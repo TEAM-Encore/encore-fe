@@ -1,4 +1,5 @@
-import { Text, View } from 'react-native'
+import { Text } from '@/components/common/ui/Text'
+import { View } from 'react-native'
 
 export default function Index() {
   return (
@@ -9,7 +10,9 @@ export default function Index() {
         alignItems: 'center',
       }}
     >
-      <Text className="text-xl font-bold text-red-500">테스트입니다</Text>
+      <Text variant="display-05" className="text-red-500">
+        테스트에요
+      </Text>
     </View>
   )
 }
