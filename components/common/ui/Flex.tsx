@@ -1,16 +1,14 @@
 import React, { forwardRef } from 'react'
-import { StyleProp, View, ViewProps, ViewStyle } from 'react-native'
+import { View, ViewProps, ViewStyle } from 'react-native'
 
-type FlexProps = {
+export type FlexProps = ViewProps & {
   flex?: number
   justify?: ViewStyle['justifyContent']
   align?: ViewStyle['alignItems']
   direction?: ViewStyle['flexDirection']
   wrap?: ViewStyle['flexWrap']
-  style?: StyleProp<ViewStyle>
-  children: React.ReactNode
   gap?: number
-} & ViewProps
+}
 
 export const Flex = forwardRef<View, FlexProps>(function Flex(
   {
@@ -19,10 +17,10 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
     align,
     direction,
     wrap,
-    style,
     gap,
-    children,
+    style,
     className,
+    children,
     ...props
   },
   ref,
