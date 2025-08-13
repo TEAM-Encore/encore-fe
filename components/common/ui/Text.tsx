@@ -31,12 +31,12 @@ export const textVariants = cva('tracking-[-0.6px]', {
 })
 
 export type TextProps = RNTextProps & {
-  variant: VariantProps<typeof textVariants>['variant']
+  variant?: VariantProps<typeof textVariants>['variant']
 }
 
-function TextCompoent(
-  { children, className, variant, ...props }: TextProps,
-  ref?: React.Ref<RNText>,
+export const Text = forwardRef<RNText, TextProps>(function Text(
+  { children, className, variant = 'body-01', ...props },
+  ref,
 ) {
   return (
     <RNText
@@ -47,6 +47,4 @@ function TextCompoent(
       {children}
     </RNText>
   )
-}
-
-export const Text = forwardRef(TextCompoent)
+})

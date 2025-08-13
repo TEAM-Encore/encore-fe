@@ -24,7 +24,7 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
     children,
     className,
     ...props
-  }: FlexProps,
+  },
   ref,
 ) {
   return (
