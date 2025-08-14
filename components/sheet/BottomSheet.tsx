@@ -1,9 +1,10 @@
 import { cn } from '@/utils/cn'
-import { BottomSheetView } from '@gorhom/bottom-sheet'
-import { type Ref, useEffect, useMemo, useRef } from 'react'
+import { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
+import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types'
+import { type Ref, useCallback, useEffect, useMemo, useRef } from 'react'
 import { View } from 'react-native'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { Flex } from '../common/ui/Flex'
+import { Text } from '../common/ui/Text'
 import { createSafeContext } from '../util/create-safe-context'
 import { GorhomSheet } from './gorhom-sheet'
 
@@ -43,18 +44,35 @@ function Root({
         }, 100)
       },
     }),
-    [ref, close],
+    [ref, close, unmount],
+  )
+
+  const renderBackdrop = useCallback(
+    (props: BottomSheetDefaultBackdropProps) => (
+      <BottomSheetBackdrop
+        {...props}
+        disappearsOnIndex={1}
+        appearsOnIndex={2}
+        opacity={0.7}
+        onPress={() => {
+          value.close()
+        }}
+      />
+    ),
+    [close, unmount],
   )
 
   return (
     <Provider value={value}>
-      <GestureHandlerRootView className="flex-1">
-        <GorhomSheet ref={ref}>
-          <BottomSheetView className="bg-[#333333] p-4">
-            {children}
-          </BottomSheetView>
-        </GorhomSheet>
-      </GestureHandlerRootView>
+      <GorhomSheet
+        ref={ref}
+        backdropComponent={renderBackdrop}
+        handleComponent={null}
+      >
+        <BottomSheetView className="bg-[#333333] p-4">
+          {children}
+        </BottomSheetView>
+      </GorhomSheet>
     </Provider>
   )
 }
@@ -68,14 +86,8 @@ function Header({
   const context = useSheet()
 
   return (
-    <Flex
-      justify="center"
-      className={cn(
-        'relative h-[70px] px-4 pb-4 font-semibold text-[18px] text-white',
-        className,
-      )}
-    >
-      {children}
+    <Flex center className={cn('relative h-[70px] px-4', className)}>
+      <Text className="font-semibold text-[18px] text-white">{children}</Text>
     </Flex>
   )
 }
