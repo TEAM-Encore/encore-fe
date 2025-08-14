@@ -1,10 +1,10 @@
 import { useSyncExternalStore } from 'react'
-import { Animated, View } from 'react-native'
+import { Animated, Pressable, View } from 'react-native'
 import { AnimatedFlex } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
 type Toast = {
-  id: number
+  id: string
   text: string
   duration?: number
   animatedValue?: Animated.Value
@@ -17,7 +17,7 @@ type Action =
     }
   | {
       type: 'REMOVE'
-      id: number
+      id: string
     }
 
 const TOAST_LIMIT_POLICY = 5
@@ -49,7 +49,7 @@ const dispatch = (action: Action) => {
 export const toast = {
   show: ({ text, duration }: Omit<Toast, 'id'>) => {
     const newToast = {
-      id: Date.now(),
+      id: `toast-${Math.random().toString(36).slice(2, 10)}`,
       text,
       duration: duration ?? 2500,
       animatedValue: new Animated.Value(0),
@@ -64,12 +64,14 @@ export const toast = {
       friction: 10,
     }).start()
 
-    setTimeout(() => {
-      toast.remove(newToast.id)
-    }, newToast.duration)
+    if (toastMemory.find((t) => t.id === newToast.id)) {
+      setTimeout(() => {
+        toast.remove(newToast.id)
+      }, newToast.duration)
+    }
   },
 
-  remove: (id: number) => {
+  remove: (id: string) => {
     const targetToRemove = toastMemory.find((t) => t.id === id)
     if (targetToRemove?.animatedValue) {
       Animated.timing(targetToRemove.animatedValue, {
@@ -102,8 +104,8 @@ export function Toaster() {
   if (!toasts.length) return null
 
   return (
-    <View className="z-modal max-w-base pointer-events-none absolute inset-x-0 bottom-16 mx-auto gap-0.5 px-5">
-      {toasts.map(({ id, text, animatedValue }) => {
+    <View className="absolute inset-x-0 bottom-16 z-modal mx-5 gap-0.5">
+      {toasts.map(({ id, text, animatedValue, duration }) => {
         if (!animatedValue) return null
 
         const opacity = animatedValue.interpolate({
@@ -122,24 +124,30 @@ export function Toaster() {
         })
 
         return (
-          <AnimatedFlex
+          <Pressable
             key={id}
-            justify="center"
-            className="max-w-base mx-auto w-full gap-4 rounded-[10px] bg-[#333333] p-4"
-            style={{
-              opacity,
-              transform: [{ translateY }, { scale }],
+            onPress={() => {
+              toast.remove(id)
             }}
           >
-            {/* <Icon
-                  name={type === 'success' ? 'CheckLine' : 'CloseLine'}
-                  color="white"
-                  size={18}
-                /> */}
-            <Text variant="body-01" className="text-[#FBFBFB]">
-              {text}
-            </Text>
-          </AnimatedFlex>
+            <AnimatedFlex
+              justify="center"
+              className="w-full gap-4 rounded-[10px] bg-[#333333] p-4"
+              style={{
+                opacity,
+                transform: [{ translateY }, { scale }],
+              }}
+            >
+              {/* <Icon
+                    name={type === 'success' ? 'CheckLine' : 'CloseLine'}
+                    color="white"
+                    size={18}
+                  /> */}
+              <Text variant="body-01" className="text-[#FBFBFB]">
+                {text}
+              </Text>
+            </AnimatedFlex>
+          </Pressable>
         )
       })}
     </View>
