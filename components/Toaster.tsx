@@ -6,7 +6,6 @@ import { Text } from './common/ui/Text'
 type Toast = {
   id: number
   text: string
-  type: 'success' | 'fail'
   duration?: number
   animatedValue?: Animated.Value
 }
@@ -48,10 +47,9 @@ const dispatch = (action: Action) => {
 }
 
 export const toast = {
-  show: ({ type, text, duration }: Omit<Toast, 'id'>) => {
+  show: ({ text, duration }: Omit<Toast, 'id'>) => {
     const newToast = {
       id: Date.now(),
-      type,
       text,
       duration: duration ?? 2500,
       animatedValue: new Animated.Value(0),
@@ -105,7 +103,7 @@ export function Toaster() {
 
   return (
     <View className="z-modal max-w-base pointer-events-none absolute inset-x-0 bottom-16 mx-auto gap-0.5 px-5">
-      {toasts.map(({ id, type, text, animatedValue }) => {
+      {toasts.map(({ id, text, animatedValue }) => {
         if (!animatedValue) return null
 
         const opacity = animatedValue.interpolate({
