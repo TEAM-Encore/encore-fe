@@ -1,8 +1,12 @@
 import { Flex } from '@/components/common/ui/Flex'
-import { toast } from '@/components/Toaster'
+import { BottomSheet } from '@/components/sheet/BottomSheet'
+import { overlay } from 'overlay-kit'
+import { useRef } from 'react'
 import { Button, View } from 'react-native'
 
 export default function Index() {
+  const ref = useRef<BottomSheet>(null)
+
   return (
     <View
       style={{
@@ -15,9 +19,11 @@ export default function Index() {
         <Button
           title="토스트"
           onPress={() => {
-            toast.show({
-              text: '테스트에요',
-            })
+            overlay.open(({ isOpen, close, unmount }) => (
+              <BottomSheet.Root isOpen={isOpen} close={close} unmount={unmount}>
+                <BottomSheet.Header></BottomSheet.Header>
+              </BottomSheet.Root>
+            ))
           }}
         />
       </Flex>
