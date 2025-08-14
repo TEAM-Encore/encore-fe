@@ -1,3 +1,4 @@
+import { Providers } from '@/providers/Providers'
 import '@/styles/globals.css'
 import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
@@ -24,8 +25,10 @@ export default function RootLayout() {
   if (!fontsLoaded) return null
 
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-    </Stack>
+    <Providers>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+      </Stack>
+    </Providers>
   )
 }

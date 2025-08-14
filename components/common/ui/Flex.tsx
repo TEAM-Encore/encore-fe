@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react'
-import { View, ViewProps, ViewStyle } from 'react-native'
+import { Animated, View, ViewProps, ViewStyle } from 'react-native'
 
 export type FlexProps = ViewProps & {
   flex?: number
@@ -7,6 +7,7 @@ export type FlexProps = ViewProps & {
   align?: ViewStyle['alignItems']
   direction?: ViewStyle['flexDirection']
   wrap?: ViewStyle['flexWrap']
+  center?: boolean
   gap?: number
 }
 
@@ -18,6 +19,7 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
     direction,
     wrap,
     gap,
+    center,
     style,
     className,
     children,
@@ -37,6 +39,10 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
           alignItems: align,
           flexWrap: wrap,
           gap: gap,
+        },
+        center && {
+          justifyContent: 'center',
+          alignItems: 'center',
         },
         style,
       ]}
@@ -61,3 +67,5 @@ export const Col = forwardRef<View, FlexProps>(function Col(
 ) {
   return <Flex direction="column" {...props} ref={ref} />
 })
+
+export const AnimatedFlex = Animated.createAnimatedComponent(Flex)
