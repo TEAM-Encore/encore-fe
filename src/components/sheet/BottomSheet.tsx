@@ -3,6 +3,7 @@ import { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types'
 import { type Ref, useCallback, useEffect, useMemo, useRef } from 'react'
 import { View } from 'react-native'
+import { interpolate } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Icon } from '../common/icons/Icon'
 import { Row } from '../common/ui/Flex'
@@ -26,13 +27,14 @@ function Root({
   const ref = useRef<GorhomSheet>(null)
   const insets = useSafeAreaInsets()
 
-  useEffect(() => {
-    if (!ref.current) return
-
-    if (isOpen) {
-      ref.current?.expand()
-    }
-  }, [isOpen])
+  const animatedBackdrop = useCallback(
+    ({ animatedIndex }: BottomSheetDefaultBackdropProps) => {
+      return {
+        opacity: interpolate(animatedIndex.value, [-1, 0], [0, 0.7]),
+      }
+    },
+    [],
+  )
 
   const value = useMemo(
     () => ({
@@ -53,8 +55,7 @@ function Root({
       <BottomSheetBackdrop
         disappearsOnIndex={-1}
         appearsOnIndex={0}
-        opacity={0.7}
-        style={[{ backgroundColor: '#000000' }]}
+        style={[{ backgroundColor: '#000000' }, animatedBackdrop(props)]}
         onPress={() => {
           value.close()
         }}
@@ -63,6 +64,14 @@ function Root({
     ),
     [value],
   )
+
+  useEffect(() => {
+    if (!ref.current) return
+
+    if (isOpen) {
+      ref.current?.expand()
+    }
+  }, [isOpen])
 
   return (
     <Provider value={value}>
