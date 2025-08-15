@@ -1,5 +1,6 @@
 import { cn } from '@/utils/cn'
 import { cva, VariantProps } from 'class-variance-authority'
+import * as React from 'react'
 import { forwardRef } from 'react'
 import { Text as RNText, type TextProps as RNTextProps } from 'react-native'
 
@@ -30,18 +31,23 @@ export const textVariants = cva('tracking-[-0.6px]', {
   },
 })
 
+export const TextClassContext = React.createContext<string | undefined>(
+  undefined,
+)
+
 export type TextProps = RNTextProps & {
   variant?: VariantProps<typeof textVariants>['variant']
 }
 
 export const Text = forwardRef<RNText, TextProps>(function Text(
-  { children, className, variant = 'body-01', ...props },
+  { children, className, variant, ...props },
   ref,
 ) {
+  const textClass = React.useContext(TextClassContext)
   return (
     <RNText
       ref={ref}
-      className={cn(textVariants({ variant }), className)}
+      className={cn(textClass, textVariants({ variant }), className)}
       {...props}
     >
       {children}
