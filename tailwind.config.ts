@@ -18,6 +18,9 @@ module.exports = {
         extrabold: ['Pretendard-ExtraBold', 'sans-serif'],
         black: ['Pretendard-Black', 'sans-serif'],
       },
+      maxWidth: {
+        base: '500px',
+      },
     },
   },
   plugins: [],
