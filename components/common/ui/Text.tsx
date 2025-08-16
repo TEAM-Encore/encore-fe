@@ -31,10 +31,6 @@ export const textVariants = cva('tracking-[-0.6px]', {
   },
 })
 
-export const TextClassContext = React.createContext<string | undefined>(
-  undefined,
-)
-
 export type TextProps = RNTextProps & {
   variant?: VariantProps<typeof textVariants>['variant']
 }
@@ -43,11 +39,10 @@ export const Text = forwardRef<RNText, TextProps>(function Text(
   { children, className, variant, ...props },
   ref,
 ) {
-  const textClass = React.useContext(TextClassContext)
   return (
     <RNText
       ref={ref}
-      className={cn(textClass, textVariants({ variant }), className)}
+      className={cn(textVariants({ variant }), className)}
       {...props}
     >
       {children}

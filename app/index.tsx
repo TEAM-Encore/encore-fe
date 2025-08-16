@@ -1,21 +1,18 @@
-import { Button } from '@/components/common/ui/Button'
+import { CTAButton } from '@/components/CTAButton'
 import { Flex } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { View } from 'react-native'
 
 export default function Index() {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, marginHorizontal: 20 }}>
       <Flex flex={1} justify="center" align="center" gap={10}>
-        <Button variant={'variant2'} className="px-[10px] py-[5px]">
-          <Text variant={'caption'}>중복 확인</Text>
-        </Button>
-        <Button variant={'default'} size={'cta'} className="w-[300px]">
-          <Text>다음</Text>
-        </Button>
-        <Button variant={'variant2'} size={'cta'} className="w-[300px]">
-          <Text>다음</Text>
-        </Button>
+        <CTAButton />
+        <CTAButton disabled />
+        <CTAButton>
+          <Text>Icon</Text>
+          <Text variant={'caption'}>확인</Text>
+        </CTAButton>
       </Flex>
     </View>
   )
