@@ -36,7 +36,7 @@ export type TextProps = RNTextProps & {
 }
 
 export const Text = forwardRef<RNText, TextProps>(function Text(
-  { children, className, variant, ...props },
+  { children, className, variant = 'body-01', ...props },
   ref,
 ) {
   return (
