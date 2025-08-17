@@ -1,9 +1,12 @@
-import { colors } from './styles/color'
-import { zIndex } from './styles/zIndex'
+import { colors } from './src/styles/color'
+import { zIndex } from './src/styles/zIndex'
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
+  content: [
+    './src/app/**/*.{js,jsx,ts,tsx}',
+    './src/components/**/*.{js,jsx,ts,tsx}',
+  ],
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
