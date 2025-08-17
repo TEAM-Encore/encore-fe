@@ -1,3 +1,4 @@
+import { colors } from './styles/color'
 import { zIndex } from './styles/zIndex'
 
 /** @type {import('tailwindcss').Config} */
@@ -7,6 +8,7 @@ module.exports = {
   theme: {
     extend: {
       zIndex,
+      colors,
       fontFamily: {
         thin: ['Pretendard-Thin', 'sans-serif'],
         extralight: ['Pretendard-ExtraLight', 'sans-serif'],

@@ -22,8 +22,8 @@ function CTAButton({
       className={cn(
         'flex-row items-center justify-center gap-[10px] whitespace-nowrap',
         'h-[52px] w-full rounded-[10px]',
-        'bg-[#FFDD56] active:bg-[#FFDD56]/80',
-        disabled && 'bg-[#6F6F6F]',
+        'bg-primary-04 active:bg-primary-04/80',
+        disabled && 'bg-gray-08',
         className,
       )}
       disabled={disabled}
@@ -35,7 +35,7 @@ function CTAButton({
         <Text
           className={cn(
             'font-semibold text-[18px]',
-            disabled ? 'text-white' : 'text-[#171717]',
+            disabled ? 'text-sub-white' : 'text-gray-12',
           )}
         >
           {text}
