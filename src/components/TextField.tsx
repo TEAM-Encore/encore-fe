@@ -2,12 +2,13 @@ import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { useState } from 'react'
 import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form'
-import { TextInput } from 'react-native'
+import { TextInput, View } from 'react-native'
 import { Col } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
 type TextFieldProps = React.ComponentProps<typeof TextInput> & {
   error?: string
+  rightElement?: (value?: string) => React.ReactNode
 }
 
 export function TextField({
@@ -15,34 +16,44 @@ export function TextField({
   onFocus: injectedOnFocus,
   onBlur: injectedOnBlur,
   error,
+  value,
+  rightElement,
   ...rest
 }: TextFieldProps) {
   const [isFocused, setIsFocused] = useState(false)
 
   return (
     <Col gap={6} className="w-full">
-      <TextInput
-        placeholderTextColor={colors.gray['08']}
-        className={cn(
-          'h-[52px] w-full rounded-[8px] border px-4 py-[14px] text-[16px] text-gray-01 transition-colors',
-          {
-            'border-gray-01': isFocused && !error,
-            'border-gray-09': !isFocused && !error,
-            'border-sub-alert': error,
-          },
-          className,
+      <View className="relative">
+        <TextInput
+          placeholderTextColor={colors.gray['08']}
+          className={cn(
+            'h-[52px] w-full rounded-[8px] border px-4 py-[14px] text-[16px] text-gray-01 transition-colors',
+            {
+              'border-gray-01': isFocused && !error,
+              'border-gray-09': !isFocused && !error,
+              'border-sub-alert': error,
+            },
+            className,
+          )}
+          textAlignVertical="center"
+          value={value}
+          onFocus={(e) => {
+            setIsFocused(true)
+            injectedOnFocus?.(e)
+          }}
+          onBlur={(e) => {
+            setIsFocused(false)
+            injectedOnBlur?.(e)
+          }}
+          {...rest}
+        />
+        {rightElement && (
+          <View className="absolute inset-y-0 right-4 justify-center">
+            {rightElement(value)}
+          </View>
         )}
-        textAlignVertical="center"
-        onFocus={(e) => {
-          setIsFocused(true)
-          injectedOnFocus?.(e)
-        }}
-        onBlur={(e) => {
-          setIsFocused(false)
-          injectedOnBlur?.(e)
-        }}
-        {...rest}
-      />
+      </View>
       {error && (
         <Text variant="caption" className="text-sub-alert">
           {error}

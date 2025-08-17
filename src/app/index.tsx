@@ -1,3 +1,4 @@
+import { Icon } from '@/components/common/icons/Icon'
 import { Col } from '@/components/common/ui/Flex'
 import { CTAButton } from '@/components/CTAButton'
 import { FormTextField, TextField } from '@/components/TextField'
@@ -23,15 +24,17 @@ export default function Index() {
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
-        <ScrollView
-          contentContainerClassName="flex-1"
-          keyboardShouldPersistTaps="always"
-        >
+        <ScrollView contentContainerClassName="flex-1">
           <Col center gap={12} className="flex-1 bg-gray-12 px-5">
             <FormTextField<FormType>
               name="name"
               placeholder="인풋필드 선택 전"
               error="오류 메시지"
+              rightElement={(value) =>
+                value && value.length > 0 ? (
+                  <Icon name="CheckCircle" size={24} className="text-white" />
+                ) : null
+              }
             />
 
             <TextField placeholder="인풋필드 선택 후" />
