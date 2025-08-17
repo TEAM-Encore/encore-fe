@@ -1,6 +1,6 @@
+import { BottomSheet } from '@/components/BottomSheet'
 import { Flex } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
-import { BottomSheet } from '@/components/sheet/BottomSheet'
 import { overlay } from 'overlay-kit'
 import { Button, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
