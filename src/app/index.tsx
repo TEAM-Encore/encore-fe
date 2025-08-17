@@ -11,8 +11,10 @@ const schema = z.object({
   name: z.string().min(1),
 })
 
+type FormType = z.infer<typeof schema>
+
 export default function Index() {
-  const form = useForm({
+  const form = useForm<FormType>({
     resolver: zodResolver(schema),
   })
 
@@ -21,9 +23,12 @@ export default function Index() {
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
-        <ScrollView contentContainerClassName="flex-1">
+        <ScrollView
+          contentContainerClassName="flex-1"
+          keyboardShouldPersistTaps="always"
+        >
           <Col center gap={12} className="flex-1 bg-gray-12 px-5">
-            <FormTextField
+            <FormTextField<FormType>
               name="name"
               placeholder="인풋필드 선택 전"
               error="오류 메시지"

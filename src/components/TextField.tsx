@@ -1,7 +1,7 @@
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { useState } from 'react'
-import { Controller, useFormContext } from 'react-hook-form'
+import { Controller, FieldValues, Path, useFormContext } from 'react-hook-form'
 import { TextInput } from 'react-native'
 import { Col } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
@@ -52,18 +52,30 @@ export function TextField({
   )
 }
 
-type FormTextFieldProps = TextFieldProps & {
-  name: string
+type FormTextFieldProps<TFieldValues extends FieldValues> = TextFieldProps & {
+  name: Path<TFieldValues>
 }
 
-export function FormTextField({ name, error, ...rest }: FormTextFieldProps) {
-  const context = useFormContext()
+export function FormTextField<TFieldValues extends FieldValues>({
+  name,
+  error,
+  ...rest
+}: FormTextFieldProps<TFieldValues>) {
+  const form = useFormContext()
 
   return (
     <Controller
-      control={context.control}
+      control={form.control}
       name={name}
-      render={({ field }) => <TextField {...field} {...rest} error={error} />}
+      render={({ field: { onChange, onBlur, value } }) => (
+        <TextField
+          {...rest}
+          error={error}
+          onChangeText={onChange}
+          onBlur={onBlur}
+          value={value}
+        />
+      )}
     />
   )
 }
