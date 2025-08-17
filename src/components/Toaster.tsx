@@ -104,7 +104,7 @@ export function Toaster() {
   if (!toasts.length) return null
 
   return (
-    <View className="absolute inset-x-0 bottom-16 z-modal mx-5 gap-0.5">
+    <View className="z-modal absolute inset-x-0 bottom-16 mx-5 gap-0.5">
       {toasts.map(({ id, text, animatedValue, duration }) => {
         if (!animatedValue) return null
 
@@ -132,7 +132,7 @@ export function Toaster() {
           >
             <AnimatedFlex
               justify="center"
-              className="w-full gap-4 rounded-[10px] bg-[#333333] p-4"
+              className="bg-gray-10 w-full gap-4 rounded-[10px] p-4"
               style={{
                 opacity,
                 transform: [{ translateY }, { scale }],
@@ -143,7 +143,7 @@ export function Toaster() {
                     color="white"
                     size={18}
                   /> */}
-              <Text variant="body-01" className="text-[#FBFBFB]">
+              <Text variant="body-01" className="text-gray-01">
                 {text}
               </Text>
             </AnimatedFlex>
