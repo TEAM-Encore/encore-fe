@@ -5,11 +5,11 @@ import { type Ref, useCallback, useEffect, useMemo, useRef } from 'react'
 import { View } from 'react-native'
 import { interpolate } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Icon } from '../common/icons/Icon'
-import { Row } from '../common/ui/Flex'
-import { Text } from '../common/ui/Text'
-import { createSafeContext } from '../util/create-safe-context'
-import { GorhomSheet } from './gorhom-sheet'
+import { GorhomSheet } from '.'
+import { createSafeContext } from '../utils/create-safe-context'
+import { Icon } from './common/icons/Icon'
+import { Row } from './common/ui/Flex'
+import { Text } from './common/ui/Text'
 
 type ContextValue = {
   ref: Ref<GorhomSheet>

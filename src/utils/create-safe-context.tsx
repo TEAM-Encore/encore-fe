@@ -1,8 +1,8 @@
-import { Consumer, type Provider, createContext, useContext } from 'react'
+import { type Provider, createContext, useContext } from 'react'
 
 const NullSymbol = Symbol('Null')
 
-export type CreateContextReturn<T> = [Provider<T>, () => T, Consumer<T>]
+export type CreateContextReturn<T> = [Provider<T>, () => T]
 
 export function createSafeContext<T>(
   displayName?: string,
@@ -23,9 +23,5 @@ export function createSafeContext<T>(
     return context
   }
 
-  return [
-    Context.Provider as Provider<T>,
-    useSafeContext,
-    Context.Consumer as Consumer<T>,
-  ]
+  return [Context.Provider as Provider<T>, useSafeContext]
 }
