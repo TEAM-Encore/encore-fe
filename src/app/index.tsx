@@ -1,41 +1,44 @@
-import { BottomSheet } from '@/components/BottomSheet'
-import { Flex } from '@/components/common/ui/Flex'
-import { Text } from '@/components/common/ui/Text'
-import { overlay } from 'overlay-kit'
-import { Button, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Col } from '@/components/common/ui/Flex'
+import { CTAButton } from '@/components/CTAButton'
+import { FormTextField, TextField } from '@/components/TextField'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { FormProvider, useForm } from 'react-hook-form'
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { z } from 'zod'
+
+const schema = z.object({
+  name: z.string().min(1),
+})
 
 export default function Index() {
+  const form = useForm({
+    resolver: zodResolver(schema),
+  })
+
+  const insets = useSafeAreaInsets()
+
   return (
-    <SafeAreaView className="flex-1">
-      <View
-        style={{
-          flex: 1,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Flex flex={1} justify="center" align="center">
-          <Button
-            title="토스트"
-            onPress={() => {
-              overlay.open(({ isOpen, close, unmount }) => (
-                <BottomSheet.Root
-                  isOpen={isOpen}
-                  close={close}
-                  unmount={unmount}
-                >
-                  <BottomSheet.Header>테스트</BottomSheet.Header>
-                  <BottomSheet.Content>
-                    <Text>테스트</Text>
-                  </BottomSheet.Content>
-                  <BottomSheet.Footer buttonProps={{ text: '바텀시트' }} />
-                </BottomSheet.Root>
-              ))
-            }}
-          />
-        </Flex>
-      </View>
-    </SafeAreaView>
+    <FormProvider {...form}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+        <ScrollView contentContainerClassName="flex-1">
+          <Col center gap={12} className="flex-1 bg-gray-12 px-5">
+            <FormTextField
+              name="name"
+              placeholder="인풋필드 선택 전"
+              error="오류 메시지"
+            />
+
+            <TextField placeholder="인풋필드 선택 후" />
+          </Col>
+          <View
+            className="absolute inset-x-0 bottom-0 px-5 py-4"
+            style={{ paddingBottom: insets.bottom }}
+          >
+            <CTAButton text="다음" />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </FormProvider>
   )
 }
