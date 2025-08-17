@@ -31,7 +31,11 @@ export const Icon = forwardRef(function Icon(
   const IconElement = Icons[name]
 
   if (!IconElement) {
-    throw new Error(`Icon ${name} not found`)
+    const error = new Error(`Icon ${name} not found`)
+    error.name = `[Error] Icon ${name}`
+    error.message = `Icon ${name} not found`
+
+    throw error
   }
 
   return (
