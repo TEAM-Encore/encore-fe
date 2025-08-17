@@ -29,7 +29,7 @@ export default function Index() {
                   <BottomSheet.Content>
                     <Text>테스트</Text>
                   </BottomSheet.Content>
-                  <BottomSheet.Footer></BottomSheet.Footer>
+                  <BottomSheet.Footer buttonProps={{ text: '바텀시트' }} />
                 </BottomSheet.Root>
               ))
             }}

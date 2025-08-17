@@ -1,7 +1,14 @@
 import { cn } from '@/utils/cn'
 import { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
 import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types'
-import { type Ref, useCallback, useEffect, useMemo, useRef } from 'react'
+import {
+  type PropsWithChildren,
+  type Ref,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react'
 import { View } from 'react-native'
 import { interpolate } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -10,6 +17,7 @@ import { createSafeContext } from '../utils/create-safe-context'
 import { Icon } from './common/icons/Icon'
 import { Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
+import { CTAButton, CTAButtonProps } from './CTAButton'
 
 type ContextValue = {
   ref: Ref<GorhomSheet>
@@ -140,15 +148,25 @@ function Content({
 function Footer({
   children,
   className,
-}: PropsWithStrictChildren<{
+  buttonProps,
+}: PropsWithChildren<{
   className?: string
+  buttonProps: CTAButtonProps
 }>) {
+  const { onPress, ...rest } = buttonProps
+  const context = useSheet()
+
   return (
     <View className={cn('px-5 py-4', className)}>
-      {/* TODO: 버튼 */}
-      {/* <PressableFlex center className="h-[52px] rounded-[10px] bg-[#FFDD56]">
-        <Text className="text-center font-semibold text-[18px]">확인</Text>
-      </PressableFlex> */}
+      {children ?? (
+        <CTAButton
+          onPress={(e) => {
+            onPress?.(e)
+            context.close()
+          }}
+          {...rest}
+        />
+      )}
     </View>
   )
 }

@@ -2,7 +2,7 @@ import { cn } from '@/utils/cn'
 import { Pressable } from 'react-native'
 import { Text } from './common/ui/Text'
 
-type CTAButtonProps = React.ComponentProps<typeof Pressable> & {
+export type CTAButtonProps = React.ComponentProps<typeof Pressable> & {
   text?: string
   children?: React.ReactNode
 }
