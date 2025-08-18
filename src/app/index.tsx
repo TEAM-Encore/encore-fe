@@ -1,22 +1,17 @@
 import { Icon } from '@/components/common/icons/Icon'
 import { Col } from '@/components/common/ui/Flex'
-import { Text } from '@/components/common/ui/Text'
 import { CTAButton } from '@/components/CTAButton'
-import { Search } from '@/components/Search'
+import { Search } from '@/components/search/Search'
 import { FormTextField, TextField } from '@/components/TextField'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FormProvider, useForm } from 'react-hook-form'
-import {
-  KeyboardAvoidingView,
-  Text as RNText,
-  ScrollView,
-  View,
-} from 'react-native'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { z } from 'zod'
 
 const schema = z.object({
   name: z.string().min(1),
+  search: z.string(),
 })
 
 type FormType = z.infer<typeof schema>
@@ -28,12 +23,28 @@ export default function Index() {
 
   const insets = useSafeAreaInsets()
 
+  console.log(form.watch())
+
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
         <ScrollView contentContainerClassName="flex-1">
           <Col center gap={12} className="flex-1 bg-gray-12 px-5">
-            <Search placeholder="공연명 검색하기" />
+            <Controller
+              control={form.control}
+              name="search"
+              render={({ field }) => (
+                <Search
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="공연명 검색하기"
+                  onDelete={() => {
+                    form.resetField('search')
+                  }}
+                />
+              )}
+            />
+
             <FormTextField
               control={form.control}
               name="name"
@@ -47,10 +58,6 @@ export default function Index() {
             />
 
             <TextField placeholder="인풋필드 선택 후" />
-            <Text variant="display-05" className="text-gray-01">
-              ddd
-            </Text>
-            <RNText className="text-display-05 text-gray-01">ddd</RNText>
           </Col>
 
           <View

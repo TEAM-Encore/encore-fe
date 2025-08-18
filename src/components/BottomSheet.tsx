@@ -116,7 +116,7 @@ function Header({
 
   return (
     <Row center className={cn('relative h-[70px] px-4', className)}>
-      <Text className="text-center font-semibold text-[18px] text-white">
+      <Text className="text-center font-semibold text-[18px] text-gray-01">
         {children}
       </Text>
       <Icon
@@ -124,7 +124,7 @@ function Header({
         width={24}
         height={24}
         size={24}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-white"
+        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-01"
         onPress={() => {
           context.close()
         }}
