@@ -1,5 +1,6 @@
 import { cn } from '@/utils/cn'
 import { useRouter } from 'expo-router'
+import { useMemo } from 'react'
 import { Pressable } from 'react-native'
 import { Icon } from './common/icons/Icon'
 import { Row } from './common/ui/Flex'
@@ -49,7 +50,7 @@ export default function NavigationBar({
   const router = useRouter()
 
   // 왼쪽 영역 렌더링
-  const renderLeftComponent = () => {
+  const leftElement = useMemo(() => {
     if (leftComponent) {
       return leftComponent
     }
@@ -63,10 +64,10 @@ export default function NavigationBar({
     }
 
     return null
-  }
+  }, [leftComponent, showBackButton, router])
 
   // 중앙 영역 렌더링
-  const renderCenterComponent = () => {
+  const centerElement = useMemo(() => {
     if (centerComponent) {
       return centerComponent
     }
@@ -84,24 +85,30 @@ export default function NavigationBar({
     }
 
     return null
-  }
+  }, [centerComponent, title])
 
   return (
     <Row className={cn('bg-gray-12 relative h-[62px] w-full', className)}>
       {/* 왼쪽 영역 */}
-      <Row className="flex-shrink-0" align="center">
-        {renderLeftComponent()}
-      </Row>
+      {leftElement && (
+        <Row className="flex-shrink-0" align="center">
+          {leftElement}
+        </Row>
+      )}
 
       {/* 오른쪽 영역 */}
-      <Row className="flex-1" align="center" justify="flex-end">
-        {rightComponent}
-      </Row>
+      {rightComponent && (
+        <Row className="flex-1" align="center" justify="flex-end">
+          {rightComponent}
+        </Row>
+      )}
 
       {/* 중앙 영역 */}
-      <Row className="absolute inset-0" align="center" justify="center">
-        {renderCenterComponent()}
-      </Row>
+      {centerElement && (
+        <Row className="absolute inset-0" align="center" justify="center">
+          {centerElement}
+        </Row>
+      )}
     </Row>
   )
 }
