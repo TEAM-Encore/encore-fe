@@ -1,8 +1,6 @@
-import { Icon } from '@/components/common/icons/Icon'
 import { Col } from '@/components/common/ui/Flex'
 import { CTAButton } from '@/components/CTAButton'
 import { Search } from '@/components/search/Search'
-import { FormTextField, TextField } from '@/components/TextField'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
@@ -23,8 +21,6 @@ export default function Index() {
 
   const insets = useSafeAreaInsets()
 
-  console.log(form.watch())
-
   return (
     <FormProvider {...form}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
@@ -38,26 +34,10 @@ export default function Index() {
                   value={field.value}
                   onChangeText={field.onChange}
                   placeholder="공연명 검색하기"
-                  onDelete={() => {
-                    form.resetField('search')
-                  }}
+                  onDelete={() => field.onChange('')}
                 />
               )}
             />
-
-            <FormTextField
-              control={form.control}
-              name="name"
-              placeholder="인풋필드 선택 전"
-              error="오류 메시지"
-              rightElement={(value) =>
-                value && value.length > 0 ? (
-                  <Icon name="CheckCircle" size={24} className="text-white" />
-                ) : null
-              }
-            />
-
-            <TextField placeholder="인풋필드 선택 후" />
           </Col>
 
           <View

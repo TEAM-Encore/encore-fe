@@ -19,21 +19,21 @@ export function Search({ className, onDelete, value, ...rest }: SearchProps) {
       <TextInput
         value={value}
         placeholderTextColor={colors.gray['07']}
-        placeholderClassName="text-body-02"
+        placeholderClassName="text-[16px]"
         className={cn(
           'h-[48px] w-full rounded-[8px] bg-gray-10 pl-[43px] text-[16px] text-gray-01',
           className,
         )}
         {...rest}
       />
-      {value?.length ? (
+      {!!value?.length && (
         <Icon
           name="XCircle"
           size={20}
           className="absolute right-4 top-1/2 z-10 -translate-y-1/2"
           onPress={onDelete}
         />
-      ) : null}
+      )}
     </View>
   )
 }
