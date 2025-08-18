@@ -77,7 +77,7 @@ export default function NavigationBar({
         <Text
           numberOfLines={1}
           variant={'headline'}
-          className="text-gray-01 text-center"
+          className="text-center text-gray-01"
         >
           {title}
         </Text>
@@ -88,7 +88,7 @@ export default function NavigationBar({
   }, [centerComponent, title])
 
   return (
-    <Row className={cn('bg-gray-12 relative h-[62px] w-full', className)}>
+    <Row className={cn('relative h-[62px] w-full bg-gray-12', className)}>
       {/* 왼쪽 영역 */}
       {leftElement && (
         <Row className="flex-shrink-0" align="center">
