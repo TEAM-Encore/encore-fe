@@ -26,7 +26,8 @@ export default function Index() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
         <ScrollView contentContainerClassName="flex-1">
           <Col center gap={12} className="flex-1 bg-gray-12 px-5">
-            <FormTextField<FormType>
+            <FormTextField
+              control={form.control}
               name="name"
               placeholder="인풋필드 선택 전"
               error="오류 메시지"
