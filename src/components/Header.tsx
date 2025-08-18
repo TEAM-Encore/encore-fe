@@ -1,6 +1,6 @@
+import { cn } from '@/utils/cn'
 import { useRouter } from 'expo-router'
 import { Pressable } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Icon } from './common/icons/Icon'
 import { Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
@@ -46,7 +46,6 @@ export default function NavigationBar({
   rightComponent,
   className,
 }: NavigationBarProps) {
-  const insets = useSafeAreaInsets()
   const router = useRouter()
 
   // 왼쪽 영역 렌더링
@@ -58,7 +57,7 @@ export default function NavigationBar({
     if (showBackButton) {
       return (
         <Pressable onPress={() => router.back()}>
-          <Icon name="ArrowLeft" />
+          <Icon name="ArrowLeft" className="text-gray-01" />
         </Pressable>
       )
     }
@@ -76,7 +75,7 @@ export default function NavigationBar({
       return (
         <Text
           numberOfLines={1}
-          variant={'subhead-02'}
+          variant={'headline'}
           className="text-gray-01 text-center"
         >
           {title}
@@ -88,20 +87,20 @@ export default function NavigationBar({
   }
 
   return (
-    <Row>
+    <Row className={cn('bg-gray-12 relative h-[62px] w-full', className)}>
       {/* 왼쪽 영역 */}
-      <Row className="flex-1" align="center">
+      <Row className="flex-shrink-0" align="center">
         {renderLeftComponent()}
-      </Row>
-
-      {/* 중앙 영역 */}
-      <Row className="flex-2" align="center" justify="center">
-        {renderCenterComponent()}
       </Row>
 
       {/* 오른쪽 영역 */}
       <Row className="flex-1" align="center" justify="flex-end">
         {rightComponent}
+      </Row>
+
+      {/* 중앙 영역 */}
+      <Row className="absolute inset-0" align="center" justify="center">
+        {renderCenterComponent()}
       </Row>
     </Row>
   )

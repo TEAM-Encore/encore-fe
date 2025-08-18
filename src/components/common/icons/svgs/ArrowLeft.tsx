@@ -1,35 +1,20 @@
-import Svg, { Mask, Path, G } from 'react-native-svg'
+import Svg, { Path } from 'react-native-svg'
 import type { SvgProps } from 'react-native-svg'
 import { Ref, forwardRef } from 'react'
 const ArrowLeft = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
-    width={24}
+    width={25}
     height={24}
     fill="none"
-    viewBox="0 0 24 24"
+    viewBox="0 0 25 24"
     ref={ref}
     {...props}
   >
-    <Mask
-      id="a"
-      width={24}
-      height={24}
-      x={0}
-      y={0}
-      maskUnits="userSpaceOnUse"
-      style={{
-        maskType: 'alpha',
-      }}
-    >
-      <Path fill="currentColor" d="M0 0h24v24H0z" />
-    </Mask>
-    <G mask="url(#a)">
-      <Path
-        fill="currentColor"
-        d="m12 13.054-5.073 5.073a.73.73 0 0 1-.522.213.7.7 0 0 1-.532-.213.72.72 0 0 1-.217-.527q0-.31.217-.527L10.946 12 5.873 6.927a.73.73 0 0 1-.212-.522.7.7 0 0 1 .212-.532.72.72 0 0 1 .527-.217q.31 0 .527.217L12 10.946l5.073-5.073a.73.73 0 0 1 .522-.212.7.7 0 0 1 .532.212q.217.217.217.527a.72.72 0 0 1-.217.527L13.054 12l5.073 5.073q.208.209.213.522a.7.7 0 0 1-.213.532.72.72 0 0 1-.527.217.72.72 0 0 1-.527-.217z"
-      />
-    </G>
+    <Path
+      fill="currentColor"
+      d="M16.53 4.47a.75.75 0 0 1 .073.976l-.073.084L10.061 12l6.47 6.47a.75.75 0 0 1 .072.976l-.073.084a.75.75 0 0 1-.976.073l-.084-.073-7-7a.75.75 0 0 1-.073-.976l.073-.084 7-7a.75.75 0 0 1 1.06 0"
+    />
   </Svg>
 )
 const ForwardRef = forwardRef(ArrowLeft)
