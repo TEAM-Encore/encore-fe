@@ -33,7 +33,7 @@ export function TextField({
         <TextInput
           placeholderTextColor={colors.gray['08']}
           className={cn(
-            'h-[52px] w-full rounded-[8px] border px-4 py-[14px] text-[16px] text-gray-01 transition-colors',
+            'text-gray-01 h-[52px] w-full rounded-[8px] border px-4 py-[14px] text-[16px]',
             {
               'border-gray-01': isFocused && !error,
               'border-gray-09': !isFocused && !error,
@@ -41,7 +41,6 @@ export function TextField({
             },
             className,
           )}
-          textAlignVertical="center"
           value={value}
           onFocus={(e) => {
             setIsFocused(true)
@@ -83,10 +82,10 @@ export function FormTextField<TFieldValues extends FieldValues>({
     <Controller
       control={control}
       name={name}
-      render={({ field: { onChange, onBlur, value } }) => (
+      render={({ field: { onChange, onBlur, value }, fieldState }) => (
         <TextField
           {...rest}
-          error={error}
+          error={error ?? fieldState.error?.message}
           onChangeText={onChange}
           onBlur={onBlur}
           value={value}
