@@ -1,4 +1,4 @@
-export { Close } from './Close'
 export { CheckCircle } from './CheckCircle'
+export { Close } from './Close'
 export { Search } from './Search'
 export { XCircle } from './XCircle'
