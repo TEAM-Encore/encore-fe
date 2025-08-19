@@ -11,12 +11,12 @@ export interface NavigationBarProps {
    * 뒤로가기 버튼 표시 여부
    * leftComponent가 제공되면 이 prop은 무시됩니다.
    */
-  showBackButton?: boolean
+  showBack?: boolean
 
   /**
    * 네비게이션 바의 왼쪽 컴포넌트
    */
-  leftComponent?: React.ReactNode
+  left?: React.ReactNode
 
   /**
    * 중앙에 표시할 제목 텍스트
@@ -26,12 +26,12 @@ export interface NavigationBarProps {
   /**
    * 네비게이션 바의 중앙 영역 컴포넌트
    */
-  centerComponent?: React.ReactNode
+  center?: React.ReactNode
 
   /**
    * 네비게이션 바의 오른쪽 컴포넌트
    */
-  rightComponent?: React.ReactNode
+  right?: React.ReactNode
 
   /**
    * 추가 스타일 클래스
@@ -40,22 +40,22 @@ export interface NavigationBarProps {
 }
 
 export default function NavigationBar({
-  leftComponent,
-  showBackButton = false,
+  left,
+  showBack = false,
   title,
-  centerComponent,
-  rightComponent,
+  center,
+  right,
   className,
 }: NavigationBarProps) {
   const router = useRouter()
 
   // 왼쪽 영역 렌더링
   const leftElement = useMemo(() => {
-    if (leftComponent) {
-      return leftComponent
+    if (left) {
+      return left
     }
 
-    if (showBackButton) {
+    if (showBack) {
       return (
         <Pressable onPress={() => router.back()}>
           <Icon name="ArrowLeft" className="text-gray-01" />
@@ -64,12 +64,12 @@ export default function NavigationBar({
     }
 
     return null
-  }, [leftComponent, showBackButton, router])
+  }, [left, showBack, router])
 
   // 중앙 영역 렌더링
   const centerElement = useMemo(() => {
-    if (centerComponent) {
-      return centerComponent
+    if (center) {
+      return center
     }
 
     if (title) {
@@ -85,7 +85,7 @@ export default function NavigationBar({
     }
 
     return null
-  }, [centerComponent, title])
+  }, [center, title])
 
   return (
     <Row className={cn('relative h-[62px] w-full bg-gray-12', className)}>
@@ -97,9 +97,9 @@ export default function NavigationBar({
       )}
 
       {/* 오른쪽 영역 */}
-      {rightComponent && (
-        <Row className="flex-1" align="center" justify="flex-end">
-          {rightComponent}
+      {right && (
+        <Row className="flex-1" align="center" justify="flex-end" gap={12}>
+          {right}
         </Row>
       )}
 
