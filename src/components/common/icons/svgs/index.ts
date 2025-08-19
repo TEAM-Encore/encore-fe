@@ -1,2 +1,3 @@
-export { Close } from './Close'
+export { ArrowLeft } from './ArrowLeft'
 export { CheckCircle } from './CheckCircle'
+export { Close } from './Close'
