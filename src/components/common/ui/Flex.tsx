@@ -3,6 +3,7 @@ import {
   Animated,
   Pressable,
   PressableProps,
+  StyleProp,
   View,
   ViewProps,
   ViewStyle,
@@ -67,22 +68,30 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
   },
   ref,
 ) {
+  const baseStyle = buildFlexStyle({
+    flex,
+    justify,
+    align,
+    direction,
+    wrap,
+    gap,
+    center,
+  })
+
   if (onPress) {
+    const pressableStyle: PressableProps['style'] =
+      typeof style === 'function'
+        ? (state) => {
+            const st = style(state)
+            const __style = Array.isArray(st) ? st : [st]
+            return [...baseStyle, ...__style] as StyleProp<ViewStyle>
+          }
+        : ([...baseStyle, style] as StyleProp<ViewStyle>)
+
     return (
       <Pressable
         ref={ref}
-        style={[
-          ...buildFlexStyle({
-            flex,
-            justify,
-            align,
-            direction,
-            wrap,
-            gap,
-            center,
-          }),
-          style,
-        ]}
+        style={pressableStyle}
         className={className}
         onPress={onPress}
         {...props}
