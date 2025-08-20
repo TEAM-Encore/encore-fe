@@ -9,12 +9,12 @@ type AvatarProps = {
 
 export function Avatar({ source, onUpload }: AvatarProps) {
   return (
-    <Pressable className="relative active:opacity-80" onPress={onUpload}>
+    <Pressable className="active:opacity-80" onPress={onUpload}>
       {source?.uri ? (
         <Image
           source={source}
           resizeMode="cover"
-          className="absolute inset-0 size-[88px] rounded-full"
+          className="size-[88px] rounded-full"
         />
       ) : (
         <Icon name="AvatarPlaceholder" size={88} />
