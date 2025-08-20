@@ -24,7 +24,6 @@ export function ReviewOptions<T extends string>({
         <Flex
           key={option.value}
           center
-          style={[]}
           className={cn(
             'h-14 flex-1 border-r-[0.5px] border-gray-10 bg-gray-11',
             {
