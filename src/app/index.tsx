@@ -1,53 +1,33 @@
-import { Col } from '@/components/common/ui/Flex'
-import { CTAButton } from '@/components/CTAButton'
-import { Search } from '@/components/search/Search'
+import { ReviewOptions } from '@/components/ReviewOptions'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useForm } from 'react-hook-form'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { z } from 'zod'
 
 const schema = z.object({
-  name: z.string().min(1),
-  search: z.string(),
+  review: z.enum(['GOOD', 'NORMAL', 'BAD']),
 })
 
-type FormType = z.infer<typeof schema>
-
 export default function Index() {
-  const form = useForm<FormType>({
+  const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
+    defaultValues: {
+      review: 'GOOD',
+    },
   })
-
-  const insets = useSafeAreaInsets()
-
   return (
-    <FormProvider {...form}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
-        <ScrollView contentContainerClassName="flex-1">
-          <Col center gap={12} className="flex-1 bg-gray-12 px-5">
-            <Controller
-              control={form.control}
-              name="search"
-              render={({ field }) => (
-                <Search
-                  value={field.value}
-                  onChangeText={field.onChange}
-                  placeholder="공연명 검색하기"
-                  onDelete={() => field.onChange('')}
-                />
-              )}
-            />
-          </Col>
-
-          <View
-            className="absolute inset-x-0 bottom-0 px-5 py-4"
-            style={{ paddingBottom: insets.bottom }}
-          >
-            <CTAButton text="다음" />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </FormProvider>
+    <SafeAreaView className="flex-1 items-center justify-center bg-gray-12 px-5">
+      <ReviewOptions
+        value={form.watch('review')}
+        options={[
+          { label: '잘 들려요', value: 'GOOD' },
+          { label: '보통이에요', value: 'NORMAL' },
+          { label: '좋지 않아요', value: 'BAD' },
+        ]}
+        onSelect={(value) => {
+          form.setValue('review', value)
+        }}
+      />
+    </SafeAreaView>
   )
 }
