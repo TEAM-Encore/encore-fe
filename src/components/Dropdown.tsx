@@ -2,6 +2,7 @@ import { cn } from '@/utils/cn'
 import { createSafeContext } from '@/utils/create-safe-context'
 import React, { ReactNode, useLayoutEffect, useRef, useState } from 'react'
 import { Modal, Pressable, View } from 'react-native'
+import { Text } from './common/ui/Text'
 
 type DropdownContextValue = {
   isOpen: boolean
@@ -22,7 +23,7 @@ function Root({ children }: { children: ReactNode }) {
 
   return (
     <Provider value={{ isOpen, open, close, triggerRef }}>
-      <View className="relative overflow-visible">{children}</View>
+      <View className="relative">{children}</View>
     </Provider>
   )
 }
@@ -75,12 +76,7 @@ function Content({
   if (!isOpen) return null
 
   return (
-    <Modal
-      transparent
-      visible={isOpen}
-      onRequestClose={close}
-      animationType="fade"
-    >
+    <Modal transparent visible={isOpen} onRequestClose={close}>
       <Pressable className="flex-1" onPress={close}>
         <View
           className={cn('absolute rounded-[8px] bg-gray-10', className)}
@@ -106,22 +102,32 @@ function Item({
   onPress,
   children,
   className,
+  variant = 'default',
 }: {
-  onPress: () => void
+  onPress?: () => void
   children: ReactNode
   className?: string
+  variant?: 'default' | 'destructive'
 }) {
   const { close } = useDropdown()
 
   return (
     <Pressable
       onPress={() => {
-        onPress()
+        onPress?.()
         close()
       }}
       className={cn('px-[22px] py-[10px]', className)}
     >
-      {children}
+      <Text
+        variant={'subhead-03'}
+        className={cn(
+          'text-gray-01',
+          variant === 'destructive' && 'text-sub-alert',
+        )}
+      >
+        {children as string}
+      </Text>
     </Pressable>
   )
 }
