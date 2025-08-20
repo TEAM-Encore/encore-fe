@@ -1,54 +1,53 @@
-import { Icon } from '@/components/common/icons/Icon'
-import { Text } from '@/components/common/ui/Text'
-import NavigationBar from '@/components/NavigationBar'
-import { View } from 'react-native'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Col } from '@/components/common/ui/Flex'
+import { CTAButton } from '@/components/CTAButton'
+import { Search } from '@/components/search/Search'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { z } from 'zod'
+
+const schema = z.object({
+  name: z.string().min(1),
+  search: z.string(),
+})
+
+type FormType = z.infer<typeof schema>
 
 export default function Index() {
+  const form = useForm<FormType>({
+    resolver: zodResolver(schema),
+  })
+
   const insets = useSafeAreaInsets()
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center bg-gray-12 px-[20px]">
-      <NavigationBar
-        showBack
-        title="내역 추가하기"
-        right={<Icon name="Close" className="text-gray-01" />}
-      />
+    <FormProvider {...form}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+        <ScrollView contentContainerClassName="flex-1">
+          <Col center gap={12} className="flex-1 bg-gray-12 px-5">
+            <Controller
+              control={form.control}
+              name="search"
+              render={({ field }) => (
+                <Search
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  placeholder="공연명 검색하기"
+                  onDelete={() => field.onChange('')}
+                />
+              )}
+            />
+          </Col>
 
-      <NavigationBar
-        title="티켓 내역"
-        left={
-          <Text variant={'subhead-long-03'} className="text-gray-01">
-            취소
-          </Text>
-        }
-        right={
-          <Text variant={'subhead-long-03'} className="text-gray-01">
-            확인
-          </Text>
-        }
-      />
-
-      <NavigationBar
-        showBack
-        right={
-          <View className={'h-[24px] w-full flex-grow bg-pink-900'}></View>
-        }
-      />
-
-      <NavigationBar
-        left={
-          <Text className="text-gray-01" variant={'headline'}>
-            앙코르
-          </Text>
-        }
-        right={
-          <>
-            <Icon name="Close" className="text-gray-01" />
-            <Icon name="Close" className="text-gray-01" />
-          </>
-        }
-      />
-    </SafeAreaView>
+          <View
+            className="absolute inset-x-0 bottom-0 px-5 py-4"
+            style={{ paddingBottom: insets.bottom }}
+          >
+            <CTAButton text="다음" />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </FormProvider>
   )
 }
