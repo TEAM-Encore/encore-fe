@@ -12,11 +12,13 @@ import { Col } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
 type TextFieldProps = React.ComponentProps<typeof TextInput> & {
+  as?: 'input' | 'textarea'
   error?: string
   rightElement?: (value?: string) => React.ReactNode
 }
 
 export function TextField({
+  as = 'input',
   className,
   onFocus: injectedOnFocus,
   onBlur: injectedOnBlur,
@@ -33,14 +35,18 @@ export function TextField({
         <TextInput
           placeholderTextColor={colors.gray['08']}
           className={cn(
-            'h-[52px] w-full rounded-[8px] border px-4 py-[14px] text-[16px] text-gray-01',
+            'h-[52px] w-full rounded-[8px] border px-4 py-[10px] text-[16px] text-gray-01',
             {
               'border-gray-01': isFocused && !error,
               'border-gray-09': !isFocused && !error,
               'border-sub-alert': error,
+              'h-[117px]': as === 'textarea',
             },
             className,
           )}
+          textAlignVertical={as === 'textarea' ? 'top' : 'center'}
+          multiline={as === 'textarea'}
+          scrollEnabled={as === 'textarea'}
           value={value}
           onFocus={(e) => {
             setIsFocused(true)

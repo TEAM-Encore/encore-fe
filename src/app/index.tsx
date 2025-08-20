@@ -1,4 +1,5 @@
 import { ReviewOptions } from '@/components/ReviewOptions'
+import { TextField } from '@/components/TextField'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -27,6 +28,11 @@ export default function Index() {
         onSelect={(value) => {
           form.setValue('review', value)
         }}
+      />
+      <TextField
+        as="textarea"
+        placeholder="리뷰를 입력해주세요"
+        className="mt-4"
       />
     </SafeAreaView>
   )
