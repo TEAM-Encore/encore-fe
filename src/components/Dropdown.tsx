@@ -120,7 +120,7 @@ function Item({
       className={cn('px-[22px] py-[10px]', className)}
     >
       <Text
-        variant={'subhead-03'}
+        variant={'subhead-02'}
         className={cn(
           'text-gray-01',
           variant === 'destructive' && 'text-sub-alert',
