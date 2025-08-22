@@ -1,2 +1,5 @@
-export { Close } from './Close'
 export { CheckCircle } from './CheckCircle'
+export { Clock } from './Clock'
+export { Close } from './Close'
+export { TheaterSeat } from './TheaterSeat'
+export { User } from './User'

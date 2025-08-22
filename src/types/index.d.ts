@@ -14,3 +14,8 @@ type OverlayProps = {
   close: VoidFunction
   unmount?: VoidFunction
 }
+
+declare module '*.png' {
+  const value: string;
+  export default value;
+}

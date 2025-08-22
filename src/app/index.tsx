@@ -1,53 +1,47 @@
-import { Icon } from '@/components/common/icons/Icon'
-import { Col } from '@/components/common/ui/Flex'
-import { CTAButton } from '@/components/CTAButton'
-import { FormTextField, TextField } from '@/components/TextField'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { FormProvider, useForm } from 'react-hook-form'
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { z } from 'zod'
-
-const schema = z.object({
-  name: z.string().min(1),
-})
-
-type FormType = z.infer<typeof schema>
+import posterplaceholder from '@/assets/images/poster-placeholder.png'
+import { TicketBook } from '@/components/TicketBook'
+import React, { useState } from 'react'
+import { Pressable, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function Index() {
-  const form = useForm<FormType>({
-    resolver: zodResolver(schema),
-  })
-
-  const insets = useSafeAreaInsets()
+  const [selectedId, setSelectedId] = useState<number | null>(null)
 
   return (
-    <FormProvider {...form}>
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
-        <ScrollView contentContainerClassName="flex-1">
-          <Col center gap={12} className="flex-1 bg-gray-12 px-5">
-            <FormTextField
-              control={form.control}
-              name="name"
-              placeholder="인풋필드 선택 전"
-              error="오류 메시지"
-              rightElement={(value) =>
-                value && value.length > 0 ? (
-                  <Icon name="CheckCircle" size={24} className="text-white" />
-                ) : null
-              }
-            />
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#111' }}>
+      
+      <Pressable style={{ flex: 1 }} onPress={() => setSelectedId(null)}>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 20,
+          }}
+        >
+          
+          <TicketBook
+            active={selectedId === 1}
+            onPress={() => setSelectedId(1)}
+            title="비더슈탄트"
+            date="2024.06.21"
+            theaterseat="샤롯데 시어터 B구역 6열 4번"
+            attendees={['우선영', '염지은', '하은영', '윤혜원']}
+            posterUrl={posterplaceholder}
+          />
 
-            <TextField placeholder="인풋필드 선택 후" />
-          </Col>
-          <View
-            className="absolute inset-x-0 bottom-0 px-5 py-4"
-            style={{ paddingBottom: insets.bottom }}
-          >
-            <CTAButton text="다음" />
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </FormProvider>
+          
+          <TicketBook
+            active={selectedId === 2}
+            onPress={() => setSelectedId(2)}
+            title="헤드윅"
+            date="2024.07.03"
+            theaterseat="B구역 7열 12번"
+            attendees={['홍길동', '김철수']}
+            posterUrl={posterplaceholder}
+          />
+        </View>
+      </Pressable>
+    </SafeAreaView>
   )
 }
