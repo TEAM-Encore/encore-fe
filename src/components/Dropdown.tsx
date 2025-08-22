@@ -118,6 +118,13 @@ function Item({
         close()
       }}
       className={cn('px-[22px] py-[10px]', className)}
+      style={{
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 13.5,
+        elevation: 1,
+      }}
     >
       <Text
         variant={'subhead-02'}
