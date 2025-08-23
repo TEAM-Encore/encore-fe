@@ -9,15 +9,16 @@ import {
   ViewStyle,
 } from 'react-native'
 
-export type FlexProps = ViewProps & {
-  flex?: number
-  justify?: ViewStyle['justifyContent']
-  align?: ViewStyle['alignItems']
-  direction?: ViewStyle['flexDirection']
-  wrap?: ViewStyle['flexWrap']
-  center?: boolean
-  gap?: number
-}
+export type FlexProps = ViewProps &
+  PressableProps & {
+    flex?: number
+    justify?: ViewStyle['justifyContent']
+    align?: ViewStyle['alignItems']
+    direction?: ViewStyle['flexDirection']
+    wrap?: ViewStyle['flexWrap']
+    center?: boolean
+    gap?: number
+  }
 
 type BaseFlexLayoutProps = Pick<
   FlexProps,
@@ -62,10 +63,44 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
     style,
     className,
     children,
+    onPress,
     ...props
   },
   ref,
 ) {
+  const baseStyle = buildFlexStyle({
+    flex,
+    justify,
+    align,
+    direction,
+    wrap,
+    gap,
+    center,
+  })
+
+  if (onPress) {
+    const pressableStyle: PressableProps['style'] =
+      typeof style === 'function'
+        ? (state) => {
+            const st = style(state)
+            const __style = Array.isArray(st) ? st : [st]
+            return [...baseStyle, ...__style] as StyleProp<ViewStyle>
+          }
+        : ([...baseStyle, style] as StyleProp<ViewStyle>)
+
+    return (
+      <Pressable
+        ref={ref}
+        style={pressableStyle}
+        className={className}
+        onPress={onPress}
+        {...props}
+      >
+        {children}
+      </Pressable>
+    )
+  }
+
   return (
     <View
       ref={ref}
@@ -104,71 +139,3 @@ export const Col = forwardRef<View, FlexProps>(function Col(
 })
 
 export const AnimatedFlex = Animated.createAnimatedComponent(Flex)
-
-export type PressableFlexProps = Omit<PressableProps, 'style'> &
-  BaseFlexLayoutProps & {
-    style?: PressableProps['style']
-    className?: string
-    children?: React.ReactNode
-  }
-
-export const PressableFlex = forwardRef<View, PressableFlexProps>(
-  function PressableFlex(
-    {
-      flex,
-      justify,
-      align,
-      direction,
-      wrap,
-      gap,
-      center,
-      style,
-      className,
-      children,
-      ...props
-    },
-    ref,
-  ) {
-    const baseStyle = buildFlexStyle({
-      flex,
-      justify,
-      align,
-      direction,
-      wrap,
-      gap,
-      center,
-    })
-
-    const pressableStyle: PressableProps['style'] =
-      typeof style === 'function'
-        ? (state) => {
-            const st = style(state)
-            const __style = Array.isArray(st) ? st : [st]
-            return [...baseStyle, ...__style] as StyleProp<ViewStyle>
-          }
-        : ([...baseStyle, style] as StyleProp<ViewStyle>)
-
-    return (
-      <Pressable
-        ref={ref}
-        style={pressableStyle}
-        className={className}
-        {...props}
-      >
-        {children}
-      </Pressable>
-    )
-  },
-)
-
-export const PressableRow = forwardRef<View, PressableFlexProps>(
-  function PressableRow(props: Omit<PressableFlexProps, 'direction'>, ref) {
-    return <PressableFlex direction="row" {...props} ref={ref} />
-  },
-)
-
-export const PressableCol = forwardRef<View, PressableFlexProps>(
-  function PressableCol(props: Omit<PressableFlexProps, 'direction'>, ref) {
-    return <PressableFlex direction="column" {...props} ref={ref} />
-  },
-)

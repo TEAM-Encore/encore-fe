@@ -1,4 +1,5 @@
 import { colors } from './src/styles/color'
+import { fontSize } from './src/styles/fontSize'
 import { zIndex } from './src/styles/zIndex'
 
 /** @type {import('tailwindcss').Config} */
@@ -12,6 +13,7 @@ module.exports = {
     extend: {
       zIndex,
       colors,
+      fontSize,
       fontFamily: {
         thin: ['Pretendard-Thin', 'sans-serif'],
         extralight: ['Pretendard-ExtraLight', 'sans-serif'],

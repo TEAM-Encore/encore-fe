@@ -30,3 +30,15 @@ export type ColorKeys = keyof typeof colors
 export type PrimaryColorKeys = keyof typeof colors.primary
 export type GrayColorKeys = keyof typeof colors.gray
 export type SubColorKeys = keyof typeof colors.sub
+
+export const flattenColorKeys = (() => {
+  const keys: string[] = []
+
+  Object.entries(colors).forEach(([key, values]) => {
+    Object.keys(values).forEach((colorKey) => {
+      keys.push(`${key}-${colorKey}`)
+    })
+  })
+
+  return keys
+})()

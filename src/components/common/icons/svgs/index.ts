@@ -1,5 +1,10 @@
+export { AvatarPlaceholder } from './AvatarPlaceholder'
+export { Camera } from './Camera'
 export { CheckCircle } from './CheckCircle'
 export { Clock } from './Clock'
 export { Close } from './Close'
+export { Search } from './Search'
 export { TheaterSeat } from './TheaterSeat'
 export { User } from './User'
+export { XCircle } from './XCircle'
+
