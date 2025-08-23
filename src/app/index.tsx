@@ -8,14 +8,12 @@ export default function Index() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#111' }}>
-      
-      <Pressable style={{ flex: 1 }} onPress={() => setSelectedId(null)}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#111'}}>
+  <Pressable style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }} onPress={() => setSelectedId(null)}>
         <View
           style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            
+            width: 320,
             gap: 20,
           }}
         >
