@@ -1,5 +1,5 @@
 import { Icon } from '@/components/common/icons/Icon'
-import { Col, PressableFlex, Row } from '@/components/common/ui/Flex'
+import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { cn } from '@/utils/cn'
 import React from 'react'
@@ -28,7 +28,7 @@ export function TicketBook({
 }: TicketBookProps) {
 
   return (
-    <PressableFlex
+    <Flex
       onPress={onPress}
 
       direction="row"
