@@ -55,6 +55,7 @@ export function TicketBook({
 
       {/* 티켓북 정보 */}
       <Col className="flex-1 ml-[16px] gap-[8px]">
+        {/* 제목 */}
         <Text variant="subhead-03"
           className={cn({
             'text-gray-12': active,
@@ -144,6 +145,6 @@ export function TicketBook({
           </Row>
         </Col>
       </Col>
-    </PressableFlex>
+    </Flex>
   )
 }
