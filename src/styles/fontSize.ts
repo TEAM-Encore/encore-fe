@@ -9,17 +9,17 @@ export const fontSize: ThemeConfig['fontSize'] = {
   caption: ['12px', '18px'],
 
   // Title / Display
-  'display-05': ['40px', { lineHeight: '52px', fontWeight: 'bold' }],
-  'display-04': ['36px', { lineHeight: '46px', fontWeight: 'bold' }],
-  'display-03': ['32px', { lineHeight: '42px', fontWeight: 'bold' }],
-  'display-02': ['28px', { lineHeight: '38px', fontWeight: 'bold' }],
-  'display-01': ['24px', { lineHeight: '34px', fontWeight: 'bold' }],
-  headline: ['20px', { lineHeight: '28px', fontWeight: 'bold' }],
+  'display-05': ['40px', { lineHeight: '52px', fontWeight: '700' }],
+  'display-04': ['36px', { lineHeight: '46px', fontWeight: '700' }],
+  'display-03': ['32px', { lineHeight: '42px', fontWeight: '700' }],
+  'display-02': ['28px', { lineHeight: '38px', fontWeight: '700' }],
+  'display-01': ['24px', { lineHeight: '34px', fontWeight: '700' }],
+  headline: ['20px', { lineHeight: '28px', fontWeight: '700' }],
 
   // Subhead
-  'subhead-03': ['16px', { lineHeight: '22px', fontWeight: 'semibold' }],
-  'subhead-long-03': ['16px', { lineHeight: '28px', fontWeight: 'medium' }],
-  'subhead-02': ['14px', { lineHeight: '20px', fontWeight: 'semibold' }],
-  'subhead-long-02': ['14px', { lineHeight: '24px', fontWeight: 'medium' }],
-  'subhead-01': ['12px', { lineHeight: '18px', fontWeight: 'semibold' }],
+  'subhead-03': ['16px', { lineHeight: '22px', fontWeight: '600' }],
+  'subhead-long-03': ['16px', { lineHeight: '28px', fontWeight: '500' }],
+  'subhead-02': ['14px', { lineHeight: '20px', fontWeight: '600' }],
+  'subhead-long-02': ['14px', { lineHeight: '24px', fontWeight: '500' }],
+  'subhead-01': ['12px', { lineHeight: '18px', fontWeight: '600' }],
 } as const
