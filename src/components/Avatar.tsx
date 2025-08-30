@@ -21,7 +21,7 @@ export function Avatar({ source, onUpload }: AvatarProps) {
       )}
       <Flex
         center
-        className="absolute -bottom-1 -right-1 size-[28px] rounded-full bg-gray-09"
+        className="-bottom-1 -right-1 absolute size-[28px] rounded-full bg-gray-09"
       >
         <Icon name="Camera" size={16} className="text-white" />
       </Flex>
