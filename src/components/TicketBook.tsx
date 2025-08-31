@@ -3,7 +3,7 @@ import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { cn } from '@/utils/cn'
 import React from 'react'
-import { Image, Text as RNText, View } from 'react-native'
+import { Image, View } from 'react-native'
 
 type TicketBookProps = {
   title: string
@@ -76,7 +76,7 @@ export function TicketBook({
               })}
 
             />
-            <RNText
+            <Text variant={"caption"}
               className={cn(
                 'font-regular text-[10px]',
                 {
@@ -88,7 +88,7 @@ export function TicketBook({
               ellipsizeMode="tail"
             >
               {attendees.join(' ')}
-            </RNText>
+            </Text>
           </Row>
 
           {/* 좌석 */}
@@ -102,7 +102,7 @@ export function TicketBook({
               })}
 
             />
-            <RNText
+            <Text variant={"caption"}
               className={cn(
                 'font-regular text-[10px]',
                 {
@@ -114,7 +114,7 @@ export function TicketBook({
               ellipsizeMode="tail"
             >
               {theaterseat}
-            </RNText>
+            </Text>
           </Row>
 
           {/* 유저 */}
@@ -128,7 +128,7 @@ export function TicketBook({
               })}
 
             />
-            <RNText
+            <Text variant={"caption"}
               className={cn(
                 'font-regular text-[10px]',
                 {
@@ -140,10 +140,10 @@ export function TicketBook({
               ellipsizeMode="tail"
             >
               {attendees.join(' ')}
-            </RNText>
+            </Text>
           </Row>
         </Col>
       </Col>
-    </PressableFlex>
+    </Flex>
   )
 }
