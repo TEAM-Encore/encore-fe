@@ -21,7 +21,7 @@ export default function Index() {
   })
   return (
     <SafeArea className="flex-1 items-center justify-center bg-gray-12 px-5">
-      <Link href="/add-ticket" asChild>
+      <Link href="/add-ticket/step1" asChild>
         <Text className="text-center font-semibold text-white">
           Add Ticket 페이지로 이동
         </Text>

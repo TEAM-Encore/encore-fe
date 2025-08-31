@@ -16,7 +16,7 @@ export function Header({
   )
 }
 
-function Title({ children }: PropsWithStrictChildren) {
+function Center({ children }: PropsWithStrictChildren) {
   return (
     <Text
       variant="subhead-05"
@@ -48,23 +48,29 @@ function Progress({ progress }: { progress: number }) {
     <View className="absolute inset-x-0 bottom-0 h-[2px] bg-gray-09">
       <View
         className="z-10 h-full bg-primary-04"
-        style={{ width: `${progress * 100}%` }}
+        style={{ width: `${(progress / 100) * 100}%` }}
       />
     </View>
   )
 }
 
-Header.Title = Title
+Header.Center = Center
 Header.Left = Left
 Header.Right = Right
 
-Header.Back = () => {
+Header.Back = ({ onPress }: { onPress?: () => void }) => {
   const router = useRouter()
   return (
     <Header.Left>
       <Icon
         name="ArrowLeft"
-        onPress={() => router.back()}
+        onPress={() => {
+          if (onPress) {
+            onPress()
+          } else {
+            router.back()
+          }
+        }}
         size={24}
         className="text-white"
       />
