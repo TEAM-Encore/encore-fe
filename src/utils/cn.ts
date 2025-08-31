@@ -1,7 +1,7 @@
-import { flattenColorKeys } from '@/styles/color'
-import { fontSize } from '@/styles/fontSize'
 import { type ClassValue, clsx } from 'clsx'
 import { extendTailwindMerge } from 'tailwind-merge'
+import { flattenColorKeys } from '@/styles/color'
+import { fontSize } from '@/styles/fontSize'
 
 const twMerge = extendTailwindMerge({
   extend: {
