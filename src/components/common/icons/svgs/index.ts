@@ -1,3 +1,4 @@
+export { ArrowLeft } from './ArrowLeft'
 export { AvatarPlaceholder } from './AvatarPlaceholder'
 export { Camera } from './Camera'
 export { CheckCircle } from './CheckCircle'

@@ -35,7 +35,7 @@ export function TextField({
         <TextInput
           placeholderTextColor={colors.gray['08']}
           className={cn(
-            'h-[52px] w-full rounded-[8px] border px-4 py-[10px] text-[16px] text-gray-01',
+            'h-[52px] w-full rounded-[8px] border px-4 py-[10px] text-gray-01 text-input-02',
             {
               'border-gray-01': isFocused && !error,
               'border-gray-09': !isFocused && !error,

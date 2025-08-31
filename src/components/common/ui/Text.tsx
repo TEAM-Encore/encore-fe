@@ -1,9 +1,9 @@
-import { cva, VariantProps } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 import { forwardRef } from 'react'
 import {
   Animated,
-  Text as RNText,
+  type Text as RNText,
   type TextProps as RNTextProps,
 } from 'react-native'
 import { cn } from '@/utils/cn'
@@ -25,6 +25,8 @@ export const textVariants = cva('tracking-[-0.6px]', {
       'display-02': 'text-display-02',
       'display-01': 'text-display-01',
       headline: 'text-headline',
+      'subhead-05': 'text-subhead-05',
+      'subhead-04': 'text-subhead-04',
       'subhead-03': 'text-subhead-03',
       'subhead-long-03': 'text-subhead-long-03',
       'subhead-02': 'text-subhead-02',
@@ -44,14 +46,12 @@ export const Text = forwardRef<RNText, TextProps>(function Text(
   ref,
 ) {
   return (
-    <RNText
+    <Animated.Text
       ref={ref}
       className={cn(textVariants({ variant }), className)}
       {...props}
     >
       {children}
-    </RNText>
+    </Animated.Text>
   )
 })
-
-export const AnimatedText = Animated.createAnimatedComponent(Text)

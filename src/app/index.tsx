@@ -1,7 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Link } from 'expo-router'
 import { useForm } from 'react-hook-form'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, TouchableOpacity } from 'react-native'
+import { SafeAreaView as SafeArea } from 'react-native-safe-area-context'
 import { z } from 'zod'
+import { Text } from '@/components/common/ui/Text'
 import { ReviewOptions } from '@/components/ReviewOptions'
 import { TextField } from '@/components/TextField'
 
@@ -17,7 +20,13 @@ export default function Index() {
     },
   })
   return (
-    <SafeAreaView className="flex-1 items-center justify-center bg-gray-12 px-5">
+    <SafeArea className="flex-1 items-center justify-center bg-gray-12 px-5">
+      <Link href="/add-ticket" asChild>
+        <Text className="text-center font-semibold text-white">
+          Add Ticket 페이지로 이동
+        </Text>
+      </Link>
+
       <ReviewOptions
         value={form.watch('review')}
         options={[
@@ -34,6 +43,6 @@ export default function Index() {
         placeholder="리뷰를 입력해주세요"
         className="mt-4"
       />
-    </SafeAreaView>
+    </SafeArea>
   )
 }
