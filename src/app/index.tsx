@@ -1,8 +1,10 @@
+
 import posterplaceholder from '@/assets/images/poster-placeholder.png'
 import { TicketBook } from '@/components/TicketBook'
 import React, { useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
+
 
 export default function Index() {
   const [selectedId, setSelectedId] = useState<number | null>(null)

@@ -1,7 +1,7 @@
-import { cn } from '@/utils/cn'
-import { createSafeContext } from '@/utils/create-safe-context'
 import React, { ReactNode, useLayoutEffect, useRef, useState } from 'react'
 import { Modal, Pressable, View } from 'react-native'
+import { cn } from '@/utils/cn'
+import { createSafeContext } from '@/utils/create-safe-context'
 import { Text } from './common/ui/Text'
 
 type DropdownContextValue = {

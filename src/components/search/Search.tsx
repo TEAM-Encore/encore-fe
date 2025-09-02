@@ -1,6 +1,6 @@
+import { TextInput, View } from 'react-native'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
-import { TextInput, View } from 'react-native'
 import { Icon } from '../common/icons/Icon'
 
 type SearchProps = React.ComponentProps<typeof TextInput> & {
@@ -14,7 +14,7 @@ export function Search({ className, onDelete, value, ...rest }: SearchProps) {
       <Icon
         name="Search"
         size={18}
-        className="absolute left-4 top-1/2 z-10 -translate-y-1/2 text-gray-01"
+        className="-translate-y-1/2 absolute top-1/2 left-4 z-10 text-gray-01"
       />
       <TextInput
         value={value}
@@ -30,7 +30,7 @@ export function Search({ className, onDelete, value, ...rest }: SearchProps) {
         <Icon
           name="XCircle"
           size={20}
-          className="absolute right-4 top-1/2 z-10 -translate-y-1/2"
+          className="-translate-y-1/2 absolute top-1/2 right-4 z-10"
           onPress={onDelete}
         />
       )}

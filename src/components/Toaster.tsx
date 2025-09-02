@@ -27,9 +27,10 @@ let listeners: ((toasts: Toast[]) => void)[] = []
 
 const reducer = (state: Toast[], action: Action): Toast[] => {
   switch (action.type) {
-    case 'ADD':
+    case 'ADD': {
       const newState = [...state, action.toast]
       return newState.slice(0, TOAST_LIMIT_POLICY)
+    }
     case 'REMOVE':
       return state.filter((toast) => toast.id !== action.id)
   }
@@ -104,7 +105,7 @@ export function Toaster() {
   if (!toasts.length) return null
 
   return (
-    <View className="z-modal absolute inset-x-0 bottom-16 mx-5 gap-0.5">
+    <View className="absolute inset-x-0 bottom-16 z-modal mx-5 gap-0.5">
       {toasts.map(({ id, text, animatedValue, duration }) => {
         if (!animatedValue) return null
 
@@ -132,7 +133,7 @@ export function Toaster() {
           >
             <AnimatedFlex
               justify="center"
-              className="bg-gray-10 w-full gap-4 rounded-[10px] p-4"
+              className="w-full gap-4 rounded-[10px] bg-gray-10 p-4"
               style={{
                 opacity,
                 transform: [{ translateY }, { scale }],
