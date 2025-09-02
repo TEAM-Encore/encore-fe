@@ -1,4 +1,3 @@
-import { cn } from '@/utils/cn'
 import { cva, VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 import { forwardRef } from 'react'
@@ -7,6 +6,7 @@ import {
   Text as RNText,
   type TextProps as RNTextProps,
 } from 'react-native'
+import { cn } from '@/utils/cn'
 
 export const textVariants = cva('tracking-[-0.6px]', {
   variants: {

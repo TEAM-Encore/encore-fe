@@ -1,5 +1,7 @@
 export { AvatarPlaceholder } from './AvatarPlaceholder'
 export { Camera } from './Camera'
+export { AvatarPlaceholder } from './AvatarPlaceholder'
+export { Camera } from './Camera'
 export { CheckCircle } from './CheckCircle'
 export { Clock } from './Clock'
 export { Close } from './Close'

@@ -19,13 +19,13 @@ export function ReviewOptions<T extends string>({
   onSelect,
 }: ReviewOptionsProps<T>) {
   return (
-    <Row className="w-full overflow-hidden rounded-bl-[10px] rounded-br-[10px] rounded-tl-[10px] rounded-tr-[10px]">
+    <Row className="w-full overflow-hidden rounded-tl-[10px] rounded-tr-[10px] rounded-br-[10px] rounded-bl-[10px]">
       {options.map((option, index) => (
         <Flex
           key={option.value}
           center
           className={cn(
-            'h-14 flex-1 border-r-[0.5px] border-gray-10 bg-gray-11',
+            'h-14 flex-1 border-gray-10 border-r-[0.5px] bg-gray-11',
             {
               'bg-primary-04': value === option.value,
               'bg-gray-11': value !== option.value,

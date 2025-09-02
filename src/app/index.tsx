@@ -1,8 +1,13 @@
-import posterplaceholder from '@/assets/images/poster-placeholder.png'
-import { ReviewCard } from '@/components/ReviewCard'
-import React, { useState } from 'react'
-import { Pressable, View } from 'react-native'
+import { ReviewOptions } from '@/components/ReviewOptions'
+import { TextField } from '@/components/TextField'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 import { SafeAreaView } from 'react-native-safe-area-context'
+import { z } from 'zod'
+
+const schema = z.object({
+  review: z.enum(['GOOD', 'NORMAL', 'BAD']),
+})
 
 export default function Index() {
   const [selectedId, setSelectedId] = useState<number | null>(null)

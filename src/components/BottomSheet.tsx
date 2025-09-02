@@ -1,6 +1,5 @@
-import { cn } from '@/utils/cn'
 import { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
-import { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types'
+import type { BottomSheetDefaultBackdropProps } from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types'
 import {
   type PropsWithChildren,
   type Ref,
@@ -12,12 +11,13 @@ import {
 import { View } from 'react-native'
 import { interpolate } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { GorhomSheet } from '.'
+import { cn } from '@/utils/cn'
 import { createSafeContext } from '../utils/create-safe-context'
+import { GorhomSheet } from '.'
+import { CTAButton, type CTAButtonProps } from './CTAButton'
 import { Icon } from './common/icons/Icon'
 import { Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
-import { CTAButton, CTAButtonProps } from './CTAButton'
 
 type ContextValue = {
   ref: Ref<GorhomSheet>
@@ -124,7 +124,7 @@ function Header({
         width={24}
         height={24}
         size={24}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-01"
+        className="-translate-y-1/2 absolute top-1/2 right-4 text-gray-01"
         onPress={() => {
           context.close()
         }}
