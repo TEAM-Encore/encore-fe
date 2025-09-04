@@ -1,12 +1,9 @@
-import React from 'react'
-import { Pressable, SafeAreaView } from 'react-native'
-import { Text } from '@/components/common/ui/Text'
+import { useState } from 'react'
+import { Button, SafeAreaView, View } from 'react-native'
 import { Popup } from '@/components/Popup'
 
 export default function Index() {
-  async function handleOpenPopup() {
-    const resume = await Popup()
-  }
+  const [popupOpen, setPopupOpen] = useState(false)
 
   return (
     <SafeAreaView
@@ -17,14 +14,19 @@ export default function Index() {
         alignItems: 'center',
       }}
     >
-      <Pressable
-        onPress={handleOpenPopup}
-        className="rounded-xl bg-yellow-400 px-6 py-3 active:scale-95"
-      >
-        <Text variant="subhead-02" className="font-bold text-[#1A1A1A]">
-          모달 열기
-        </Text>
-      </Pressable>
+      <Button title="팝업 열기" onPress={() => setPopupOpen(true)} />
+      <View style={{ width: 287 }}>
+        <Popup
+          isOpen={popupOpen}
+          title="작성 중인 글이 있어요"
+          subtitle="이어서 쓰시겠어요?"
+          primaryLabel="이어 쓰기"
+          secondaryLabel="새로 쓰기"
+          onClose={() => {
+            setPopupOpen(false)
+          }}
+        />
+      </View>
     </SafeAreaView>
   )
 }
