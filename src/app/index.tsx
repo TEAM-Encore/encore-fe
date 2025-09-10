@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { ReviewCard } from '@/components/ReviewCard'
 import posterplaceholder from '../../assets/images/poster-placeholder.png'
 
+
 export default function Index() {
   const [selectedId, setSelectedId] = useState<number | null>(null)
 
