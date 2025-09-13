@@ -2,15 +2,17 @@ import React, { forwardRef } from 'react'
 import {
   Animated,
   Pressable,
-  PressableProps,
-  StyleProp,
-  View,
-  ViewProps,
-  ViewStyle,
+  type PressableProps,
+  type StyleProp,
+  type View,
+  type ViewProps,
+  type ViewStyle,
 } from 'react-native'
+import type { AnimatedProps } from 'react-native-reanimated'
 
 export type FlexProps = ViewProps &
-  PressableProps & {
+  PressableProps &
+  AnimatedProps<ViewProps> & {
     flex?: number
     justify?: ViewStyle['justifyContent']
     align?: ViewStyle['alignItems']
@@ -51,7 +53,7 @@ function buildFlexStyle({
   ] as ViewStyle[]
 }
 
-export const Flex = forwardRef<View, FlexProps>(function Flex(
+const FlexComponent = forwardRef<View, FlexProps>(function Flex(
   {
     flex,
     justify,
@@ -102,7 +104,7 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
   }
 
   return (
-    <View
+    <Animated.View
       ref={ref}
       style={[
         ...buildFlexStyle({
@@ -120,9 +122,11 @@ export const Flex = forwardRef<View, FlexProps>(function Flex(
       {...props}
     >
       {children}
-    </View>
+    </Animated.View>
   )
 })
+
+export const Flex = Animated.createAnimatedComponent(FlexComponent)
 
 export const Row = forwardRef<View, FlexProps>(function Row(
   props: Omit<FlexProps, 'direction'>,
@@ -137,5 +141,3 @@ export const Col = forwardRef<View, FlexProps>(function Col(
 ) {
   return <Flex direction="column" {...props} ref={ref} />
 })
-
-export const AnimatedFlex = Animated.createAnimatedComponent(Flex)

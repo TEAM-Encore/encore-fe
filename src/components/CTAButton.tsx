@@ -29,18 +29,14 @@ function CTAButton({
       disabled={disabled}
       {...props}
     >
-      {children ? (
-        children
-      ) : (
-        <Text
-          className={cn(
-            'font-semibold text-[18px]',
-            disabled ? 'text-sub-white' : 'text-gray-12',
-          )}
-        >
-          {text}
-        </Text>
-      )}
+      <Text
+        className={cn(
+          'font-semibold text-[18px]',
+          disabled ? 'text-sub-white' : 'text-gray-12',
+        )}
+      >
+        {children}
+      </Text>
     </Pressable>
   )
 }

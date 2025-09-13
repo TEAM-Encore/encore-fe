@@ -1,13 +1,16 @@
-import { Slot, Stack } from 'expo-router'
-import { AddTicketProvider } from './components/AddTicketProvider'
+import { Stack } from 'expo-router'
 
-export default function AddTicketLayout() {
+export default function Layout() {
   return (
-    <AddTicketProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="step1" />
-        <Stack.Screen name="step2" />
-      </Stack>
-    </AddTicketProvider>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="step1" />
+      <Stack.Screen name="step2" />
+      <Stack.Screen name="step3" />
+      <Stack.Screen name="step4" />
+    </Stack>
   )
 }

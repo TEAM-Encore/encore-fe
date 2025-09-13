@@ -1,6 +1,7 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { useFormContext } from 'react-hook-form'
+import { useForm, useFormContext } from 'react-hook-form'
 import { FlatList } from 'react-native'
 import { CTAButton } from '@/components/CTAButton'
 import { Col } from '@/components/common/ui/Flex'
@@ -11,17 +12,34 @@ import { FixedBottomContainer } from '@/components/FixedBottom'
 import { Search } from '@/components/search/Search'
 import { SearchItem } from '@/components/search/SearchItem'
 import { AddTicketHeader } from '../components/AddTicketHeader'
-import type { FormType } from '../components/AddTicketProvider'
+import { type FormType, schema } from '../schema'
 
 export default function Step1() {
   const [searchValue, setSearchValue] = useState('')
-  const form = useFormContext<FormType>()
+  const form = useForm<Pick<FormType, 'musicalId'>>({
+    resolver: zodResolver(schema.pick({ musicalId: true })),
+  })
 
   const router = useRouter()
 
   return (
     <Screen
       header={<AddTicketHeader progress={25} onBack={() => router.back()} />}
+      fixedButton={
+        <CTAButton
+          onPress={() => {
+            router.push({
+              pathname: '/add-ticket/step2',
+              params: {
+                data: JSON.stringify(form.getValues()),
+              },
+            })
+          }}
+          disabled={!form.watch('musicalId')}
+        >
+          확인
+        </CTAButton>
+      }
       className="py-[29px]"
     >
       <Col gap={8}>
@@ -64,16 +82,6 @@ export default function Step1() {
         )}
         contentContainerClassName="gap-2 mt-4"
       />
-
-      <FixedBottomContainer>
-        <CTAButton
-          text="확인"
-          onPress={() => {
-            router.push('/add-ticket/step2')
-          }}
-          disabled={!form.watch('musicalId')}
-        />
-      </FixedBottomContainer>
     </Screen>
   )
 }

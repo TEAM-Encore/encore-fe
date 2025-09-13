@@ -26,7 +26,7 @@ export const colors = {
   },
 } as const
 
-export type ColorKeys = keyof typeof colors
+// export type ColorKeys = keyof typeof colors
 export type PrimaryColorKeys = keyof typeof colors.primary
 export type GrayColorKeys = keyof typeof colors.gray
 export type SubColorKeys = keyof typeof colors.sub
@@ -42,3 +42,24 @@ export const flattenColorKeys = (() => {
 
   return keys
 })()
+
+export type ColorKeys =
+  | 'primary-01'
+  | 'primary-02'
+  | 'primary-03'
+  | 'primary-04'
+  | 'gray-01'
+  | 'gray-02'
+  | 'gray-03'
+  | 'gray-04'
+  | 'gray-05'
+  | 'gray-06'
+  | 'gray-07'
+  | 'gray-08'
+  | 'gray-09'
+  | 'gray-10'
+  | 'gray-11'
+  | 'gray-12'
+  | 'sub-alert'
+  | 'sub-black'
+  | 'sub-white'
