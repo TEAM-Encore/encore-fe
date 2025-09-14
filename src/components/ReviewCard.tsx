@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, View } from 'react-native'
+import { Image, ImageSourcePropType, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
@@ -9,8 +9,8 @@ type ReviewCardProps = {
   title: string
   summary: string
   author: string
-  like: number
-  posterUrl: string
+  likes: number
+  posterUrl?: ImageSourcePropType | undefined
   onPress?: () => void
   className?: string
   active?: boolean
@@ -20,7 +20,7 @@ export function ReviewCard({
   title,
   summary,
   author,
-  like,
+  likes,
   posterUrl,
   onPress,
   className,
@@ -39,7 +39,6 @@ export function ReviewCard({
         className,
       )}
     >
-      {/* 포스터 */}
       <View className="h-[92px] w-[66px] overflow-hidden rounded-[12px] bg-white/5">
         {posterUrl ? (
           <Image
@@ -50,9 +49,7 @@ export function ReviewCard({
         ) : null}
       </View>
 
-      {/* 리뷰 정보 */}
       <Col className="ml-[16px] flex-1">
-        {/* 제목 */}
         <Text
           variant="subhead-03"
           className={cn(active ? 'text-gray-12' : 'text-gray-01')}
@@ -61,7 +58,6 @@ export function ReviewCard({
           {title}
         </Text>
 
-        {/* 요약 */}
         <Text
           variant="body-01"
           className={cn('text-gray-07', 'mt-[6px]')}
@@ -71,9 +67,8 @@ export function ReviewCard({
           {summary}
         </Text>
 
-        {/* 작성자, like Count */}
-        <Row className="mt-[8px] items-center gap-x-[8px]">
-          <Row className="items-center gap-x-[4px]">
+        <Row className="mt-[8px] gap-x-[8px]" align="center">
+          <Row className="gap-x-[4px]" align="center">
             <Icon
               name="User"
               size={12}
@@ -94,7 +89,7 @@ export function ReviewCard({
             </Text>
           </Row>
 
-          <Row className="items-center gap-x-[4px]">
+          <Row className="gap-x-[4px]" align="center">
             <Icon
               name="Like"
               size={12}
@@ -110,7 +105,7 @@ export function ReviewCard({
                 'text-gray-01': !active,
               })}
             >
-              {like}
+              {likes}
             </Text>
           </Row>
         </Row>

@@ -1,11 +1,14 @@
 import { useState } from 'react'
+
 import { Button, SafeAreaView, View } from 'react-native'
 import { Popup } from '@/components/Popup'
+
 
 export default function Index() {
   const [popupOpen, setPopupOpen] = useState(false)
 
   return (
+
     <SafeAreaView
       style={{
         flex: 1,
@@ -27,6 +30,7 @@ export default function Index() {
           }}
         />
       </View>
+
     </SafeAreaView>
   )
 }
