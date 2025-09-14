@@ -1,36 +1,36 @@
 import { useState } from 'react'
-import { Pressable, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { ReviewCard } from '@/components/ReviewCard'
-import posterplaceholder from '../../assets/images/poster-placeholder.png'
+
+import { Button, SafeAreaView, View } from 'react-native'
+import { Popup } from '@/components/Popup'
 
 
 export default function Index() {
-  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const [popupOpen, setPopupOpen] = useState(false)
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#111' }}>
-      <Pressable
-        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
-        onPress={() => setSelectedId(null)}
-      >
-        <View
-          style={{
-            width: 320,
-            gap: 20,
+
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: '#111',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Button title="팝업 열기" onPress={() => setPopupOpen(true)} />
+      <View style={{ width: 287 }}>
+        <Popup
+          isOpen={popupOpen}
+          title="작성 중인 글이 있어요"
+          subtitle="이어서 쓰시겠어요?"
+          primaryLabel="이어 쓰기"
+          secondaryLabel="새로 쓰기"
+          onClose={() => {
+            setPopupOpen(false)
           }}
-        >
-          <ReviewCard
-            active={selectedId === 1}
-            onPress={() => setSelectedId(1)}
-            posterUrl={posterplaceholder}
-            title="5년차 찐 뮤덕의 알라딘 후기"
-            summary={`넘버 퀄리티부터 배우합까지, 전반적으로 모두 만족스러웠던 공연.`}
-            author="뮤사랑"
-            likes={10}
-          />
-        </View>
-      </Pressable>
+        />
+      </View>
+
     </SafeAreaView>
   )
 }
