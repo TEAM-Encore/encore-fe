@@ -139,11 +139,9 @@ export const Row = forwardRef<View, FlexProps>(function Row(
   return <Flex direction="row" {...props} ref={ref} />
 })
 
-const ColComponent = forwardRef<View, FlexProps>(function Col(
+export const Col = forwardRef<View, FlexProps>(function Col(
   props: Omit<FlexProps, 'direction'>,
   ref,
 ) {
   return <Flex direction="column" {...props} ref={ref} />
 })
-
-export const Col = Animated.createAnimatedComponent(ColComponent)
