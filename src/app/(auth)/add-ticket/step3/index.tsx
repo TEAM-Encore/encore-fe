@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FlatList } from 'react-native-gesture-handler'
-import { CTAButton } from '@/components/CTAButton'
+import { Button } from '@/components/Button'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -82,23 +82,23 @@ export default function Step3() {
 
   const [searchValue, setSearchValue] = useState('')
 
+  const onSubmit = form.handleSubmit((data) => {
+    router.push({
+      pathname: '/add-ticket/step4',
+      params: {
+        data: JSON.stringify(data),
+      },
+    })
+  })
+
   return (
     <Screen
       className="py-[29px]"
       header={<AddTicketHeader progress={75} onBack={() => router.back()} />}
       fixedButton={
-        <CTAButton
-          onPress={() =>
-            router.push({
-              pathname: '/add-ticket/step4',
-              params: {
-                data: JSON.stringify(form.getValues()),
-              },
-            })
-          }
-        >
+        <Button onPress={onSubmit} disabled={!form.formState.isValid}>
           확인
-        </CTAButton>
+        </Button>
       }
     >
       <Col gap={8} className="mb-[31px]">

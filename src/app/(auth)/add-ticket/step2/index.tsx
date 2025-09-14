@@ -4,8 +4,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { Controller, useForm } from 'react-hook-form'
 import { TextInput } from 'react-native'
+import { Button } from '@/components/Button'
 import { Calendar } from '@/components/Calendar'
-import { CTAButton } from '@/components/CTAButton'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -62,24 +62,23 @@ export default function Step2() {
     },
   })
 
+  const onSubmit = form.handleSubmit((data) => {
+    router.push({
+      pathname: '/add-ticket/step3',
+      params: {
+        data: JSON.stringify(data),
+      },
+    })
+  })
+
   return (
     <Screen
       className="py-7"
       header={<AddTicketHeader progress={50} onBack={() => router.back()} />}
       fixedButton={
-        <CTAButton
-          disabled={!form.formState.isValid}
-          onPress={() => {
-            router.push({
-              pathname: '/add-ticket/step3',
-              params: {
-                data: JSON.stringify(form.getValues()),
-              },
-            })
-          }}
-        >
+        <Button disabled={!form.formState.isValid} onPress={onSubmit}>
           확인
-        </CTAButton>
+        </Button>
       }
     >
       <Col gap={8}>

@@ -3,8 +3,8 @@ import * as ImagePicker from 'expo-image-picker'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useForm } from 'react-hook-form'
 import { Image } from 'react-native'
+import { Button } from '@/components/Button'
 import { Checkbox } from '@/components/Checkbox'
-import { CTAButton } from '@/components/CTAButton'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -39,17 +39,18 @@ export default function Step4() {
     }
   }
 
+  const onSubmit = form.handleSubmit((data) => {
+    console.log(data)
+  })
+
   return (
     <Screen
       className="py-[29px]"
       header={<AddTicketHeader progress={100} onBack={() => router.back()} />}
       fixedButton={
-        <CTAButton
-          disabled={!form.formState.isValid}
-          onPress={() => router.push('/add-ticket/step4')}
-        >
+        <Button onPress={onSubmit} disabled={!form.formState.isValid}>
           등록
-        </CTAButton>
+        </Button>
       }
     >
       <Col gap={8}>

@@ -2,19 +2,19 @@ import { Pressable } from 'react-native'
 import { cn } from '@/utils/cn'
 import { Text } from './common/ui/Text'
 
-export type CTAButtonProps = React.ComponentProps<typeof Pressable> & {
+export type ButtonProps = React.ComponentProps<typeof Pressable> & {
   text?: string
   children?: React.ReactNode
 }
 
-function CTAButton({
+export function Button({
   ref,
   className,
   disabled = false,
   text = '다음',
   children,
   ...props
-}: CTAButtonProps) {
+}: ButtonProps) {
   return (
     <Pressable
       ref={ref}
@@ -40,5 +40,3 @@ function CTAButton({
     </Pressable>
   )
 }
-
-export { CTAButton }

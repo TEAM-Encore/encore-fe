@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { cn } from '@/utils/cn'
 import { createSafeContext } from '../utils/create-safe-context'
 import { GorhomSheet } from '.'
-import { CTAButton, type CTAButtonProps } from './CTAButton'
+import { Button, type ButtonProps } from './Button'
 import { Icon } from './common/icons/Icon'
 import { Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
@@ -151,7 +151,7 @@ function Footer({
   buttonProps,
 }: PropsWithChildren<{
   className?: string
-  buttonProps: CTAButtonProps
+  buttonProps: ButtonProps
 }>) {
   const { onPress, ...rest } = buttonProps
   const context = useSheet()
@@ -159,7 +159,7 @@ function Footer({
   return (
     <View className={cn('px-5 py-4', className)}>
       {children ?? (
-        <CTAButton
+        <Button
           onPress={(e) => {
             onPress?.(e)
             context.close()

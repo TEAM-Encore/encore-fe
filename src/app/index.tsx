@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { SafeAreaView, TouchableOpacity } from 'react-native'
 import { SafeAreaView as SafeArea } from 'react-native-safe-area-context'
 import { z } from 'zod'
-import { CTAButton } from '@/components/CTAButton'
+import { Button } from '@/components/Button'
 import { Text } from '@/components/common/ui/Text'
 import { ReviewOptions } from '@/components/ReviewOptions'
 import { TextField } from '@/components/TextField'
@@ -40,7 +40,7 @@ export default function Index() {
           form.setValue('review', value)
         }}
       />
-      <CTAButton onPress={() => toast.show('토스트')}>토스트</CTAButton>
+      <Button onPress={() => toast.show('토스트')}>토스트</Button>
       <TextField
         as="textarea"
         placeholder="리뷰를 입력해주세요"
