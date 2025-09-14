@@ -36,8 +36,8 @@ export function TimePicker({
         <Col center flex={1} className="absolute inset-0">
           <Col
             onPress={close}
-            entering={FadeIn}
-            exiting={FadeOut}
+            entering={FadeIn.duration(150)}
+            exiting={FadeOut.duration(150)}
             className="absolute inset-0 size-full flex-1 bg-black/50"
           />
           <Col

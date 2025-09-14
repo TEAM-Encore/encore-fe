@@ -1,11 +1,11 @@
 import dayjs from 'dayjs'
+import { cn } from '@/utils/cn'
 import 'dayjs/locale/ko'
 import { AnimatePresence } from 'moti'
 import { useState } from 'react'
-import { useWindowDimensions, View } from 'react-native'
+import { useWindowDimensions } from 'react-native'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
 import { useLilius } from 'use-lilius'
-import { cn } from '@/utils/cn'
 import { Icon } from './common/icons/Icon'
 import { Col, Flex, Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
@@ -31,13 +31,13 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
         <Col center className="absolute inset-0 flex-1">
           <Flex
             onPress={close}
-            entering={FadeIn}
-            exiting={FadeOut}
+            entering={FadeIn.duration(150)}
+            exiting={FadeOut.duration(150)}
             className="absolute inset-0 flex-1 bg-black/50"
           />
           <Col
-            entering={FadeIn}
-            exiting={FadeOut}
+            entering={FadeIn.duration(150)}
+            exiting={FadeOut.duration(150)}
             style={{
               width: dims.width - 98,
             }}
