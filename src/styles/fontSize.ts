@@ -17,9 +17,13 @@ export const fontSize: ThemeConfig['fontSize'] = {
   headline: ['20px', { lineHeight: '28px', fontWeight: 700 }],
 
   // Subhead
+  'subhead-05': ['20px', { lineHeight: '30px', fontWeight: 600 }],
+  'subhead-04': ['16px', { lineHeight: '22px', fontWeight: 600 }],
   'subhead-03': ['16px', { lineHeight: '22px', fontWeight: 600 }],
   'subhead-long-03': ['16px', { lineHeight: '28px', fontWeight: 500 }],
   'subhead-02': ['14px', { lineHeight: '20px', fontWeight: 600 }],
   'subhead-long-02': ['14px', { lineHeight: '24px', fontWeight: 500 }],
   'subhead-01': ['12px', { lineHeight: '18px', fontWeight: 600 }],
+
+  'input-02': ['16px', { lineHeight: '16px' }],
 } as const

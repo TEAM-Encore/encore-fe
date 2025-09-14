@@ -1,7 +1,7 @@
 import { Providers } from '@/providers/Providers'
 import '@/styles/globals.css'
 import { useFonts } from 'expo-font'
-import { SplashScreen, Stack } from 'expo-router'
+import { Slot, SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 
 export default function RootLayout() {
@@ -26,9 +26,7 @@ export default function RootLayout() {
 
   return (
     <Providers>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+      <Stack screenOptions={{ headerShown: false }} />
     </Providers>
   )
 }

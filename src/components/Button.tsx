@@ -2,19 +2,19 @@ import { Pressable } from 'react-native'
 import { cn } from '@/utils/cn'
 import { Text } from './common/ui/Text'
 
-export type CTAButtonProps = React.ComponentProps<typeof Pressable> & {
+export type ButtonProps = React.ComponentProps<typeof Pressable> & {
   text?: string
   children?: React.ReactNode
 }
 
-function CTAButton({
+export function Button({
   ref,
   className,
   disabled = false,
   text = '다음',
   children,
   ...props
-}: CTAButtonProps) {
+}: ButtonProps) {
   return (
     <Pressable
       ref={ref}
@@ -29,20 +29,14 @@ function CTAButton({
       disabled={disabled}
       {...props}
     >
-      {children ? (
-        children
-      ) : (
-        <Text
-          className={cn(
-            'font-semibold text-[18px]',
-            disabled ? 'text-sub-white' : 'text-gray-12',
-          )}
-        >
-          {text}
-        </Text>
-      )}
+      <Text
+        className={cn(
+          'font-semibold text-[18px]',
+          disabled ? 'text-sub-white' : 'text-gray-12',
+        )}
+      >
+        {children}
+      </Text>
     </Pressable>
   )
 }
-
-export { CTAButton }

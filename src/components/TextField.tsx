@@ -12,12 +12,14 @@ import { Col } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
 type TextFieldProps = React.ComponentProps<typeof TextInput> & {
+  variant?: 'short' | 'full'
   as?: 'input' | 'textarea'
   error?: string
   rightElement?: (value?: string) => React.ReactNode
 }
 
 export function TextField({
+  variant = 'full',
   as = 'input',
   className,
   onFocus: injectedOnFocus,
@@ -30,17 +32,18 @@ export function TextField({
   const [isFocused, setIsFocused] = useState(false)
 
   return (
-    <Col gap={6} className="w-full">
+    <Col gap={6} className={cn('w-full', { 'w-fit': variant === 'short' })}>
       <View className="relative">
         <TextInput
           placeholderTextColor={colors.gray['08']}
           className={cn(
-            'h-[52px] w-full rounded-[8px] border px-4 py-[10px] text-[16px] text-gray-01',
+            'h-[52px] w-full rounded-[8px] border px-4 text-gray-01',
             {
               'border-gray-01': isFocused && !error,
               'border-gray-09': !isFocused && !error,
               'border-sub-alert': error,
               'h-[117px]': as === 'textarea',
+              'h-9 px-3': variant === 'short',
             },
             className,
           )}

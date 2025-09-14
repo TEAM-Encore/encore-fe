@@ -1,36 +1,27 @@
-import { useState } from 'react'
-
-import { Button, SafeAreaView, View } from 'react-native'
-import { Popup } from '@/components/Popup'
+import { Button } from '@/components/Button'
+import { Text } from '@/components/common/ui/Text'
+import { TextField } from '@/components/TextField'
+import { toast } from '@/components/Toaster'
+import { Link } from 'expo-router'
+import { SafeAreaView as SafeArea } from 'react-native-safe-area-context'
 
 
 export default function Index() {
-  const [popupOpen, setPopupOpen] = useState(false)
 
   return (
+    <SafeArea className="flex-1 items-center justify-center bg-gray-12 px-5">
+      <Link href="/add-ticket/step1" asChild>
+        <Text className="text-center font-semibold text-white">
+          Add Ticket 페이지로 이동
+        </Text>
+      </Link>
 
-    <SafeAreaView
-      style={{
-        flex: 1,
-        backgroundColor: '#111',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <Button title="팝업 열기" onPress={() => setPopupOpen(true)} />
-      <View style={{ width: 287 }}>
-        <Popup
-          isOpen={popupOpen}
-          title="작성 중인 글이 있어요"
-          subtitle="이어서 쓰시겠어요?"
-          primaryLabel="이어 쓰기"
-          secondaryLabel="새로 쓰기"
-          onClose={() => {
-            setPopupOpen(false)
-          }}
-        />
-      </View>
-
-    </SafeAreaView>
+      <Button onPress={() => toast.show('토스트')}>토스트</Button>
+      <TextField
+        as="textarea"
+        placeholder="리뷰를 입력해주세요"
+        className="mt-4"
+      />
+    </SafeArea>
   )
 }

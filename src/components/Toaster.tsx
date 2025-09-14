@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from 'react'
-import { Animated, Pressable, View } from 'react-native'
-import { AnimatedFlex } from './common/ui/Flex'
+import { Animated, View } from 'react-native'
+import { Flex } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
 type Toast = {
@@ -48,11 +48,11 @@ const dispatch = (action: Action) => {
 }
 
 export const toast = {
-  show: ({ text, duration }: Omit<Toast, 'id'>) => {
+  show: (text: string) => {
     const newToast = {
       id: `toast-${Math.random().toString(36).slice(2, 10)}`,
       text,
-      duration: duration ?? 2500,
+      duration: 2500,
       animatedValue: new Animated.Value(0),
     }
 
@@ -125,30 +125,24 @@ export function Toaster() {
         })
 
         return (
-          <Pressable
+          <Flex
             key={id}
-            onPress={() => {
-              toast.remove(id)
+            justify="center"
+            style={{
+              opacity,
+              transform: [{ translateY }, { scale }],
             }}
+            className="w-full gap-4 rounded-[10px] bg-gray-10 p-4"
           >
-            <AnimatedFlex
-              justify="center"
-              className="w-full gap-4 rounded-[10px] bg-gray-10 p-4"
-              style={{
-                opacity,
-                transform: [{ translateY }, { scale }],
-              }}
-            >
-              {/* <Icon
+            {/* <Icon
                     name={type === 'success' ? 'CheckLine' : 'CloseLine'}
                     color="white"
                     size={18}
                   /> */}
-              <Text variant="body-01" className="text-gray-01">
-                {text}
-              </Text>
-            </AnimatedFlex>
-          </Pressable>
+            <Text variant="body-01" className="text-gray-01">
+              {text}
+            </Text>
+          </Flex>
         )
       })}
     </View>

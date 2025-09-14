@@ -19,7 +19,8 @@
     "rules": {
       "recommended": true,
       "style": {
-        "useImportType": "off"
+        "useImportType": "error",
+        "noArrayIndexKey": "false"
       },
       "nursery": {
         "useSortedClasses": {
