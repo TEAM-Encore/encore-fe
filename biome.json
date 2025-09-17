@@ -19,8 +19,7 @@
     "rules": {
       "recommended": true,
       "style": {
-        "useImportType": "error",
-        "noArrayIndexKey": "false"
+        "useImportType": "error"
       },
       "nursery": {
         "useSortedClasses": {
@@ -28,6 +27,10 @@
           "fix": "safe",
           "options": {}
         }
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "useIterableCallbackReturn": "off"
       }
     }
   },
