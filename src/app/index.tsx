@@ -23,10 +23,8 @@ export default function Index() {
               {...o}
               title="Dialog"
               description="Dialog"
-              topLabel="이어쓰기"
-              bottomLabel="새로쓰기"
-              onTopPress={() => {}}
-              onBottomPress={() => {}}
+              top="이어쓰기"
+              bottom="새로쓰기"
             />
           ))
         }}

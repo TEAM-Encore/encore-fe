@@ -6,10 +6,10 @@ import { Text } from './common/ui/Text'
 type DialogProps = OverlayProps & {
   title: string
   description: string
-  topLabel: string
-  bottomLabel: string
-  onTopPress: VoidFunction
-  onBottomPress: VoidFunction
+  top: string
+  bottom: string
+  onTopPress?: VoidFunction
+  onBottomPress?: VoidFunction
 }
 
 export function Dialog({
@@ -18,8 +18,8 @@ export function Dialog({
   unmount,
   title,
   description,
-  topLabel,
-  bottomLabel,
+  top,
+  bottom,
   onTopPress,
   onBottomPress,
 }: DialogProps) {
@@ -58,22 +58,22 @@ export function Dialog({
                 center
                 className="h-[46px] rounded-[4px] bg-primary-04"
                 onPress={() => {
-                  onTopPress()
+                  onTopPress?.()
                   close()
                 }}
               >
-                <Text variant="subhead-02">{topLabel}</Text>
+                <Text variant="subhead-02">{top}</Text>
               </Flex>
               <Text
                 variant="subhead-02"
                 color="gray-07"
                 className="text-center"
                 onPress={() => {
-                  onBottomPress()
+                  onBottomPress?.()
                   close()
                 }}
               >
-                {bottomLabel}
+                {bottom}
               </Text>
             </Col>
           </Col>
