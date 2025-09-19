@@ -56,22 +56,38 @@ export const textVariants = cva('tracking-[-0.6px]', {
       'sub-black': 'text-sub-black',
       'sub-white': 'text-sub-white',
     },
+    weight: {
+      light: 'font-light',
+      regular: 'font-regular',
+      medium: 'font-medium',
+      semibold: 'font-semibold',
+      bold: 'font-bold',
+      extraBold: 'font-extraBold',
+    },
   },
 })
 
 export type TextProps = RNTextProps & {
   variant?: VariantProps<typeof textVariants>['variant']
   color?: ColorKeys
+  weight?: VariantProps<typeof textVariants>['weight']
 }
 
 export const Text = forwardRef<RNText, TextProps>(function Text(
-  { children, className, variant = 'body-01', color = 'gray-12', ...props },
+  {
+    children,
+    className,
+    variant = 'body-01',
+    color = 'gray-12',
+    weight = 'regular',
+    ...props
+  },
   ref,
 ) {
   return (
     <Animated.Text
       ref={ref}
-      className={cn(textVariants({ variant, color }), className)}
+      className={cn(textVariants({ variant, color, weight }), className)}
       {...props}
     >
       {children}
