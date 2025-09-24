@@ -1,14 +1,13 @@
-import { AnimatePresence } from 'moti'
 import { useState } from 'react'
 import {
+  Modal,
   TextInput,
   type TextInputProps,
   useWindowDimensions,
 } from 'react-native'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
-import { flattenColorKeys } from '@/styles/color'
 import { cn } from '@/utils/cn'
-import { Col, Flex, Row } from './common/ui/Flex'
+import { Col, Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 import { toast } from './Toaster'
 
@@ -27,70 +26,68 @@ export function TimePicker({
 }: TimePickerProps) {
   const dims = useWindowDimensions()
 
-  const [__hour, setHour] = useState('00')
-  const [__minute, setMinute] = useState('00')
+  const [__hour, setHour] = useState(hour)
+  const [__minute, setMinute] = useState(minute)
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <Col center flex={1} className="absolute inset-0">
-          <Col
-            onPress={close}
-            entering={FadeIn}
-            exiting={FadeOut}
-            className="absolute inset-0 size-full flex-1 bg-black/50"
-          />
-          <Col
-            style={{ width: dims.width - 48 }}
-            className="h-[210px] rounded-[20px] bg-gray-10"
-            gap={18}
-          >
-            <Row className="px-5 pt-5">
-              <Text variant="subhead-03" className="text-gray-01">
-                공연 회차
+    <Modal visible={isOpen} transparent animationType="fade">
+      <Col center flex={1} className="absolute inset-0">
+        <Col
+          onPress={close}
+          entering={FadeIn.duration(150)}
+          exiting={FadeOut.duration(150)}
+          className="absolute inset-0 size-full flex-1 bg-black/50"
+        />
+        <Col
+          style={{ width: dims.width - 48 }}
+          className="h-[210px] rounded-[20px] bg-gray-10"
+          gap={18}
+        >
+          <Row className="px-5 pt-5">
+            <Text variant="subhead-03" className="text-gray-01">
+              공연 회차
+            </Text>
+          </Row>
+          <Row className="px-5" gap={12}>
+            <Col flex={1} gap={6}>
+              <TimePickerInput value={__hour} onChangeText={setHour} />
+              <Text variant="subhead-long-02" className="text-gray-01">
+                시
               </Text>
-            </Row>
-            <Row className="px-5" gap={12}>
-              <Col flex={1} gap={6}>
-                <TimePickerInput value={__hour} onChangeText={setHour} />
-                <Text variant="subhead-long-02" className="text-gray-01">
-                  시
-                </Text>
-              </Col>
-              <Col flex={1} gap={6}>
-                <TimePickerInput value={__minute} onChangeText={setMinute} />
-                <Text variant="subhead-long-02" className="text-gray-01">
-                  분
-                </Text>
-              </Col>
-            </Row>
-            <Row justify="flex-end" gap={12} className="px-5">
-              <Text
-                variant="subhead-long-02"
-                className="text-gray-01"
-                onPress={close}
-              >
-                취소
+            </Col>
+            <Col flex={1} gap={6}>
+              <TimePickerInput value={__minute} onChangeText={setMinute} />
+              <Text variant="subhead-long-02" className="text-gray-01">
+                분
               </Text>
-              <Text
-                variant="subhead-long-02"
-                color="primary-04"
-                onPress={() => {
-                  if (__hour.length !== 2 || __minute.length !== 2) {
-                    toast.show('시간을 입력해주세요.')
-                    return
-                  }
-                  onConfirm(__hour, __minute)
-                  close()
-                }}
-              >
-                확인
-              </Text>
-            </Row>
-          </Col>
+            </Col>
+          </Row>
+          <Row justify="flex-end" gap={12} className="px-5">
+            <Text
+              variant="subhead-long-02"
+              className="text-gray-01"
+              onPress={close}
+            >
+              취소
+            </Text>
+            <Text
+              variant="subhead-long-02"
+              color="primary-04"
+              onPress={() => {
+                if (__hour.length !== 2 || __minute.length !== 2) {
+                  toast.show('시간을 입력해주세요.')
+                  return
+                }
+                onConfirm(__hour, __minute)
+                close()
+              }}
+            >
+              확인
+            </Text>
+          </Row>
         </Col>
-      )}
-    </AnimatePresence>
+      </Col>
+    </Modal>
   )
 }
 

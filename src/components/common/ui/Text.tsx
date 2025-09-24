@@ -5,6 +5,7 @@ import {
   Animated,
   type Text as RNText,
   type TextProps as RNTextProps,
+  type TextStyle,
 } from 'react-native'
 import { type ColorKeys, flattenColorKeys } from '@/styles/color'
 import { cn } from '@/utils/cn'
@@ -56,22 +57,44 @@ export const textVariants = cva('tracking-[-0.6px]', {
       'sub-black': 'text-sub-black',
       'sub-white': 'text-sub-white',
     },
+    weight: {
+      light: 'font-light',
+      regular: 'font-regular',
+      medium: 'font-medium',
+      semibold: 'font-semibold',
+      bold: 'font-bold',
+      extraBold: 'font-extraBold',
+    },
   },
 })
 
 export type TextProps = RNTextProps & {
   variant?: VariantProps<typeof textVariants>['variant']
   color?: ColorKeys
+  weight?: VariantProps<typeof textVariants>['weight']
+  flex?: number
+  textAlign?: TextStyle['textAlign']
 }
 
 export const Text = forwardRef<RNText, TextProps>(function Text(
-  { children, className, variant = 'body-01', color = 'gray-12', ...props },
+  {
+    children,
+    className,
+    variant = 'body-01',
+    color = 'gray-12',
+    weight = 'regular',
+    flex,
+    style,
+    textAlign = 'auto',
+    ...props
+  },
   ref,
 ) {
   return (
     <Animated.Text
       ref={ref}
-      className={cn(textVariants({ variant, color }), className)}
+      className={cn(textVariants({ variant, color, weight }), className)}
+      style={[{ flex, textAlign }, style]}
       {...props}
     >
       {children}

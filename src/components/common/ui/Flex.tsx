@@ -1,6 +1,5 @@
 import React, { forwardRef } from 'react'
 import {
-  Animated,
   Pressable,
   type PressableProps,
   type StyleProp,
@@ -9,6 +8,7 @@ import {
   type ViewStyle,
 } from 'react-native'
 import type { AnimatedProps } from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
 
 export type FlexProps = ViewProps &
   PressableProps &
@@ -86,7 +86,11 @@ const FlexComponent = forwardRef<View, FlexProps>(function Flex(
         ? (state) => {
             const st = style(state)
             const __style = Array.isArray(st) ? st : [st]
-            return [...baseStyle, ...__style] as StyleProp<ViewStyle>
+            return [
+              ...baseStyle,
+              ...__style,
+              state.pressed && { opacity: 0.8 },
+            ] as StyleProp<ViewStyle>
           }
         : ([...baseStyle, style] as StyleProp<ViewStyle>)
 
