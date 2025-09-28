@@ -73,7 +73,6 @@ export type TextProps = RNTextProps & {
   color?: ColorKeys
   weight?: VariantProps<typeof textVariants>['weight']
   flex?: number
-  textAlign?: TextStyle['textAlign']
 }
 
 export const Text = forwardRef<RNText, TextProps>(function Text(
@@ -85,7 +84,6 @@ export const Text = forwardRef<RNText, TextProps>(function Text(
     weight = 'regular',
     flex,
     style,
-    textAlign = 'auto',
     ...props
   },
   ref,
@@ -94,7 +92,7 @@ export const Text = forwardRef<RNText, TextProps>(function Text(
     <Animated.Text
       ref={ref}
       className={cn(textVariants({ variant, color, weight }), className)}
-      style={[{ flex, textAlign }, style]}
+      style={[{ flex }, style]}
       {...props}
     >
       {children}
