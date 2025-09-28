@@ -20,7 +20,8 @@ function Center({ children }: PropsWithStrictChildren) {
   return (
     <Text
       variant="subhead-05"
-      className="-translate-y-1/2 pointer-events-none absolute inset-x-0 top-1/2 text-center text-gray-01"
+      textAlign="center"
+      className="-translate-y-1/2 pointer-events-none absolute inset-x-0 top-1/2 text-gray-01"
     >
       {children}
     </Text>
