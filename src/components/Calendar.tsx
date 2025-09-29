@@ -41,16 +41,13 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
           }}
           className="z-10 h-[350px] rounded-[20px] bg-gray-10"
         >
-          <Row
-            align="flex-end"
-            className="h-[55px] border-gray-09 border-b py-3 pr-2 pl-4"
-          >
+          <Row align="flex-end" className="border-gray-09 border-b p-[14px]">
             <Text variant="subhead-03" className="text-white">
               공연 일정
             </Text>
           </Row>
-          <Row align="center" justify="space-between" className="h-10 px-4">
-            <Text variant="subhead-03" className="text-white">
+          <Row align="center" justify="space-between" className="px-[14px]">
+            <Text variant="subhead-01" className="text-white">
               {dayjs(lilius.viewing).format('YYYY년 M월')}
             </Text>
             <Row
@@ -66,7 +63,7 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
                   lilius.viewPreviousMonth()
                 }}
               >
-                <Icon name="ArrowLeft" size={20} className="text-white" />
+                <Icon name="Before" size={20} className="text-white" />
               </Flex>
               <Flex
                 center
@@ -75,16 +72,12 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
                   lilius.viewNextMonth()
                 }}
               >
-                <Icon
-                  name="ArrowLeft"
-                  size={20}
-                  className="rotate-180 text-white"
-                />
+                <Icon name="Next" size={20} className="text-white" />
               </Flex>
             </Row>
           </Row>
-          <Col flex={1} className="px-[9px]">
-            <Row align="center">
+          <Col flex={1}>
+            <Row align="center" className="px-1">
               {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
                 <Flex key={index} center flex={1} className="size-[35px]">
                   <Text variant="subhead-03" className="flex-1 text-primary-04">
@@ -94,7 +87,11 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
               ))}
             </Row>
             {lilius.calendar[0].map((week, index) => (
-              <Row key={week[0].toISOString()} flex={1} className="h-[35px]">
+              <Row
+                key={week[0].toISOString()}
+                flex={1}
+                className="h-[35px] px-1"
+              >
                 {week.map((day, index) => {
                   const isDayOfCurrentMonth = dayjs(day).isSame(
                     dayjs(lilius.viewing),
@@ -115,9 +112,9 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
                       <Col
                         center
                         className={cn('size-[30px]', {
-                          'rounded-full border border-primary-04': dayjs(
-                            day,
-                          ).isSame(dayjs().startOf('day'), 'day'),
+                          'rounded-full border border-primary-04':
+                            dayjs(day).isSame(dayjs().startOf('day'), 'day') &&
+                            isDayOfCurrentMonth,
                           'rounded-full bg-primary-04':
                             dayjs(day).isSame(selectedDate, 'day') &&
                             isDayOfCurrentMonth,
@@ -150,15 +147,15 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
               </Row>
             ))}
           </Col>
-          <Row align="center" justify="flex-end" className="px-2 py-[2px]">
-            <Flex center className="size-[45px]" onPress={close}>
-              <Text variant="subhead-04" className="font-medium text-gray-06">
+          <Row align="center" justify="flex-end" className="px-[10px]">
+            <Flex center className="p-3" onPress={close}>
+              <Text variant="caption" className="font-medium text-gray-06">
                 취소
               </Text>
             </Flex>
             <Flex
               center
-              className="size-[45px]"
+              className="p-3"
               onPress={() => {
                 if (selectedDate) {
                   onConfirm(selectedDate)
@@ -166,10 +163,7 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
                 }
               }}
             >
-              <Text
-                variant="subhead-04"
-                className="font-medium text-primary-04"
-              >
+              <Text variant="caption" className="font-medium text-primary-04">
                 확인
               </Text>
             </Flex>

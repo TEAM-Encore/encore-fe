@@ -40,20 +40,21 @@ export function TimePicker({
         />
         <Col
           style={{ width: dims.width - 48 }}
-          className="h-[210px] rounded-[20px] bg-gray-10"
+          className="rounded-[20px] bg-gray-10 px-[30px] py-4"
           gap={18}
         >
-          <Row className="px-5 pt-5">
-            <Text variant="subhead-03" className="text-gray-01">
-              공연 회차
-            </Text>
-          </Row>
-          <Row className="px-5" gap={12}>
-            <Col flex={1} gap={6}>
+          <Text variant="subhead-03" className="text-gray-01">
+            공연 회차
+          </Text>
+          <Row center gap={10}>
+            <Col flex={1} gap={14}>
               <TimePickerInput value={__hour} onChangeText={setHour} />
               <Text variant="subhead-long-02" className="text-gray-01">
                 시
               </Text>
+            </Col>
+            <Col center className="h-[67px] w-[22px] self-start">
+              <Text className="text-[52px] text-gray-06">:</Text>
             </Col>
             <Col flex={1} gap={6}>
               <TimePickerInput value={__minute} onChangeText={setMinute} />
@@ -62,28 +63,30 @@ export function TimePicker({
               </Text>
             </Col>
           </Row>
-          <Row justify="flex-end" gap={12} className="px-5">
-            <Text
-              variant="subhead-long-02"
-              className="text-gray-01"
-              onPress={close}
-            >
-              취소
-            </Text>
-            <Text
-              variant="subhead-long-02"
-              color="primary-04"
-              onPress={() => {
-                if (__hour.length !== 2 || __minute.length !== 2) {
-                  toast.show('시간을 입력해주세요.')
-                  return
-                }
-                onConfirm(__hour, __minute)
-                close()
-              }}
-            >
-              확인
-            </Text>
+          <Row justify="flex-end">
+            <Row gap={24} className="px-3 py-[6px]">
+              <Text
+                variant="subhead-long-02"
+                className="text-gray-01"
+                onPress={close}
+              >
+                취소
+              </Text>
+              <Text
+                variant="subhead-long-02"
+                color="primary-04"
+                onPress={() => {
+                  if (__hour.length !== 2 || __minute.length !== 2) {
+                    toast.show('시간을 입력해주세요.')
+                    return
+                  }
+                  onConfirm(__hour, __minute)
+                  close()
+                }}
+              >
+                확인
+              </Text>
+            </Row>
           </Row>
         </Col>
       </Col>

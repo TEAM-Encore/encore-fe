@@ -1,0 +1,21 @@
+import { forwardRef, type Ref } from 'react'
+import type { SvgProps } from 'react-native-svg'
+import Svg, { Path } from 'react-native-svg'
+
+const Next = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
+  <Svg
+    width="21"
+    height="21"
+    viewBox="0 0 21 21"
+    fill="none"
+    ref={ref}
+    {...props}
+  >
+    <Path
+      d="M10.9993 10.5L7.16602 6.66667L8.33268 5.5L13.3327 10.5L8.33268 15.5L7.16602 14.3333L10.9993 10.5Z"
+      fill="currentColor"
+    />
+  </Svg>
+)
+const ForwardRef = forwardRef(Next)
+export { ForwardRef as Next }
