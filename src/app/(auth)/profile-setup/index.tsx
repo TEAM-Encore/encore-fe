@@ -60,12 +60,14 @@ export default function ProfileSetup() {
           name="nickname"
           render={({ field }) => (
             <Col className="mt-8 gap-2.5">
-              <View className="relative">
+              <View className="relative flex w-full flex-row gap-4">
                 <TextField
-                  className="pr-20 leading-5"
+                  style={{ paddingRight: 90 }}
                   placeholder="닉네임을 입력해주세요."
                   placeholderTextColor="#8B8B8B"
-                  {...field}
+                  value={field.value}
+                  onChangeText={field.onChange}
+                  onBlur={field.onBlur}
                 />
                 <Pressable className="-translate-y-1/2 absolute top-1/2 right-4 flex h-7 w-[64px] items-center justify-center rounded-[4px] bg-primary-04">
                   <Text variant="caption" color="gray-12">
