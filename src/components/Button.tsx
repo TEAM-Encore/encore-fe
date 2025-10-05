@@ -3,15 +3,13 @@ import { cn } from '@/utils/cn'
 import { Text } from './common/ui/Text'
 
 export type ButtonProps = React.ComponentProps<typeof Pressable> & {
-  text?: string
-  children?: React.ReactNode
+  children?: React.ReactNode | string | number
 }
 
 export function Button({
   ref,
   className,
   disabled = false,
-  text = '다음',
   children,
   ...props
 }: ButtonProps) {
@@ -29,14 +27,18 @@ export function Button({
       disabled={disabled}
       {...props}
     >
-      <Text
-        className={cn(
-          'font-semibold text-[18px]',
-          disabled ? 'text-sub-white' : 'text-gray-12',
-        )}
-      >
-        {children}
-      </Text>
+      {typeof children === 'string' || typeof children === 'number' ? (
+        <Text
+          className={cn(
+            'font-semibold text-[18px]',
+            disabled ? 'text-sub-white' : 'text-gray-12',
+          )}
+        >
+          {children}
+        </Text>
+      ) : (
+        children
+      )}
     </Pressable>
   )
 }
