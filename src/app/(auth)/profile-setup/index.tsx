@@ -43,17 +43,17 @@ export default function ProfileSetup() {
             바로 시작할 수 있어요!
           </Text>
         </Col>
-        <Pressable
-          className="mt-6 flex items-center justify-center"
-          onPress={() => setIsBottomOpen(true)}
-        >
-          <View className="relative flex h-[88px] w-[88px] items-center justify-center rounded-full bg-gray-01">
+        <View className="mt-6 flex items-center justify-center">
+          <Pressable
+            className="relative flex h-[88px] w-[88px] items-center justify-center rounded-full bg-gray-01"
+            onPress={() => setIsBottomOpen(true)}
+          >
             <Logo size={44} color="#C1C1C1" />
             <View className="absolute right-0 bottom-0 flex h-7 w-7 items-center justify-center rounded-full bg-gray-09">
               <Icon name="Camera" size={16} className="text-white" />
             </View>
-          </View>
-        </Pressable>
+          </Pressable>
+        </View>
 
         <Controller
           control={form.control}
