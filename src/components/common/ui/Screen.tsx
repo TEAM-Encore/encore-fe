@@ -1,8 +1,7 @@
-import { ScrollView } from 'react-native-gesture-handler'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { FixedBottomContainer } from '@/components/FixedBottom'
 import { type ColorKeys, colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
+import { ScrollView } from 'react-native-gesture-handler'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Col, Row } from './Flex'
 
 export function Screen({
