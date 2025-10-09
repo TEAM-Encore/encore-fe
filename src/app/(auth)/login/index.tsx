@@ -8,16 +8,16 @@ import { TERMS_AND_PRIVACY } from '@/constants/login'
 import LoginButton from './components/LoginButton'
 import { LogoText } from './components/LogoText'
 
+const termsProps: TextProps = {
+  color: 'gray-01',
+  variant: 'caption',
+}
+
 export default function Index() {
   const insets = useSafeAreaInsets()
 
-  const openWebPage = async (url: string) => {
+  const onOpenWebPage = async (url: string) => {
     await WebBrowser.openBrowserAsync(url)
-  }
-
-  const termsProps: TextProps = {
-    color: 'gray-01',
-    variant: 'caption',
   }
 
   return (
@@ -45,17 +45,17 @@ export default function Index() {
         <Col gap={16} className="w-full px-[19px]">
           <LoginButton
             type="Kakao"
-            onPress={() => router.push('/profile-setup')}
+            onPress={() => router.push('/login/profile-setup')}
           />
           <LoginButton
             type="Google"
-            onPress={() => router.push('/profile-setup')}
+            onPress={() => router.push('/login/profile-setup')}
           />
-          <View className="mt-[52px] flex flex-col items-center justify-center">
+          <Col align="center" justify="center" className="mt-[52px]">
             <Text {...termsProps} className="text-center">
               가입하면 앙코르의{' '}
               <Text
-                onPress={() => openWebPage(TERMS_AND_PRIVACY.terms)}
+                onPress={() => onOpenWebPage(TERMS_AND_PRIVACY.terms)}
                 className="underline"
                 {...termsProps}
               >
@@ -63,7 +63,7 @@ export default function Index() {
               </Text>{' '}
               및{'\n'}
               <Text
-                onPress={() => openWebPage(TERMS_AND_PRIVACY.privacy)}
+                onPress={() => onOpenWebPage(TERMS_AND_PRIVACY.privacy)}
                 className="underline"
                 {...termsProps}
               >
@@ -71,7 +71,7 @@ export default function Index() {
               </Text>
               에 동의하게 됩니다.
             </Text>
-          </View>
+          </Col>
         </Col>
       </Col>
     </View>
