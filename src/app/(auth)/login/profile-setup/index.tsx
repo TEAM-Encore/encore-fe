@@ -1,33 +1,39 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { overlay } from 'overlay-kit'
 import { Controller, useForm } from 'react-hook-form'
-import { Pressable, StatusBar, View } from 'react-native'
+import { StatusBar } from 'react-native'
 import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
-import { Col, Flex } from '@/components/common/ui/Flex'
+import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { TextField } from '@/components/TextField'
 import { GalleryBottomSheet } from './components/GalleryBottomSheet'
+import { type LoginFormType, loginSchema } from './schema'
 
 export default function ProfileSetup() {
-  const form = useForm({
+  const form = useForm<LoginFormType>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      image: null,
+      image: undefined,
       nickname: '',
     },
   })
 
+  const onSubmit = form.handleSubmit(() => {
+    // do something
+  })
+
   return (
     <Screen
-      className=""
       header={
         <Header>
           <Header.Back />
           <Header.Center>회원가입</Header.Center>
         </Header>
       }
-      fixedButton={<Button>시작하기</Button>}
+      fixedButton={<Button onPress={onSubmit}>시작하기</Button>}
     >
       <StatusBar barStyle="light-content" />
       <Col className="mt-6">
@@ -49,25 +55,28 @@ export default function ProfileSetup() {
         control={form.control}
         name="nickname"
         render={({ field }) => (
-          <Col className="mt-8 gap-2.5">
-            <View className="relative flex w-full flex-row gap-4">
+          <Col gap={10} className="mt-8">
+            <Row gap={16} className="relative w-full">
               <TextField
                 style={{ paddingRight: 90 }}
                 placeholder="닉네임을 입력해주세요."
                 placeholderTextColor="#8B8B8B"
-                value={field.value}
+                {...field}
                 onChangeText={field.onChange}
-                onBlur={field.onBlur}
+                error={form.formState.errors.nickname?.message}
+                rightElement={() => (
+                  <Col
+                    align="center"
+                    justify="center"
+                    className="h-7 w-[64px] rounded-[4px] bg-primary-04"
+                  >
+                    <Text variant="caption" color="gray-12">
+                      중복 확인
+                    </Text>
+                  </Col>
+                )}
               />
-              <Pressable className="-translate-y-1/2 absolute top-1/2 right-4 flex h-7 w-[64px] items-center justify-center rounded-[4px] bg-primary-04">
-                <Text variant="caption" color="gray-12">
-                  중복 확인
-                </Text>
-              </Pressable>
-            </View>
-            <Text variant="caption" color="sub-alert">
-              {form.formState.errors.nickname?.message}
-            </Text>
+            </Row>
           </Col>
         )}
       />
