@@ -5,7 +5,7 @@ import { StepIndicator } from "@/components/StepIndicator";
 import { TicketBook } from "@/components/TicketBook";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StatusBar, View } from "react-native";
+import { FlatList, View } from "react-native";
 
 // TODO: api 연동 후 Mock data 삭제
 const mockTickets = [
@@ -58,48 +58,45 @@ export default function ReviewWritePage() {
     };
 
     return (
-        <>
-            <StatusBar barStyle="light-content" backgroundColor="#000000" />
-            <Screen
-                header={
-                    <Header progress={(1 / 6) * 100}>
-                        <Header.Back />
-                        <Header.Center>후기글 추가</Header.Center>
-                    </Header>
-                }
-                fixedButton={
-                    <Button onPress={handleNext} disabled={!selectedTicketId}>
-                        다음
-                    </Button>
-                }
-            >
-                <StepIndicator
-                    currentStep={1}
-                    totalSteps={6}
-                    instruction="후기를 작성할 내역을 선택해주세요."
-                />
+        <Screen
+            header={
+                <Header progress={(1 / 6) * 100}>
+                    <Header.Back />
+                    <Header.Center>후기글 추가</Header.Center>
+                </Header>
+            }
+            fixedButton={
+                <Button onPress={handleNext} disabled={!selectedTicketId}>
+                    다음
+                </Button>
+            }
+        >
+            <StepIndicator
+                currentStep={1}
+                totalSteps={6}
+                instruction="후기를 작성할 내역을 선택해주세요."
+                className="my-7"
+            />
 
-                {/* Ticket List */}
-                <ScrollView
-                    className="flex-1 -mx-5 px-5"
-                    showsVerticalScrollIndicator={false}
-                >
-                    <View className="gap-3">
-                        {mockTickets.map((ticket) => (
-                            <TicketBook
-                                key={ticket.id}
-                                title={ticket.title}
-                                date={ticket.date}
-                                theaterseat={ticket.theaterseat}
-                                attendees={ticket.attendees}
-                                posterUrl={ticket.posterUrl}
-                                active={selectedTicketId === ticket.id}
-                                onPress={() => handleTicketSelect(ticket.id)}
-                            />
-                        ))}
-                    </View>
-                </ScrollView>
-            </Screen>
-        </>
+            {/* Ticket List */}
+            <FlatList
+                data={mockTickets}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <TicketBook
+                        title={item.title}
+                        date={item.date}
+                        theaterseat={item.theaterseat}
+                        attendees={item.attendees}
+                        posterUrl={item.posterUrl}
+                        active={selectedTicketId === item.id}
+                        onPress={() => handleTicketSelect(item.id)}
+                    />
+                )}
+                ItemSeparatorComponent={() => <View className="h-5" />}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ flexGrow: 1 }}
+            />
+        </Screen>
     );
 }
