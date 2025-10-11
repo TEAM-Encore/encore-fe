@@ -3,9 +3,11 @@ import { Screen } from "@/components/common/ui/Screen";
 import { Header } from "@/components/Header";
 import { StepIndicator } from "@/components/StepIndicator";
 import { TicketBook } from "@/components/TicketBook";
+import { Dialog } from "@/components/Dialog";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { FlatList, View } from "react-native";
+import { overlay } from "overlay-kit";
 
 // TODO: api 연동 후 Mock data 삭제
 const mockTickets = [
@@ -61,8 +63,23 @@ export default function ReviewWritePage() {
         <Screen
             header={
                 <Header progress={(1 / 6) * 100}>
-                    <Header.Back />
                     <Header.Center>후기글 추가</Header.Center>
+                    <Header.Close
+                        onPress={() => {
+                            overlay.open((ov) => (
+                                <Dialog
+                                    {...ov}
+                                    title="리뷰 작성을 그만할까요?"
+                                    description="중간에 나갈 시 작성한 내용이 삭제돼요."
+                                    top="확인"
+                                    bottom="취소"
+                                    onTopPress={() => {
+                                        router.back();
+                                    }}
+                                />
+                            ));
+                        }}
+                    />
                 </Header>
             }
             fixedButton={
