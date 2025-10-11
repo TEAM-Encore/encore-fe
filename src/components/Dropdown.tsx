@@ -1,7 +1,9 @@
-import React, { ReactNode, useLayoutEffect, useRef, useState } from 'react'
+import type React from 'react'
+import { type ReactNode, useLayoutEffect, useRef, useState } from 'react'
 import { Modal, Pressable, View } from 'react-native'
 import { cn } from '@/utils/cn'
 import { createSafeContext } from '@/utils/create-safe-context'
+import { Col, Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
 type DropdownContextValue = {
@@ -64,6 +66,10 @@ function Content({
     width: 0,
     height: 0,
   })
+  const [contentLayout, setContentLayout] = useState({
+    width: 0,
+    height: 0,
+  })
 
   useLayoutEffect(() => {
     if (isOpen && triggerRef.current) {
@@ -75,25 +81,30 @@ function Content({
 
   if (!isOpen) return null
 
+  console.log(triggerLayout)
+
   return (
     <Modal transparent visible={isOpen} onRequestClose={close}>
-      <Pressable className="flex-1" onPress={close}>
-        <View
-          className={cn('absolute rounded-[8px] bg-gray-10', className)}
-          style={{
-            ...(position === 'bottom' && {
-              top: triggerLayout.y + triggerLayout.height + 16,
-              left: triggerLayout.x,
-            }),
-            ...(position === 'left' && {
-              top: triggerLayout.y,
-              right: triggerLayout.x + triggerLayout.width + 8,
-            }),
-          }}
-        >
-          {children}
-        </View>
-      </Pressable>
+      <Col
+        className={cn('self-start rounded-[8px] bg-gray-10', className)}
+        onPress={close}
+        onLayout={(event) => {
+          const { width, height } = event.nativeEvent.layout
+          setContentLayout({ width, height })
+        }}
+        style={{
+          ...(position === 'bottom' && {
+            top: triggerLayout.y + triggerLayout.height + 16,
+            left: triggerLayout.x,
+          }),
+          ...(position === 'left' && {
+            top: triggerLayout.y,
+            left: Math.max(8, triggerLayout.x - contentLayout.width - 8),
+          }),
+        }}
+      >
+        {children}
+      </Col>
     </Modal>
   )
 }
@@ -112,7 +123,7 @@ function Item({
   const { close } = useDropdown()
 
   return (
-    <Pressable
+    <Row
       onPress={() => {
         onPress?.()
         close()
@@ -135,7 +146,7 @@ function Item({
       >
         {children as string}
       </Text>
-    </Pressable>
+    </Row>
   )
 }
 
