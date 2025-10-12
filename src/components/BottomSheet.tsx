@@ -31,7 +31,11 @@ function Root({
   close,
   unmount,
   children,
-}: PropsWithStrictChildren<OverlayProps>) {
+  backgroundColor = '#333333',
+  borderTopRadius = 25,
+}: PropsWithStrictChildren<
+  OverlayProps & { backgroundColor?: string; borderTopRadius?: number }
+>) {
   const ref = useRef<GorhomSheet>(null)
   const insets = useSafeAreaInsets()
 
@@ -88,16 +92,21 @@ function Root({
         backdropComponent={renderBackdrop}
         handleComponent={null}
         backgroundStyle={{
-          backgroundColor: '#333333',
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
+          backgroundColor,
+          borderTopLeftRadius: borderTopRadius,
+          borderTopRightRadius: borderTopRadius,
+          overflow: 'hidden',
         }}
         enablePanDownToClose
         onClose={value.close}
       >
         <BottomSheetView
-          className="z-modal rounded-t-[25px] bg-[#333333]"
-          style={{ paddingBottom: insets.bottom }}
+          className="z-modal rounded-t-[25px]"
+          style={{
+            paddingBottom: insets.bottom,
+            backgroundColor,
+            overflow: 'hidden',
+          }}
         >
           {children}
         </BottomSheetView>

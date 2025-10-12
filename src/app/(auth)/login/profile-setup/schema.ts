@@ -1,0 +1,12 @@
+import z from 'zod'
+
+export const loginSchema = z.object({
+  image: z.string().optional(),
+  nickname: z
+    .string()
+    .min(1, '닉네임을 입력해주세요')
+    .max(6, '6글자가 초과되었어요.')
+    .regex(/^[가-힣a-zA-Z0-9]+$/, '여백 없이 한글, 영문, 숫자만 가능해요.'),
+})
+
+export type LoginFormType = z.infer<typeof loginSchema>
