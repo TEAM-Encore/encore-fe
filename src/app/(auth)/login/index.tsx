@@ -30,7 +30,7 @@ export default function Index() {
       <Col
         justify="space-between"
         align="center"
-        className="flex-1"
+        className="flex-1 px-[19px]"
         style={{
           paddingTop: insets.top + 112,
           paddingBottom: insets.bottom + 23,
@@ -42,36 +42,37 @@ export default function Index() {
             생생한 뮤지컬 후기는 모두 여기에
           </Text>
         </Col>
-        <Col gap={16} className="w-full px-[19px]">
-          <LoginButton
-            type="Kakao"
-            onPress={() => router.push('/login/profile-setup')}
-          />
-          <LoginButton
-            type="Google"
-            onPress={() => router.push('/login/profile-setup')}
-          />
-          <Col align="center" justify="center" className="mt-[52px]">
-            <Text {...termsProps} className="text-center">
-              가입하면 앙코르의{' '}
-              <Text
-                onPress={() => onOpenWebPage(TERMS_AND_PRIVACY.terms)}
-                className="underline"
-                {...termsProps}
-              >
-                이용약관
-              </Text>{' '}
-              및{'\n'}
-              <Text
-                onPress={() => onOpenWebPage(TERMS_AND_PRIVACY.privacy)}
-                className="underline"
-                {...termsProps}
-              >
-                개인정보처리방침
-              </Text>
-              에 동의하게 됩니다.
-            </Text>
+
+        <Col gap={52} className="w-full">
+          <Col gap={16} className="w-full">
+            <LoginButton
+              type="Kakao"
+              onPress={() => router.push('/login/profile-setup')}
+            />
+            <LoginButton
+              type="Google"
+              onPress={() => router.push('/login/profile-setup')}
+            />
           </Col>
+          <Text {...termsProps} className="text-center">
+            가입하면 앙코르의{' '}
+            <Text
+              onPress={() => onOpenWebPage(TERMS_AND_PRIVACY.terms)}
+              className="underline"
+              {...termsProps}
+            >
+              이용약관
+            </Text>{' '}
+            및{'\n'}
+            <Text
+              onPress={() => onOpenWebPage(TERMS_AND_PRIVACY.privacy)}
+              className="underline"
+              {...termsProps}
+            >
+              개인정보처리방침
+            </Text>
+            에 동의하게 됩니다.
+          </Text>
         </Col>
       </Col>
     </View>
