@@ -9,6 +9,7 @@ import { SortSelector } from './SortSelector'
 
 export const MOCK = [
   {
+    id: '1',
     title: '비더슈단트 [샤롯데시어터]',
     date: '2025-06-21',
     theaterseat: 'B구역 6열 4번',
@@ -16,6 +17,7 @@ export const MOCK = [
     posterUrl: 'https://picsum.photos/200/300?1',
   },
   {
+    id: '2',
     title: '레미제라블 [블루스퀘어 신한카드홀]',
     date: '2025-07-05',
     theaterseat: 'A구역 5열 12번',
@@ -23,6 +25,7 @@ export const MOCK = [
     posterUrl: 'https://picsum.photos/200/300?2',
   },
   {
+    id: '3',
     title: '웃는 남자 [예술의전당 오페라극장]',
     date: '2025-08-03',
     theaterseat: 'C구역 3열 9번',
@@ -30,6 +33,7 @@ export const MOCK = [
     posterUrl: 'https://picsum.photos/200/300?3',
   },
   {
+    id: '4',
     title: '드라큘라 [샤롯데시어터]',
     date: '2025-09-14',
     theaterseat: 'VIP석 2열 6번',
@@ -37,6 +41,7 @@ export const MOCK = [
     posterUrl: 'https://picsum.photos/200/300?4',
   },
   {
+    id: '5',
     title: '데스노트 [충무아트센터 대극장]',
     date: '2025-10-02',
     theaterseat: 'S석 10열 17번',
@@ -59,7 +64,7 @@ export default function TicketbookStep() {
         <FlatList
           data={MOCK}
           contentContainerClassName="px-5 gap-5 pb-6"
-          keyExtractor={(item) => item.title}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => <TicketBook {...item} />}
         />
       ) : (
