@@ -5,9 +5,8 @@ export const loginSchema = z.object({
   nickname: z
     .string()
     .min(1, '닉네임을 입력해주세요')
-    .max(6, '닉네임은 6자 이하여야 합니다')
-    .regex(/^[가-힣a-zA-Z0-9]+$/, '한글, 영문, 숫자만 사용 가능합니다')
-    .refine((val) => !val.includes(' '), '공백은 사용할 수 없습니다'),
+    .max(6, '6글자가 초과되었어요.')
+    .regex(/^[가-힣a-zA-Z0-9]+$/, '여백 없이 한글, 영문, 숫자만 가능해요.'),
 })
 
 export type LoginFormType = z.infer<typeof loginSchema>
