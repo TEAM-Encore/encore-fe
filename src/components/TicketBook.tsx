@@ -1,9 +1,9 @@
+import React from 'react'
+import { Image, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { cn } from '@/utils/cn'
-import React from 'react'
-import { Image, View } from 'react-native'
 
 type TicketBookProps = {
   title: string
@@ -26,15 +26,13 @@ export function TicketBook({
   className,
   active = false,
 }: TicketBookProps) {
-
   return (
     <Flex
       onPress={onPress}
-
       direction="row"
       align="center"
       className={cn(
-        'w-full h-[120px] py-[16px] px-4 rounded-lg flex-row items-center',
+        'h-[120px] w-full flex-row items-center rounded-lg px-4 py-[16px]',
         {
           'bg-gray-03': active,
           'bg-gray-11': !active,
@@ -43,25 +41,29 @@ export function TicketBook({
       )}
     >
       {/* 포스터 */}
-      <View className="w-[66px] h-[92px] rounded-[4.79px] overflow-hidden bg-white/5">
+      <View className="h-[92px] w-[66px] overflow-hidden rounded-[4.79px] bg-white/5">
         {posterUrl ? (
           <Image
-            source={posterUrl}
-            className="w-full h-full"
+            source={
+              typeof posterUrl === 'string' ? { uri: posterUrl } : posterUrl
+            }
+            className="h-full w-full"
             resizeMode="cover"
           />
         ) : null}
       </View>
 
       {/* 티켓북 정보 */}
-      <Col className="flex-1 ml-[16px] gap-[8px]">
+      <Col className="ml-[16px] flex-1 gap-[8px]">
         {/* 제목 */}
-        <Text variant="subhead-03"
+        <Text
+          variant="subhead-03"
           className={cn({
             'text-gray-12': active,
             'text-gray-01': !active,
           })}
-          numberOfLines={1}>
+          numberOfLines={1}
+        >
           {title}
         </Text>
 
@@ -75,16 +77,13 @@ export function TicketBook({
                 'text-gray-10': active,
                 'text-gray-01': !active,
               })}
-
             />
-            <Text variant={"caption"}
-              className={cn(
-                'font-regular text-[10px]',
-                {
-                  'text-gray-08': active,
-                  'text-gray-06': !active,
-                }
-              )}
+            <Text
+              variant={'caption'}
+              className={cn('font-regular text-[10px]', {
+                'text-gray-08': active,
+                'text-gray-06': !active,
+              })}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -101,16 +100,13 @@ export function TicketBook({
                 'text-gray-10': active,
                 'text-gray-01': !active,
               })}
-
             />
-            <Text variant={"caption"}
-              className={cn(
-                'font-regular text-[10px]',
-                {
-                  'text-gray-08': active,
-                  'text-gray-06': !active,
-                }
-              )}
+            <Text
+              variant={'caption'}
+              className={cn('font-regular text-[10px]', {
+                'text-gray-08': active,
+                'text-gray-06': !active,
+              })}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
@@ -127,16 +123,13 @@ export function TicketBook({
                 'text-gray-10': active,
                 'text-gray-01': !active,
               })}
-
             />
-            <Text variant={"caption"}
-              className={cn(
-                'font-regular text-[10px]',
-                {
-                  'text-gray-08': active,
-                  'text-gray-06': !active,
-                }
-              )}
+            <Text
+              variant={'caption'}
+              className={cn('font-regular text-[10px]', {
+                'text-gray-08': active,
+                'text-gray-06': !active,
+              })}
               numberOfLines={1}
               ellipsizeMode="tail"
             >

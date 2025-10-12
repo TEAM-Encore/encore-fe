@@ -1,4 +1,4 @@
-import { forwardRef, Ref } from 'react'
+import { forwardRef, type Ref } from 'react'
 import type { SvgProps } from 'react-native-svg'
 import Svg, { G, Mask, Path } from 'react-native-svg'
 
