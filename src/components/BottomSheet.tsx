@@ -24,6 +24,11 @@ type ContextValue = {
   close: VoidFunction
 }
 
+type RootProps = OverlayProps & {
+  backgroundColor?: string
+  borderTopRadius?: number
+}
+
 const [Provider, useSheet] = createSafeContext<ContextValue>('BottomSheet')
 
 function Root({
@@ -33,8 +38,11 @@ function Root({
   children,
   backgroundColor = '#333333',
   borderTopRadius = 25,
-}: PropsWithStrictChildren<
-  OverlayProps & { backgroundColor?: string; borderTopRadius?: number }
+}: RenderPropsChildren<
+  RootProps,
+  {
+    onClose: VoidFunction
+  }
 >) {
   const ref = useRef<GorhomSheet>(null)
   const insets = useSafeAreaInsets()
@@ -108,7 +116,9 @@ function Root({
             overflow: 'hidden',
           }}
         >
-          {children}
+          {typeof children === 'function'
+            ? children({ onClose: value.close })
+            : children}
         </BottomSheetView>
       </GorhomSheet>
     </Provider>

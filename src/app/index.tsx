@@ -7,7 +7,7 @@ import { Dialog } from '@/components/Dialog'
 import { TextField } from '@/components/TextField'
 
 export default function Index() {
-  Redirect({ href: '/login' })
+  // Redirect({ href: '/login' })
 
   return (
     <SafeArea className="flex-1 items-center justify-center bg-gray-12 px-5">

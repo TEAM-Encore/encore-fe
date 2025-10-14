@@ -5,8 +5,9 @@ import { overlay } from 'overlay-kit'
 import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { TextInput } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
+import { FlatList, ScrollView } from 'react-native-gesture-handler'
 import z from 'zod'
+import { BottomSheet } from '@/components/BottomSheet'
 import { Calendar } from '@/components/Calendar'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
@@ -15,9 +16,34 @@ import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
 import { Dropdown } from '@/components/Dropdown'
 import { Header } from '@/components/Header'
+import { Search } from '@/components/search/Search'
 import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
+import { cn } from '@/utils/cn'
 import { type FormType, schema } from '../../add-ticket/schema'
+
+const ACTORS = [
+  {
+    id: 1,
+    name: '옥주현',
+  },
+  {
+    id: 2,
+    name: '서경수',
+  },
+  {
+    id: 3,
+    name: '이준호',
+  },
+  {
+    id: 4,
+    name: '김민수',
+  },
+  {
+    id: 5,
+    name: '박준호',
+  },
+]
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
@@ -73,7 +99,11 @@ export default function TicketDetailScreen() {
           <Header.Center>관람 내역</Header.Center>
           {isEdit ? (
             <Header.Right>
-              <Text variant="body-02" color="gray-01">
+              <Text
+                variant="body-02"
+                color="gray-01"
+                onPress={() => setIsEdit(false)}
+              >
                 확인
               </Text>
             </Header.Right>
@@ -103,7 +133,7 @@ export default function TicketDetailScreen() {
             공연 제목
           </Text>
           <Row align="center" className="rounded bg-gray-10 px-3 py-[10px]">
-            <Text variant="body-01" color="gray-01">
+            <Text variant="body-01" color={isEdit ? 'gray-08' : 'gray-01'}>
               알라딘 [샤롯데시어터]
             </Text>
           </Row>
@@ -118,6 +148,9 @@ export default function TicketDetailScreen() {
                 variant="short"
                 control={form.control}
                 name="floor"
+                className={cn({
+                  'border-gray-01': isEdit,
+                })}
               />
               <Text variant="body-01" className="text-white">
                 층
@@ -128,6 +161,9 @@ export default function TicketDetailScreen() {
                 variant="short"
                 control={form.control}
                 name="area"
+                className={cn({
+                  'border-gray-01': isEdit,
+                })}
               />
               <Text variant="body-01" className="text-white">
                 구역
@@ -138,6 +174,9 @@ export default function TicketDetailScreen() {
                 variant="short"
                 control={form.control}
                 name="row"
+                className={cn({
+                  'border-gray-01': isEdit,
+                })}
               />
               <Text variant="body-01" className="text-white">
                 열
@@ -148,6 +187,9 @@ export default function TicketDetailScreen() {
                 variant="short"
                 control={form.control}
                 name="seatNumber"
+                className={cn({
+                  'border-gray-01': isEdit,
+                })}
               />
               <Text variant="body-01" className="text-white">
                 번
@@ -227,7 +269,13 @@ export default function TicketDetailScreen() {
                 onChangeText={onChange}
                 onBlur={onBlur}
                 ref={ref}
-                className="h-10 rounded-[4px] bg-gray-10 px-3 py-[10px] text-body-1 text-gray-01"
+                readOnly
+                className={cn(
+                  'h-10 rounded-[4px] bg-gray-10 px-3 py-[10px] text-body-1 text-gray-01',
+                  {
+                    'text-gray-08': isEdit,
+                  },
+                )}
               />
             )}
           />
@@ -238,7 +286,51 @@ export default function TicketDetailScreen() {
           </Text>
           <Flex center className="h-[176px] rounded-lg bg-gray-10">
             {isEdit ? (
-              <Col gap={4} align="center">
+              <Col
+                gap={4}
+                align="center"
+                onPress={() => {
+                  overlay.open(({ isOpen, close, unmount }) => (
+                    <BottomSheet.Root
+                      isOpen={isOpen}
+                      close={close}
+                      backgroundColor="#FFFFFF"
+                      borderTopRadius={20}
+                    >
+                      {({ onClose }) => (
+                        <BottomSheet.Content>
+                          <Row
+                            center
+                            className="py-5"
+                            gap={6}
+                            onPress={() => {
+                              onClose()
+                            }}
+                          >
+                            <Icon name="Image" size={24} />
+                            <Text variant="subhead-03" color="gray-09">
+                              갤러리에서 사진 변경하기
+                            </Text>
+                          </Row>
+                          <Row
+                            center
+                            className="py-5"
+                            gap={6}
+                            onPress={() => {
+                              onClose()
+                            }}
+                          >
+                            <Icon name="Delete" size={24} color="sub-alert" />
+                            <Text variant="subhead-03" color="sub-alert">
+                              사진 삭제하기
+                            </Text>
+                          </Row>
+                        </BottomSheet.Content>
+                      )}
+                    </BottomSheet.Root>
+                  ))
+                }}
+              >
                 <Icon name="Camera" size={24} className="text-gray-01" />
                 <Text variant="subhead-02" color="gray-01">
                   사진 추가
@@ -251,6 +343,36 @@ export default function TicketDetailScreen() {
               >{`티켓 사진을 업로드하고\n후기를 작성해보세요!`}</Text>
             )}
           </Flex>
+        </Col>
+        <Col gap={12}>
+          <Text variant="subhead-02" color="gray-01">
+            배우
+          </Text>
+          {isEdit && (
+            <Search onDelete={() => {}} placeholder="추가할 배우 검색하기" />
+          )}
+          <Row align="center" gap={4} wrap="wrap" className="mt-3">
+            {ACTORS.map((actor) => (
+              <Col
+                key={actor.id}
+                align="center"
+                gap={4}
+                className="relative h-[100px] w-[78px]"
+              >
+                {isEdit && (
+                  <Icon
+                    name="XCircle"
+                    size={20}
+                    className="-top-[7px] -right-1 absolute z-10"
+                  />
+                )}
+                <Col className="size-[60px] rounded-lg bg-gray-06" />
+                <Text variant="caption" color="gray-01">
+                  {actor.name}
+                </Text>
+              </Col>
+            ))}
+          </Row>
         </Col>
       </Col>
     </Screen>
