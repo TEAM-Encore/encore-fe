@@ -50,14 +50,14 @@ export const MOCK = [
   },
 ]
 
-const sorts = ['전체', '최근 1주', '최근 1달']
+const tabs = [{ label: '전체', value: 'all' }, { label: '최근 1주', value: 'week' }, { label: '최근 1달', value: 'month' }]
 
 export default function TicketbookStep() {
-  const [sort, setSort] = useState('전체')
+  const [sort, setSort] = useState<typeof tabs[number]['value']>(tabs[0].value)
 
   return (
     <>
-      <SortSelector data={sorts} value={sort} onChange={setSort} />
+      <SortSelector tabs={tabs} value={sort} onChange={setSort} />
       <Spacing size={1} />
 
       {MOCK.length > 0 ? (
@@ -68,7 +68,7 @@ export default function TicketbookStep() {
           renderItem={({ item }) => <TicketBook {...item} />}
         />
       ) : (
-        <Col gap={8} align="center" justify="center" className="flex-1">
+        <Col gap={8} center className="flex-1">
           <Ticket width={64} height={64} color="#A5A5A5" />
           <Text variant="body-02" color="gray-06">
             뮤지컬 티켓을 추가해보세요!

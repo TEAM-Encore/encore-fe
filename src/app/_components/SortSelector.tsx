@@ -3,32 +3,31 @@ import { Text } from '@/components/common/ui/Text'
 import { cn } from '@/utils/cn'
 
 interface SortSelectorProps {
-  data: string[]
+  tabs: { label: string; value: string }[]
   value: string
   onChange: (value: string) => void
 }
 
-export function SortSelector({ data, value, onChange }: SortSelectorProps) {
+export function SortSelector({ tabs, value, onChange }: SortSelectorProps) {
   return (
     <Row gap={8} align="center" className="p-5">
-      {data.map((item) => (
+      {tabs.map((tab) => (
         <Flex
-          key={item}
-          align="center"
-          justify="center"
+          key={tab.value}
+          center
           className={cn(
             'rounded-[18px] border px-3.5 py-2',
-            value === item
+            value === tab.value
               ? 'border-primary-04 bg-primary-04'
               : 'border-gray-04',
           )}
-          onPress={() => onChange(item)}
+          onPress={() => onChange(tab.value)}
         >
           <Text
             variant="subhead-02"
-            color={value === item ? 'gray-12' : 'gray-04'}
+            color={value === tab.value ? 'gray-12' : 'gray-04'}
           >
-            {item}
+            {tab.label}
           </Text>
         </Flex>
       ))}

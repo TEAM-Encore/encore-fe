@@ -55,10 +55,10 @@ export const MOCK = [
   },
 ]
 
-const sorts = ['인기순', '최신순']
+const tabs = [{ label: '인기순', value: 'likes' }, { label: '최신순', value: 'createdAt' }]
 
 export default function ReviewStep() {
-  const [sort, setSort] = useState('인기순')
+  const [sort, setSort] = useState<typeof tabs[number]['value']>(tabs[0].value)
 
   const flatListRef = useRef<FlatList>(null)
 
@@ -69,7 +69,7 @@ export default function ReviewStep() {
 
   return (
     <>
-      <SortSelector data={sorts} value={sort} onChange={setSort} />
+      <SortSelector tabs={tabs} value={sort} onChange={setSort} />
       <Spacing size={1} />
       <FlatList
         data={MOCK}

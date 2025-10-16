@@ -26,7 +26,7 @@ export default function AddReviewBottomSheet({
   return (
     <BottomSheet.Root isOpen close={onClose}>
       <BottomSheet.Content className="z-[9999]">
-        <Row justify="center" align="center" className="py-5">
+        <Row center className="py-5">
           <Text variant="subhead-04" color="gray-01">
             추가하기
           </Text>
@@ -84,7 +84,7 @@ export default function AddReviewBottomSheet({
           </Col>
           <ArrowRight width={24} height={24} color="#FBFBFB" />
         </Row>
-        <Row align="center" justify="center" className="px-5 py-4">
+        <Row center className="px-5 py-4">
           <Button onPress={onClose}>확인</Button>
         </Row>
       </BottomSheet.Content>
