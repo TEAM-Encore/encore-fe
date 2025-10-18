@@ -1,10 +1,10 @@
-import { View } from 'react-native'
-import { useRouter } from 'expo-router'
+import { Button } from '@/components/Button'
 import { Screen } from '@/components/common/ui/Screen'
+import { Text } from '@/components/common/ui/Text'
 import { StepHeader } from '@/components/StepHeader'
 import { StepIndicator } from '@/components/StepIndicator'
-import { Button } from '@/components/Button'
-import { Text } from '@/components/common/ui/Text'
+import { useRouter } from 'expo-router'
+import { View } from 'react-native'
 
 export default function ReviewWriteStep3() {
   const router = useRouter()
@@ -22,10 +22,11 @@ export default function ReviewWriteStep3() {
         currentStep={3}
         totalSteps={6}
         instruction="3단계 - 구현 예정"
+        className="my-7"
       />
 
       <View className="flex-1 items-center justify-center">
-        <Text className="text-white text-center mb-8">
+        <Text className="mb-8 text-center text-white">
           3단계 페이지입니다.{'\n'}아직 구현되지 않았습니다.
         </Text>
       </View>

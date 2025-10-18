@@ -4,7 +4,6 @@ import { Text } from '@/components/common/ui/Text'
 import { StepHeader } from '@/components/StepHeader'
 import { StepIndicator } from '@/components/StepIndicator'
 import { useRouter } from 'expo-router'
-import React from 'react'
 import { View } from 'react-native'
 
 export default function ReviewWriteStep2() {
@@ -23,10 +22,11 @@ export default function ReviewWriteStep2() {
         currentStep={2}
         totalSteps={6}
         instruction="2단계 - 구현 예정"
+        className="my-7"
       />
 
       <View className="flex-1 items-center justify-center">
-        <Text className="text-white text-center mb-8">
+        <Text className="mb-8 text-center text-white">
           2단계 페이지입니다.{'\n'}아직 구현되지 않았습니다.
         </Text>
       </View>
