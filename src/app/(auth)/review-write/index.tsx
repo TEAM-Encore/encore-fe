@@ -110,9 +110,8 @@ export default function ReviewWritePage() {
             onPress={() => handleTicketSelect(item.id)}
           />
         )}
-        ItemSeparatorComponent={() => <View className="h-5" />}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={{ flexGrow: 1, gap: 20 }}
       />
     </Screen>
   )
