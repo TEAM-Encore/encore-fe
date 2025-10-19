@@ -8,6 +8,7 @@ import { FlatList, Image, StyleSheet } from 'react-native';
 import { PointItem } from '../_components/PointItem';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
 
 const MOCK = [
   {
@@ -124,6 +125,7 @@ export default function Point() {
         align="center"
         justify="space-between"
         className="absolute bottom-[23px] z-[9998] p-[14px] bg-gray-10 mx-5 w-full rounded-[10px]"
+        onPress={() => router.push('/mypage/point/guide')}
       >
         <Col>
           <Text variant="caption" color="gray-03">포인트가 궁금해요!</Text>

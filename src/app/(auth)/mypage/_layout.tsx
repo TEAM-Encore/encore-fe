@@ -5,6 +5,7 @@ export default function Layout() {
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="point" options={{ headerShown: false }} />
+      <Stack.Screen name="point/guide" options={{ headerShown: false }} />
     </Stack>
   )
 }
