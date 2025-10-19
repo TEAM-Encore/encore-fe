@@ -3,13 +3,15 @@ import { View } from 'react-native'
 import { Icon } from './common/icons/Icon'
 import { Flex, Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
+import { cn } from '@/utils/cn'
 
 export function Header({
   children,
   progress,
-}: PropsWithStrictChildren<{ progress?: number }>) {
+  className,
+}: PropsWithStrictChildren<{ progress?: number, className?: string }>) {
   return (
-    <Row align="center" className="relative h-[70px] px-5">
+    <Row align="center" className={cn("relative h-[70px] px-5", className)}>
       {children}
       {progress !== undefined && <Progress progress={progress} />}
     </Row>

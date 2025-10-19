@@ -3,10 +3,10 @@ import { Search } from '@/components/search/Search';
 import { useState } from 'react';
 import { ReviewCard } from '@/components/ReviewCard';
 import { FlatList } from 'react-native';
-import { router } from 'expo-router';
 import { Text } from '@/components/common/ui/Text';
 import { Col, Flex, Row } from '@/components/common/ui/Flex';
 import { Icon } from '@/components/common/icons/Icon';
+import { Header } from '@/components/Header';
 
 const MOCK = ['알라딘', '레미제라블', '오페라의 유령', '캣츠'];
 
@@ -53,19 +53,9 @@ export default function Index() {
     <Screen
       className='!px-0'
       header={
-        <Row
-          align='center'
-          justify='space-between'
-          className='w-full py-[13px] pr-5 pl-3'
-          gap={8}
-        >
-          <Icon
-            name='ArrowLeft'
-            size={24}
-            color='#FBFBFB'
-            onPress={() => router.back()}
-          />
-          <Row className='flex-1 h-[36px]'>
+        <Header className='pr-5 pl-3'>
+          <Header.Back />
+          <Row className='ml-2 flex-1 h-[36px]'>
             <Search
               placeholder='공연 제목'
               value={searchValue}
@@ -75,7 +65,7 @@ export default function Index() {
               onEndEditing={() => setIsSearching(true)}
             />
           </Row>
-        </Row>
+        </Header>
       }
     >
       <Col className='w-full'>
