@@ -18,7 +18,6 @@ export default function PointGuide() {
       }
     >
       <ScrollView
-        contentContainerClassName='px-5'
         contentContainerStyle={{ paddingBottom: 38 }}
       >
         <Spacing size={32} />
