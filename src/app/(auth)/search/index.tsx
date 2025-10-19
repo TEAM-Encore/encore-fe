@@ -1,14 +1,14 @@
-import { Screen } from '@/components/common/ui/Screen';
-import { Search } from '@/components/search/Search';
-import { useState } from 'react';
-import { ReviewCard } from '@/components/ReviewCard';
-import { FlatList } from 'react-native';
-import { Text } from '@/components/common/ui/Text';
-import { Col, Flex, Row } from '@/components/common/ui/Flex';
-import { Icon } from '@/components/common/icons/Icon';
-import { Header } from '@/components/Header';
+import { useState } from 'react'
+import { FlatList } from 'react-native'
+import { Icon } from '@/components/common/icons/Icon'
+import { Col, Flex, Row } from '@/components/common/ui/Flex'
+import { Screen } from '@/components/common/ui/Screen'
+import { Text } from '@/components/common/ui/Text'
+import { Header } from '@/components/Header'
+import { ReviewCard } from '@/components/ReviewCard'
+import { Search } from '@/components/search/Search'
 
-const MOCK = ['알라딘', '레미제라블', '오페라의 유령', '캣츠'];
+const MOCK = ['알라딘', '레미제라블', '오페라의 유령', '캣츠']
 
 const RESULT_MOCK = [
   {
@@ -43,64 +43,54 @@ const RESULT_MOCK = [
     author: '공연덕후',
     likes: 30,
   },
-];
+]
 
 export default function Index() {
-  const [searchValue, setSearchValue] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const [searchValue, setSearchValue] = useState('')
+  const [isSearching, setIsSearching] = useState(false)
 
   return (
     <Screen
-      className='!px-0'
+      className="!px-0"
       header={
-        <Header className='pr-5 pl-3'>
+        <Header className="pr-5 pl-3">
           <Header.Back />
-          <Row className='ml-2 flex-1 h-[36px]'>
+          <Row className="ml-2 h-[36px] flex-1">
             <Search
-              placeholder='공연 제목'
+              placeholder="공연 제목"
               value={searchValue}
               onChangeText={setSearchValue}
               onDelete={() => setSearchValue('')}
-              className='w-full !h-[36px] !text-[14px] placeholder:!text-gray-07 !py-[9px]'
+              className="!h-[36px] !text-[14px] placeholder:!text-gray-07 !py-[9px] w-full"
               onEndEditing={() => setIsSearching(true)}
             />
           </Row>
         </Header>
       }
     >
-      <Col className='w-full'>
+      <Col className="w-full">
         {isSearching ? (
           <FlatList
             data={RESULT_MOCK}
             renderItem={({ item }) => (
-              <ReviewCard
-                {...item}
-                className='!p-4 !w-full'
-              />
+              <ReviewCard {...item} className="!p-4 !w-full" />
             )}
-            contentContainerClassName='mt-3 gap-5 px-5'
+            contentContainerClassName="mt-3 gap-5 px-5"
           />
         ) : (
           <Col>
-            {MOCK.map(searchKey => (
+            {MOCK.map((searchKey) => (
               <Row
                 key={searchKey}
-                align='center'
-                justify='space-between'
-                className='py-[17px] px-5 border-b border-b-gray-09'
+                align="center"
+                justify="space-between"
+                className="border-b border-b-gray-09 px-5 py-[17px]"
               >
-                <Text
-                  color='gray-01'
-                  className='text-[16px] font-normal'
-                >
+                <Text color="gray-01" className="font-normal text-[16px]">
                   {searchKey}
                 </Text>
                 <Flex>
-                  <Icon
-                    name='Close'
-                    size={24}
-                    color='#FBFBFB'
-                  />
+                  <Icon name="Close" size={24} color="#FBFBFB" />
                 </Flex>
               </Row>
             ))}
@@ -108,5 +98,5 @@ export default function Index() {
         )}
       </Col>
     </Screen>
-  );
+  )
 }
