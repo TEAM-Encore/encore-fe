@@ -4,6 +4,7 @@ import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { cn } from '@/utils/cn'
+import { Spacing } from './common/ui/Spacing'
 
 type ReviewCardProps = {
   title: string
@@ -39,7 +40,7 @@ export function ReviewCard({
         className,
       )}
     >
-      <View className="h-[92px] w-[66px] overflow-hidden rounded-[12px] bg-white/5">
+      {posterUrl && <View className="h-[92px] w-[66px] overflow-hidden rounded-[12px] bg-white/5">
         {posterUrl ? (
           <Image
             source={posterUrl}
@@ -47,9 +48,9 @@ export function ReviewCard({
             resizeMode="cover"
           />
         ) : null}
-      </View>
-
-      <Col className="ml-[16px] flex-1">
+      </View>}
+      {posterUrl && <Spacing size={16} />}
+      <Col className="flex-1">
         <Text
           variant="subhead-03"
           className={cn(active ? 'text-gray-12' : 'text-gray-01')}
