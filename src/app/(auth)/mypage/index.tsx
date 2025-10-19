@@ -4,13 +4,13 @@ import MypageHeader from './_components/MypageHeader';
 import { Col } from '@/components/common/ui/Flex';
 import { Avatar } from '@/components/Avatar';
 import { Spacing } from '@/components/common/ui/Spacing';
-import { MypageSection } from './_components/MypageSection';
+import { MypageSection, MypageSectionItem } from './_components/MypageSection';
 import { ScrollView } from 'react-native';
 
-const MOCK = {
+const MOCK: Record<string, MypageSectionItem[]> = {
   account: [
     { label: '계정 관리', href: '/mypage/account' },
-    { label: '프로필 수정', href: '/mypage/profile' },
+    { label: '프로필 수정', href: '/mypage/account/profile' },
     { label: '작성글', href: '/mypage/reviews' },
     { label: '좋아요 목록', href: '/mypage/likes' },
   ],
@@ -60,8 +60,7 @@ export default function Index() {
           />
           <MypageSection
 						title='앱 정보'
-						items={[{ label: '앱 버전', href: "" }]}
-            version={MOCK.appInfo[0].value}
+						items={MOCK.appInfo}
           />
         </Col>
       </ScrollView>
