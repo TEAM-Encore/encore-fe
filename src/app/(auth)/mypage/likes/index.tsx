@@ -1,10 +1,10 @@
-import { REVIEW_MOCK } from '@/app/_components/ReviewStep';
-import { Screen } from '@/components/common/ui/Screen';
-import { Header } from '@/components/Header';
-import { ReviewCard } from '@/components/ReviewCard';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { FlatList } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient'
+import { FlatList } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { REVIEW_MOCK } from '@/app/_components/ReviewStep'
+import { Screen } from '@/components/common/ui/Screen'
+import { Header } from '@/components/Header'
+import { ReviewCard } from '@/components/ReviewCard'
 
 export default function Reviews() {
   const insets = useSafeAreaInsets()
@@ -20,15 +20,10 @@ export default function Reviews() {
     >
       <FlatList
         data={REVIEW_MOCK}
-        contentContainerClassName='gap-5 py-6'
+        contentContainerClassName="gap-5 py-6"
         showsVerticalScrollIndicator={false}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <ReviewCard
-            {...item}
-            hideImage
-          />
-        )}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <ReviewCard {...item} hideImage />}
       />
       <LinearGradient
         colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.1)', '#000000']}
@@ -44,5 +39,5 @@ export default function Reviews() {
         }}
       />
     </Screen>
-  );
+  )
 }

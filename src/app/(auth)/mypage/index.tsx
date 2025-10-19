@@ -1,11 +1,14 @@
-import { Screen } from '@/components/common/ui/Screen';
-import { Text } from '@/components/common/ui/Text';
-import MypageHeader from './_components/MypageHeader';
-import { Col } from '@/components/common/ui/Flex';
-import { Avatar } from '@/components/Avatar';
-import { Spacing } from '@/components/common/ui/Spacing';
-import { MypageSection, MypageSectionItem } from './_components/MypageSection';
-import { ScrollView } from 'react-native';
+import { ScrollView } from 'react-native'
+import { Avatar } from '@/components/Avatar'
+import { Col } from '@/components/common/ui/Flex'
+import { Screen } from '@/components/common/ui/Screen'
+import { Spacing } from '@/components/common/ui/Spacing'
+import { Text } from '@/components/common/ui/Text'
+import MypageHeader from './_components/MypageHeader'
+import {
+  MypageSection,
+  type MypageSectionItem,
+} from './_components/MypageSection'
 
 const MOCK: Record<string, MypageSectionItem[]> = {
   account: [
@@ -29,41 +32,28 @@ const MOCK: Record<string, MypageSectionItem[]> = {
     },
   ],
   appInfo: [{ label: '앱 버전', value: '1.0.0' }],
-};
+}
 
 export default function Index() {
   return (
     <Screen header={<MypageHeader />} className="px-0">
-      <ScrollView contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 38 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 38 }}
+      >
         <Spacing size={21} />
-        <Col
-          gap={20}
-          center
-        >
+        <Col gap={20} center>
           <Avatar hideCameraIcon />
-          <Text
-            variant='subhead-04'
-            color='gray-01'
-          >
+          <Text variant="subhead-04" color="gray-01">
             뮤사랑
           </Text>
         </Col>
         <Spacing size={10} />
         <Col gap={42}>
-          <MypageSection
-            title='내 계정'
-            items={MOCK.account}
-          />
-          <MypageSection
-            title='외부 링크'
-            items={MOCK.externalLinks}
-          />
-          <MypageSection
-						title='앱 정보'
-						items={MOCK.appInfo}
-          />
+          <MypageSection title="내 계정" items={MOCK.account} />
+          <MypageSection title="외부 링크" items={MOCK.externalLinks} />
+          <MypageSection title="앱 정보" items={MOCK.appInfo} />
         </Col>
       </ScrollView>
     </Screen>
-  );
+  )
 }

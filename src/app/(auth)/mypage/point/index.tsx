@@ -1,14 +1,14 @@
-import { Icon } from '@/components/common/icons/Icon';
-import { Col, Flex, Row } from '@/components/common/ui/Flex';
-import { Screen } from '@/components/common/ui/Screen';
-import { Spacing } from '@/components/common/ui/Spacing';
-import { Text } from '@/components/common/ui/Text';
-import { Header } from '@/components/Header';
-import { FlatList, Image, StyleSheet } from 'react-native';
-import { PointItem } from '../_components/PointItem';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient'
+import { router } from 'expo-router'
+import { FlatList, Image, StyleSheet } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Icon } from '@/components/common/icons/Icon'
+import { Col, Flex, Row } from '@/components/common/ui/Flex'
+import { Screen } from '@/components/common/ui/Screen'
+import { Spacing } from '@/components/common/ui/Spacing'
+import { Text } from '@/components/common/ui/Text'
+import { Header } from '@/components/Header'
+import { PointItem } from '../_components/PointItem'
 
 const MOCK = [
   {
@@ -51,7 +51,7 @@ const MOCK = [
     date: '2024-10-12T15:45:00',
     point: '-10',
   },
-];
+]
 
 export default function Point() {
   const insets = useSafeAreaInsets()
@@ -69,34 +69,21 @@ export default function Point() {
       <Spacing size={28} />
       <Col
         gap={8}
-        justify='center'
-        className='relative w-full h-[129px] bg-gray-10 rounded-lg pl-5'
+        justify="center"
+        className="relative h-[129px] w-full rounded-lg bg-gray-10 pl-5"
       >
-        <Text
-          variant='subhead-03'
-          color='gray-01'
-        >
+        <Text variant="subhead-03" color="gray-01">
           보유 포인트
         </Text>
-        <Row
-          gap={7}
-          align='center'
-        >
-          <Icon
-            name='Point'
-            size={24}
-            color='#FBFBFB'
-          />
-          <Text
-            variant='display-02'
-            color='gray-01'
-          >
+        <Row gap={7} align="center">
+          <Icon name="Point" size={24} color="#FBFBFB" />
+          <Text variant="display-02" color="gray-01">
             15
           </Text>
         </Row>
         <Flex
           style={styles.image}
-          className='absolute w-[180px] h-[100px] rounded-lg -right-1.5 bottom-1.5'
+          className="-right-1.5 absolute bottom-1.5 h-[100px] w-[180px] rounded-lg"
         >
           <Image source={require('@/assets/images/point-bg.png')} />
         </Flex>
@@ -124,20 +111,29 @@ export default function Point() {
       <Row
         align="center"
         justify="space-between"
-        className="absolute bottom-[23px] z-[9998] p-[14px] bg-gray-10 mx-5 w-full rounded-[10px]"
+        className="absolute bottom-[23px] z-[9998] mx-5 w-full rounded-[10px] bg-gray-10 p-[14px]"
         onPress={() => router.push('/mypage/point/guide')}
       >
         <Col>
-          <Text variant="caption" color="gray-03">포인트가 궁금해요!</Text>
-          <Text variant="subhead-03" color="gray-03">포인트 안내 페이지</Text>
+          <Text variant="caption" color="gray-03">
+            포인트가 궁금해요!
+          </Text>
+          <Text variant="subhead-03" color="gray-03">
+            포인트 안내 페이지
+          </Text>
         </Col>
-        <Icon name="ArrowLeft" size={24} color="#FBFBFB" className="rotate-180" />
+        <Icon
+          name="ArrowLeft"
+          size={24}
+          color="#FBFBFB"
+          className="rotate-180"
+        />
       </Row>
     </Screen>
-  );
+  )
 }
 const styles = StyleSheet.create({
   image: {
     mixBlendMode: 'screen',
   },
-});
+})
