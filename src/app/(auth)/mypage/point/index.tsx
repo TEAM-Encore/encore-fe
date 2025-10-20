@@ -76,7 +76,7 @@ export default function Point() {
           보유 포인트
         </Text>
         <Row gap={7} align="center">
-          <Icon name="Point" size={24} color="#FBFBFB" />
+          <Icon name="Point" size={24} className="text-gray-01" />
           <Text variant="display-02" color="gray-01">
             15
           </Text>
@@ -122,12 +122,7 @@ export default function Point() {
             포인트 안내 페이지
           </Text>
         </Col>
-        <Icon
-          name="ArrowLeft"
-          size={24}
-          color="#FBFBFB"
-          className="rotate-180"
-        />
+        <Icon name="ArrowLeft" size={24} className="rotate-180 text-gray-01" />
       </Row>
     </Screen>
   )

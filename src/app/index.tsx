@@ -14,11 +14,16 @@ import ReviewStep from './_components/ReviewStep'
 import TicketbookStep from './_components/TicketbookStep'
 import { LogoText } from './(auth)/login/components/LogoText'
 
-const tabs = [{ label: '후기글', value: 'review' }, { label: '티켓북', value: 'ticketbook' }]
+const tabs = [
+  { label: '후기글', value: 'review' },
+  { label: '티켓북', value: 'ticketbook' },
+]
 
 export default function Index() {
   const router = useRouter()
-  const [selected, setSelected] = useState<typeof tabs[number]['value']>(tabs[0].value)
+  const [selected, setSelected] = useState<(typeof tabs)[number]['value']>(
+    tabs[0].value,
+  )
 
   const translateX = useSharedValue(0)
   const insets = useSafeAreaInsets()
@@ -40,10 +45,10 @@ export default function Index() {
           <LogoText height={28} width={66.5} />
           <Row align="center" gap={12}>
             <Flex onPress={() => router.push('/search')}>
-              <Search width={20} height={20} color="#FBFBFB" />
+              <Search width={20} height={20} className="text-gray-01" />
             </Flex>
             <Flex onPress={() => router.push('/mypage')}>
-              <UserLinear width={24} height={24} color="#FBFBFB" />
+              <UserLinear width={24} height={24} className="text-gray-01" />
             </Flex>
           </Row>
         </Row>

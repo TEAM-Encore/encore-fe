@@ -2,6 +2,7 @@ import { type Href, router } from 'expo-router'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
+import { cn } from '@/utils/cn'
 
 export interface MypageSectionItem {
   label: string
@@ -29,7 +30,10 @@ export function MypageSection({ title, items }: MypageSectionProps) {
             key={sectionItem.label}
             align="center"
             justify="space-between"
-            className={`px-5 py-[13px] ${index !== items.length - 1 ? 'border-gray-09 border-b' : ''}`}
+            className={cn(
+              'px-5 py-[13px]',
+              index !== items.length - 1 ? 'border-gray-09 border-b' : '',
+            )}
             onPress={() => {
               if (sectionItem.href) {
                 router.push(sectionItem.href)
@@ -49,15 +53,18 @@ export function MypageSection({ title, items }: MypageSectionProps) {
                 {sectionItem.label}
               </Text>
               {title === '외부 링크' && (
-                <Icon name="ExternalLink" size={18.5} color="#FBFBFB" />
+                <Icon
+                  name="ExternalLink"
+                  size={18.5}
+                  className="text-gray-01"
+                />
               )}
             </Row>
             {title === '내 계정' && (
               <Icon
                 name="ArrowLeft"
                 size={24}
-                color="#FBFBFB"
-                className="rotate-180"
+                className="rotate-180 text-gray-01"
               />
             )}
             {sectionItem.value && (

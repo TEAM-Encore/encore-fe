@@ -40,7 +40,7 @@ export default function AddReviewBottomSheet({
             onClose()
           }}
         >
-          <Ticket width={36} height={36} color="#FBFBFB" />
+          <Ticket width={36} height={36} className="text-gray-01" />
           <Col className="flex-1">
             <Text variant="subhead-03" color="gray-01">
               티켓 내역 추가
@@ -49,7 +49,7 @@ export default function AddReviewBottomSheet({
               티켓을 추가해야 후기를 작성할 수 있어요!
             </Text>
           </Col>
-          <ArrowRight width={24} height={24} color="#FBFBFB" />
+          <ArrowRight width={24} height={24} className="text-gray-01" />
         </Row>
         <Row
           gap={15}
@@ -73,7 +73,7 @@ export default function AddReviewBottomSheet({
             ))
           }}
         >
-          <Edit width={36} height={36} color="#FBFBFB" />
+          <Edit width={36} height={36} className="text-gray-01" />
           <Col className="flex-1">
             <Text variant="subhead-03" color="gray-01">
               후기글 추가
@@ -82,7 +82,7 @@ export default function AddReviewBottomSheet({
               체계적인 가이드와 함께 기록을 남겨보세요!
             </Text>
           </Col>
-          <ArrowRight width={24} height={24} color="#FBFBFB" />
+          <ArrowRight width={24} height={24} className="text-gray-01" />
         </Row>
         <Row center className="px-5 py-4">
           <Button onPress={onClose}>확인</Button>
