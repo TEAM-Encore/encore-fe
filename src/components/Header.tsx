@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router'
 import { View } from 'react-native'
+import { cn } from '@/utils/cn'
 import { Icon } from './common/icons/Icon'
 import { Flex, Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
@@ -7,9 +8,10 @@ import { Text } from './common/ui/Text'
 export function Header({
   children,
   progress,
-}: PropsWithStrictChildren<{ progress?: number }>) {
+  className,
+}: PropsWithStrictChildren<{ progress?: number; className?: string }>) {
   return (
-    <Row align="center" className="relative h-[70px] px-5">
+    <Row align="center" className={cn('relative h-[70px] px-5', className)}>
       {children}
       {progress !== undefined && <Progress progress={progress} />}
     </Row>
@@ -35,9 +37,12 @@ function Left({ children }: PropsWithStrictChildren) {
   )
 }
 
-function Right({ children }: PropsWithStrictChildren) {
+function Right({
+  children,
+  className,
+}: PropsWithStrictChildren<{ className?: string }>) {
   return (
-    <Flex align="center" gap={12} className="z-10 ml-auto">
+    <Flex align="center" gap={12} className={cn('z-10 ml-auto', className)}>
       {children}
     </Flex>
   )
