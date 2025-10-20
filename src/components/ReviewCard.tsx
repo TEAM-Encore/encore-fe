@@ -1,5 +1,4 @@
-import React from 'react'
-import { Image, ImageSourcePropType, View } from 'react-native'
+import { Image, type ImageSourcePropType, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
@@ -15,6 +14,7 @@ type ReviewCardProps = {
   onPress?: () => void
   className?: string
   active?: boolean
+  hideImage?: boolean
 }
 
 export function ReviewCard({
@@ -26,6 +26,7 @@ export function ReviewCard({
   onPress,
   className,
   active = false,
+  hideImage = false,
 }: ReviewCardProps) {
   return (
     <Flex
@@ -40,16 +41,19 @@ export function ReviewCard({
         className,
       )}
     >
-      {posterUrl && <View className="h-[92px] w-[66px] overflow-hidden rounded-[12px] bg-white/5">
-        {posterUrl ? (
-          <Image
-            source={posterUrl}
-            className="h-full w-full"
-            resizeMode="cover"
-          />
-        ) : null}
-      </View>}
-      {posterUrl && <Spacing size={16} />}
+      {!hideImage && (
+        <View className="h-[92px] w-[66px] overflow-hidden rounded-[12px] bg-white/5">
+          {posterUrl ? (
+            <Image
+              source={posterUrl}
+              className="h-full w-full"
+              resizeMode="cover"
+            />
+          ) : null}
+        </View>
+      )}
+
+      {!hideImage && <Spacing size={16} />}
       <Col className="flex-1">
         <Text
           variant="subhead-03"
