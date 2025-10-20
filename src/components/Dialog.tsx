@@ -5,7 +5,7 @@ import { Text } from './common/ui/Text'
 
 type DialogProps = OverlayProps & {
   title: string
-  description: string
+  description?: string
   top: string
   bottom: string
   onTopPress?: VoidFunction

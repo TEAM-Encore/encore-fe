@@ -3,7 +3,8 @@ import { cn } from '@/utils/cn'
 import { Text } from './common/ui/Text'
 
 export type ButtonProps = React.ComponentProps<typeof Pressable> & {
-  children?: React.ReactNode | string | number
+  children?: React.ReactNode | string | number;
+  textClassName?: string;
 }
 
 export function Button({
@@ -11,6 +12,7 @@ export function Button({
   className,
   disabled = false,
   children,
+  textClassName,
   ...props
 }: ButtonProps) {
   return (
@@ -32,6 +34,7 @@ export function Button({
           className={cn(
             'font-semibold text-[18px]',
             disabled ? 'text-sub-white' : 'text-gray-12',
+            textClassName,
           )}
         >
           {children}

@@ -4,7 +4,7 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
 import { SortSelector } from './SortSelector'
 
-export const MOCK = [
+export const REVIEW_MOCK = [
   {
     id: '1',
     title: '5년차 찐 뮤덕의 알라딘 후기',
@@ -77,7 +77,7 @@ export default function ReviewStep() {
       <SortSelector tabs={tabs} value={sort} onChange={setSort} />
       <Spacing size={1} />
       <FlatList
-        data={MOCK}
+        data={REVIEW_MOCK}
         ref={flatListRef}
         contentContainerClassName="px-5 gap-5 pb-6"
         keyExtractor={(item) => item.id}

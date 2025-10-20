@@ -19,12 +19,14 @@ export function Avatar({ source, onUpload }: AvatarProps) {
       ) : (
         <Icon name="AvatarPlaceholder" size={88} />
       )}
-      <Flex
-        center
-        className="-bottom-1 -right-1 absolute size-[28px] rounded-full bg-gray-09"
-      >
-        <Icon name="Camera" size={16} className="text-white" />
-      </Flex>
+      {!!onUpload && (
+        <Flex
+          center
+          className="-bottom-1 -right-1 absolute size-[28px] rounded-full bg-gray-09"
+        >
+          <Icon name="Camera" size={16} className="text-white" />
+        </Flex>
+      )}
     </Pressable>
   )
 }
