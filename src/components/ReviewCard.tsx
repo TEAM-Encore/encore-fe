@@ -14,7 +14,6 @@ type ReviewCardProps = {
   onPress?: () => void
   className?: string
   active?: boolean
-  hideImage?: boolean
 }
 
 export function ReviewCard({
@@ -26,7 +25,6 @@ export function ReviewCard({
   onPress,
   className,
   active = false,
-  hideImage = false,
 }: ReviewCardProps) {
   return (
     <Flex
@@ -41,7 +39,7 @@ export function ReviewCard({
         className,
       )}
     >
-      {!hideImage && (
+      {posterUrl && (
         <View className="h-[92px] w-[66px] overflow-hidden rounded-[12px] bg-white/5">
           {posterUrl ? (
             <Image
@@ -53,7 +51,7 @@ export function ReviewCard({
         </View>
       )}
 
-      {!hideImage && <Spacing size={16} />}
+      {posterUrl && <Spacing size={16} />}
       <Col className="flex-1">
         <Text
           variant="subhead-03"

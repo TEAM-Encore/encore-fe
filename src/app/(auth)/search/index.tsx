@@ -73,7 +73,7 @@ export default function Index() {
           <FlatList
             data={RESULT_MOCK}
             renderItem={({ item }) => (
-              <ReviewCard {...item} className="!p-4 !w-full" hideImage />
+              <ReviewCard {...item} className="!p-4 !w-full" />
             )}
             contentContainerClassName="mt-3 gap-5 px-5"
           />
