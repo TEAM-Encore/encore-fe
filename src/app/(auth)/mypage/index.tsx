@@ -36,24 +36,20 @@ const MOCK: Record<string, MypageSectionItem[]> = {
 
 export default function Index() {
   return (
-    <Screen header={<MypageHeader />} className="px-0">
-      <ScrollView
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 38 }}
-      >
-        <Spacing size={21} />
-        <Col gap={20} center>
-          <Avatar hideCameraIcon />
-          <Text variant="subhead-04" color="gray-01">
-            뮤사랑
-          </Text>
-        </Col>
-        <Spacing size={10} />
-        <Col gap={42}>
-          <MypageSection title="내 계정" items={MOCK.account} />
-          <MypageSection title="외부 링크" items={MOCK.externalLinks} />
-          <MypageSection title="앱 정보" items={MOCK.appInfo} />
-        </Col>
-      </ScrollView>
+    <Screen header={<MypageHeader />} scrollable>
+      <Spacing size={21} />
+      <Col gap={20} center>
+        <Avatar />
+        <Text variant="subhead-04" color="gray-01">
+          뮤사랑
+        </Text>
+      </Col>
+      <Spacing size={10} />
+      <Col gap={42}>
+        <MypageSection title="내 계정" items={MOCK.account} />
+        <MypageSection title="외부 링크" items={MOCK.externalLinks} />
+        <MypageSection title="앱 정보" items={MOCK.appInfo} />
+      </Col>
     </Screen>
   )
 }
