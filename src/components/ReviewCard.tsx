@@ -1,9 +1,9 @@
-import React from 'react'
 import { Image, type ImageSourcePropType, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { cn } from '@/utils/cn'
+import { Spacing } from './common/ui/Spacing'
 
 type ReviewCardProps = {
   title: string
@@ -14,7 +14,6 @@ type ReviewCardProps = {
   onPress?: () => void
   className?: string
   active?: boolean
-  hideImage?: boolean
 }
 
 export function ReviewCard({
@@ -26,7 +25,6 @@ export function ReviewCard({
   onPress,
   className,
   active = false,
-  hideImage = false,
 }: ReviewCardProps) {
   return (
     <Flex
@@ -41,7 +39,7 @@ export function ReviewCard({
         className,
       )}
     >
-      {!hideImage && (
+      {posterUrl && (
         <View className="h-[92px] w-[66px] overflow-hidden rounded-[12px] bg-white/5">
           {posterUrl ? (
             <Image
@@ -53,7 +51,8 @@ export function ReviewCard({
         </View>
       )}
 
-      <Col className={cn('flex-1', hideImage ? '' : 'ml-[16px]')}>
+      {posterUrl && <Spacing size={16} />}
+      <Col className="flex-1">
         <Text
           variant="subhead-03"
           className={cn(active ? 'text-gray-12' : 'text-gray-01')}

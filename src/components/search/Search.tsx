@@ -22,7 +22,7 @@ export function Search({ className, onDelete, value, ...rest }: SearchProps) {
         placeholderClassName="text-[16px]"
         textAlignVertical="center"
         className={cn(
-          'h-[48px] w-full rounded-[8px] bg-gray-10 pl-[43px] text-[16px] text-gray-01',
+          'h-[48px] w-full rounded-[8px] bg-gray-10 px-[43px] text-[16px] text-gray-01',
           className,
         )}
         {...rest}

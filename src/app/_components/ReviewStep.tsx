@@ -55,10 +55,15 @@ export const REVIEW_MOCK = [
   },
 ]
 
-const tabs = [{ label: '인기순', value: 'likes' }, { label: '최신순', value: 'createdAt' }]
+const tabs = [
+  { label: '인기순', value: 'likes' },
+  { label: '최신순', value: 'createdAt' },
+]
 
 export default function ReviewStep() {
-  const [sort, setSort] = useState<typeof tabs[number]['value']>(tabs[0].value)
+  const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
+    tabs[0].value,
+  )
 
   const flatListRef = useRef<FlatList>(null)
 
@@ -76,7 +81,7 @@ export default function ReviewStep() {
         ref={flatListRef}
         contentContainerClassName="px-5 gap-5 pb-6"
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ReviewCard {...item} hideImage />}
+        renderItem={({ item }) => <ReviewCard {...item} />}
       />
     </>
   )
