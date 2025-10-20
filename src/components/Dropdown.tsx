@@ -81,8 +81,6 @@ function Content({
 
   if (!isOpen) return null
 
-  console.log(triggerLayout)
-
   return (
     <Modal transparent visible={isOpen} onRequestClose={close}>
       <Col
