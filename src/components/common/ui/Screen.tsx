@@ -1,3 +1,4 @@
+import { ScrollView } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { FixedBottomContainer } from '@/components/FixedBottom'
 import { type ColorKeys, colors } from '@/styles/color'
@@ -10,11 +11,13 @@ export function Screen({
   header,
   className,
   fixedButton,
+  scrollable,
 }: PropsWithStrictChildren<{
   header?: React.ReactNode
   bg?: ColorKeys
   className?: string
   fixedButton?: React.ReactNode
+  scrollable?: boolean
 }>) {
   const insets = useSafeAreaInsets()
 
@@ -29,9 +32,16 @@ export function Screen({
       }}
     >
       {header}
-      <Col style={{ flex: 1 }} className={cn('px-5', className)}>
-        {children}
-      </Col>
+      {scrollable ? (
+        <ScrollView contentContainerClassName={cn('px-5', className)}>
+          {children}
+        </ScrollView>
+      ) : (
+        <Col style={{ flex: 1 }} className={cn('px-5', className)}>
+          {children}
+        </Col>
+      )}
+
       {fixedButton && (
         <Row
           style={{

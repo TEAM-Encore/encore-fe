@@ -1,14 +1,15 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
-import { StatusBar, View } from 'react-native'
+import { Button, StatusBar, View } from 'react-native'
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Feather, Search, UserLinear } from '@/components/common/icons/svgs'
 import { Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Text } from '@/components/common/ui/Text'
+import { Dialog } from '@/components/Dialog'
 import AddReviewBottomSheet from './_components/AddReviewBottomSheet'
 import ReviewStep from './_components/ReviewStep'
 import TicketbookStep from './_components/TicketbookStep'
@@ -35,7 +36,6 @@ export default function Index() {
 
   return (
     <Screen className="px-0">
-      <StatusBar barStyle="default" />
       <View className="flex-1">
         <Row
           justify="space-between"
