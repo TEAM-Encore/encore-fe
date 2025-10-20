@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 
@@ -15,7 +16,7 @@ export function PointItem({ title, date, point }: PointItemProps) {
           {title}
         </Text>
         <Text variant="caption" className="text-[#6D6D6D]">
-          {date.split('T')[0].replaceAll('-', '/')}
+          {dayjs(date).format('YYYY/MM/DD')}
         </Text>
       </Col>
       <Text
