@@ -90,7 +90,7 @@ export default function Point() {
       </Col>
       <Spacing size={22} />
       <FlatList
-        contentContainerStyle={{ paddingBottom: 38, paddingRight: 4 }}
+        contentContainerStyle={{ paddingBottom: 108, paddingRight: 4 }}
         showsVerticalScrollIndicator={false}
         data={MOCK}
         renderItem={({ item }) => <PointItem {...item} />}
