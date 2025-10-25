@@ -75,7 +75,7 @@ export default function ReviewWritePage() {
                 top="확인"
                 bottom="취소"
                 onTopPress={() => {
-                  router.back()
+                  router.push('/')
                 }}
               />
             ))

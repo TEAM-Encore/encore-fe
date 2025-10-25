@@ -58,7 +58,7 @@ export default function ReviewWriteStep5() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          router.back()
+          router.push('/')
         }}
       />
     ))
