@@ -69,7 +69,7 @@ export default function ReviewWriteStep3() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          router.back()
+          router.push('/')
         }}
       />
     ))
