@@ -15,6 +15,11 @@ export const reviewWriteSchema = z.object({
     .string()
     .min(20, '20자 이상 입력해주세요.')
     .max(500, '500자 이내로 작성해주세요.'),
+  facilityQuality: z.enum(['GOOD', 'AVERAGE', 'POOR']),
+  facilityQualityReason: z
+    .string()
+    .min(20, '20자 이상 입력해주세요.')
+    .max(500, '500자 이내로 작성해주세요.'),
 })
 
 export type ReviewWriteFormType = z.infer<typeof reviewWriteSchema>
