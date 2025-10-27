@@ -7,11 +7,17 @@ function customFetch(
   return fetch(input, init)
 }
 
+let instance: Api<unknown>['api'] | null = null
+
 /**
  * 토큰 로직 추가 필요
  */
-const api = <T>(fetchFn: typeof fetch = customFetch): Api<T>['api'] => {
-  const instance = new Api({
+export const api = ((): Api<unknown>['api'] => {
+  if (instance) {
+    return instance
+  }
+
+  const __instance = new Api({
     baseUrl: process.env.EXPO_PUBLIC_API_HOST,
     baseApiParams: {
       format: 'json',
@@ -19,13 +25,12 @@ const api = <T>(fetchFn: typeof fetch = customFetch): Api<T>['api'] => {
       cache: 'no-store',
     },
     customFetch: async (input: RequestInfo | URL, init?: RequestInit) => {
-      const response = await fetchFn(input, init)
-
+      const response = await customFetch(input, init)
       return response
     },
   })
 
-  return instance.api
-}
+  instance = __instance.api as Api<unknown>['api']
 
-export { api }
+  return instance
+})()
