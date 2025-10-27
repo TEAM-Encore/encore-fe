@@ -10,7 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "icon": "tsx ./src/generate-icons.ts",
-    "icon:current": "tsx ./src/generate-icons.ts --current-color"
+    "icon:current": "tsx ./src/generate-icons.ts --current-color",
+    "genapi": "ts-node codegen/generate_api.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
@@ -22,6 +23,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.18",
+    "dotenv": "^17.2.3",
     "expo": "~53.0.20",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.7",
@@ -29,7 +31,7 @@
     "expo-haptics": "~14.1.4",
     "expo-image": "~2.4.0",
     "expo-image-picker": "^16.1.4",
-    "expo-linear-gradient": "^15.0.7",
+    "expo-linear-gradient": "~14.1.5",
     "expo-linking": "~7.1.7",
     "expo-router": "~5.1.4",
     "expo-splash-screen": "~0.30.10",
@@ -52,8 +54,7 @@
     "react-native-webview": "13.13.5",
     "tailwind-merge": "^3.3.1",
     "use-lilius": "^2.0.5",
-    "zod": "^4.0.17",
-    "expo-linear-gradient": "~14.1.5"
+    "zod": "^4.0.17"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -66,7 +67,9 @@
     "commander": "^14.0.0",
     "nativewind": "^4.1.23",
     "prettier": "^3.6.2",
+    "swagger-typescript-api": "^13.2.16",
     "tailwindcss": "^3.4.17",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.4",
     "typescript": "~5.8.3"
   },

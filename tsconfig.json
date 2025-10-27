@@ -1,17 +1,43 @@
 {
-  "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
     "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "paths": {
       "@/*": ["./src/*"],
-      "@/assets/*": ["./assets/*"]
+      "@/public/*": ["./public/*"],
+      "api": ["./codegen/__generated__/api_sdk"]
     }
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "nativewind-env.d.ts",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts",
-    "nativewind-env.d.ts"
-  ]
+    "expo-env.d.ts"
+  ],
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "extends": "expo/tsconfig.base"
 }
