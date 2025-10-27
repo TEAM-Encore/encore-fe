@@ -20,14 +20,15 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"],
       "@/public/*": ["./public/*"],
       "api": ["./codegen/__generated__/api_sdk"]
     }
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "/src/**/*.ts",
+    "/src/**/*.tsx",
     ".next/types/**/*.ts",
     "nativewind-env.d.ts",
     ".expo/types/**/*.ts",
