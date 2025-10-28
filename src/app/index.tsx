@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
