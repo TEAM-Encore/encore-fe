@@ -3,7 +3,7 @@ import { Icon } from '@/components/common/icons/Icon'
 import { Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 
-export function GalleryBottomSheet({ isOpen, close, unmount }: OverlayProps) {
+function GalleryBottomSheet({ isOpen, close, unmount }: OverlayProps) {
   return (
     <BottomSheet.Root
       isOpen={isOpen}
@@ -41,3 +41,5 @@ export function GalleryBottomSheet({ isOpen, close, unmount }: OverlayProps) {
     </BottomSheet.Root>
   )
 }
+
+export default GalleryBottomSheet

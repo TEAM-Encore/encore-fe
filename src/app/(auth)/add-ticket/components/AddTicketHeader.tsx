@@ -3,7 +3,7 @@ import { overlay } from 'overlay-kit'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
 
-export function AddTicketHeader({
+function AddTicketHeader({
   progress,
   onBack,
 }: {
@@ -36,3 +36,5 @@ export function AddTicketHeader({
     </Header>
   )
 }
+
+export default AddTicketHeader

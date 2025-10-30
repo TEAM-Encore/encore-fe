@@ -1,12 +1,12 @@
 import Svg, { Path } from 'react-native-svg'
 
-export const LogoText = ({
+function LogoText({
   height = 49,
   width = 115,
 }: {
   height?: number
   width?: number
-}) => {
+}) {
   return (
     <Svg width={width} height={height} viewBox="0 0 115 49" fill="none">
       <Path
@@ -24,3 +24,5 @@ export const LogoText = ({
     </Svg>
   )
 }
+
+export default LogoText

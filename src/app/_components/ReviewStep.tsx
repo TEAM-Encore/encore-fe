@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { FlatList } from 'react-native'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
-import { SortSelector } from './SortSelector'
+import SortSelector from './SortSelector'
 
 export const REVIEW_MOCK = [
   {

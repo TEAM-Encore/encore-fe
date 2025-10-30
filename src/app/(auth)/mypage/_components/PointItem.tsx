@@ -8,7 +8,7 @@ interface PointItemProps {
   point: string
 }
 
-export function PointItem({ title, date, point }: PointItemProps) {
+function PointItem({ title, date, point }: PointItemProps) {
   return (
     <Row align="center" className="border-b border-b-gray-09 py-[13px]">
       <Col gap={4} className="flex-1">
@@ -28,3 +28,5 @@ export function PointItem({ title, date, point }: PointItemProps) {
     </Row>
   )
 }
+
+export default PointItem

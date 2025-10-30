@@ -8,7 +8,7 @@ interface SortSelectorProps {
   onChange: (value: string) => void
 }
 
-export function SortSelector({ tabs, value, onChange }: SortSelectorProps) {
+function SortSelector({ tabs, value, onChange }: SortSelectorProps) {
   return (
     <Row gap={8} align="center" className="p-5">
       {tabs.map((tab) => (
@@ -34,3 +34,5 @@ export function SortSelector({ tabs, value, onChange }: SortSelectorProps) {
     </Row>
   )
 }
+
+export default SortSelector
