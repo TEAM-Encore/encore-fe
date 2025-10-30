@@ -36,7 +36,7 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
-                        router.replace('/')
+                        router.replace('/login')
                       }}
                     />
                   ),
@@ -56,7 +56,7 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
-                        router.replace('/')
+                        router.replace('/login')
                       }}
                     />
                   ),
