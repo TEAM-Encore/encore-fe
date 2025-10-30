@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "encore-fe",
-    "slug": "encore-fe",
+    "name": "encore",
+    "slug": "encore",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "encorefe",
+    "scheme": "encore",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -39,6 +39,12 @@
         {
           "photosPermission": "갤러리에 접근하기 위해 권한을 허용해주세요.",
           "cameraPermission": "카메라에 접근하기 위해 권한을 허용해주세요."
+        }
+      ],
+      [
+        "expo-web-browser",
+        {
+          "experimentalLauncherActivity": true
         }
       ]
     ],
