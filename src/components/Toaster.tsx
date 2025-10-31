@@ -1,13 +1,15 @@
 import { useSyncExternalStore } from 'react'
-import { Animated, View } from 'react-native'
-import { Flex } from './common/ui/Flex'
+import {
+  FadeInDown,
+  FadeOutUp,
+  LinearTransition,
+} from 'react-native-reanimated'
+import { Col, Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
 type Toast = {
   id: string
   text: string
-  duration?: number
-  animatedValue?: Animated.Value
 }
 
 type Action =
@@ -52,37 +54,21 @@ export const toast = {
     const newToast = {
       id: `toast-${Math.random().toString(36).slice(2, 10)}`,
       text,
-      duration: 2500,
-      animatedValue: new Animated.Value(0),
     }
 
     dispatch({ type: 'ADD', toast: newToast })
 
-    Animated.spring(newToast.animatedValue, {
-      toValue: 1,
-      useNativeDriver: true,
-      tension: 60,
-      friction: 10,
-    }).start()
-
     if (toastMemory.find((t) => t.id === newToast.id)) {
       setTimeout(() => {
         toast.remove(newToast.id)
-      }, newToast.duration)
+      }, 2500)
     }
   },
 
   remove: (id: string) => {
     const targetToRemove = toastMemory.find((t) => t.id === id)
-    if (targetToRemove?.animatedValue) {
-      Animated.timing(targetToRemove.animatedValue, {
-        toValue: 2,
-        duration: 200,
-        useNativeDriver: true,
-      }).start(() => {
-        dispatch({ type: 'REMOVE', id })
-      })
-    } else {
+
+    if (targetToRemove) {
       dispatch({ type: 'REMOVE', id })
     }
   },
@@ -102,36 +88,20 @@ export function Toaster() {
     () => toastMemory,
   )
 
-  if (!toasts.length) return null
-
   return (
-    <View className="absolute inset-x-0 bottom-16 z-modal mx-5 gap-0.5">
-      {toasts.map(({ id, text, animatedValue, duration }) => {
-        if (!animatedValue) return null
-
-        const opacity = animatedValue.interpolate({
-          inputRange: [0, 1, 2],
-          outputRange: [0, 1, 0],
-        })
-
-        const translateY = animatedValue.interpolate({
-          inputRange: [0, 1, 2],
-          outputRange: [50, 0, -20],
-        })
-
-        const scale = animatedValue.interpolate({
-          inputRange: [0, 1, 2],
-          outputRange: [0.95, 1, 1],
-        })
-
+    <Col
+      layout={LinearTransition}
+      pointerEvents="none"
+      className="absolute inset-x-0 bottom-16 z-modal mx-5 gap-0.5"
+    >
+      {toasts.map(({ id, text }) => {
         return (
-          <Flex
+          <Row
             key={id}
-            justify="center"
-            style={{
-              opacity,
-              transform: [{ translateY }, { scale }],
-            }}
+            align="center"
+            entering={FadeInDown}
+            exiting={FadeOutUp}
+            layout={LinearTransition}
             className="w-full gap-4 rounded-[10px] bg-gray-10 p-4"
           >
             {/* <Icon
@@ -141,10 +111,11 @@ export function Toaster() {
                   /> */}
             <Text variant="body-01" className="text-gray-01">
               {text}
+              {id}
             </Text>
-          </Flex>
+          </Row>
         )
       })}
-    </View>
+    </Col>
   )
 }

@@ -30,8 +30,7 @@
       },
       "suspicious": {
         "noArrayIndexKey": "off",
-        "useIterableCallbackReturn": "off",
-        "useConst": "off"
+        "useIterableCallbackReturn": "off"
       }
     }
   },
