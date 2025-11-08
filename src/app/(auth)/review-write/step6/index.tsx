@@ -4,6 +4,7 @@ import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
+import { InfoDialog } from '@/components/InfoDialog'
 import { RatingSlider } from '@/components/RatingSlider'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
@@ -73,7 +74,13 @@ export default function ReviewWriteStep6() {
   }
 
   const handleNumberHelp = () => {
-    // TODO: 넘버 설명 모달
+    overlay.open((ov) => (
+      <InfoDialog
+        {...ov}
+        title="넘버란?"
+        description="뮤지컬 넘버는 뮤지컬에서 사용되는 노래나 음악을 의미하며, 극의 전개와 인물의 감정을 전달하는 중요한 역할을 한다."
+      />
+    ))
   }
 
   const isFormValid = form.formState.isValid
