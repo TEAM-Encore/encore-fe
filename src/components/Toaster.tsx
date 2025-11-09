@@ -111,7 +111,6 @@ export function Toaster() {
                   /> */}
             <Text variant="body-01" className="text-gray-01">
               {text}
-              {id}
             </Text>
           </Row>
         )
