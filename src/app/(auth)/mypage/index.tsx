@@ -1,14 +1,11 @@
-import { ScrollView } from 'react-native'
 import { Avatar } from '@/components/Avatar'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import MypageHeader from './_components/MypageHeader'
-import {
-  MypageSection,
-  type MypageSectionItem,
-} from './_components/MypageSection'
+import type { MypageSectionItem } from './_components/MypageSection'
+import MypageSection from './_components/MypageSection'
 
 const MOCK: Record<string, MypageSectionItem[]> = {
   account: [
