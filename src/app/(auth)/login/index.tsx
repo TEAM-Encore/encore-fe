@@ -2,22 +2,58 @@ import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { Image, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { api } from '@/api'
 import { Col } from '@/components/common/ui/Flex'
 import { Text, type TextProps } from '@/components/common/ui/Text'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
+import { saveToken } from '@/lib/storage'
 import LoginButton from './components/LoginButton'
-import { LogoText } from './components/LogoText'
+import LogoText from './components/LogoText'
+
+const PROVIDER = {
+  KAKAO: 'KAKAO',
+  GOOGLE: 'GOOGLE',
+} as const
 
 const termsProps: TextProps = {
   color: 'gray-01',
   variant: 'caption',
 }
 
+WebBrowser.maybeCompleteAuthSession()
+
 export default function Index() {
   const insets = useSafeAreaInsets()
 
   const onOpenWebPage = async (url: string) => {
     await WebBrowser.openBrowserAsync(url)
+  }
+
+  const onLogin = async (
+    provider: (typeof PROVIDER)[keyof typeof PROVIDER],
+  ) => {
+    try {
+      const response = await api.getLoginUrl({ provider })
+      const url = response.url as string
+
+      const result = await WebBrowser.openAuthSessionAsync(
+        url,
+        'encore://oauth',
+      )
+
+      if (result.type === 'success') {
+        const parsed = new URL(result.url)
+        const token = parsed.searchParams.get('token')
+
+        if (token) {
+          await saveToken('accessToken', token).then(() =>
+            router.push('/login/profile-setup'),
+          )
+        }
+      }
+    } catch (error) {
+      console.error('로그인 실패:', error)
+    }
   }
 
   return (
@@ -45,13 +81,10 @@ export default function Index() {
 
         <Col gap={52} className="w-full">
           <Col gap={16} className="w-full">
-            <LoginButton
-              type="Kakao"
-              onPress={() => router.push('/login/profile-setup')}
-            />
+            <LoginButton type="Kakao" onPress={() => onLogin(PROVIDER.KAKAO)} />
             <LoginButton
               type="Google"
-              onPress={() => router.push('/login/profile-setup')}
+              onPress={() => onLogin(PROVIDER.GOOGLE)}
             />
           </Col>
           <Text {...termsProps} className="text-center">
