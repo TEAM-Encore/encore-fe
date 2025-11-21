@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient'
-import { Redirect, useRouter } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
@@ -12,7 +12,7 @@ import { Text } from '@/components/common/ui/Text'
 import AddReviewBottomSheet from './_components/AddReviewBottomSheet'
 import ReviewStep from './_components/ReviewStep'
 import TicketbookStep from './_components/TicketbookStep'
-import { LogoText } from './(auth)/login/components/LogoText'
+import LogoText from './(auth)/login/components/LogoText'
 
 const tabs = [
   { label: '후기글', value: 'review' },
