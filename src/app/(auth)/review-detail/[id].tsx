@@ -241,7 +241,7 @@ export default function ReviewDetail() {
               </Text>
 
               {/* 시야 이미지 */}
-              <View className="overflow-hidden rounded-lg bg-gray-10">
+              <View className="overflow-hidden rounded-lg">
                 <Image
                   source={{ uri: review.seatViewImage }}
                   style={{
