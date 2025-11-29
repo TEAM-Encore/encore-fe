@@ -23,7 +23,6 @@ export const colors = {
     alert: '#FF692D',
     black: '#000000',
     white: '#FFFFFF',
-    '04': '#FFDD56',
   },
 } as const
 
@@ -64,4 +63,3 @@ export type ColorKeys =
   | 'sub-alert'
   | 'sub-black'
   | 'sub-white'
-  | 'sub-04'
