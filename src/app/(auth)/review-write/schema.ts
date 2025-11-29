@@ -10,25 +10,8 @@ export const reviewWriteSchema = z.object({
     .string()
     .min(20, '20자 이상 입력해주세요.')
     .max(500, '500자 이내로 작성해주세요.'),
-  soundQuality: z.enum(['GOOD', 'AVERAGE', 'POOR']),
-  soundQualityReason: z
-    .string()
-    .min(20, '20자 이상 입력해주세요.')
-    .max(500, '500자 이내로 작성해주세요.'),
-  facilityQuality: z.enum(['GOOD', 'AVERAGE', 'POOR']),
-  facilityQualityReason: z
-    .string()
-    .min(20, '20자 이상 입력해주세요.')
-    .max(500, '500자 이내로 작성해주세요.'),
-  ratingNumber: z.number().min(1).max(5),
-  ratingStory: z.number().min(1).max(5),
-  ratingRewatch: z.number().min(1).max(5),
-  ratingActing: z.number().min(1).max(5),
-  ratingPerformance: z.number().min(1).max(5),
-  overallComment: z
-    .string()
-    .min(20, '20자 이상 입력해주세요.')
-    .max(500, '500자 이내로 작성해주세요.'),
+
+  // TODO: Step 4~6 추가 예정
 })
 
 export type ReviewWriteFormType = z.infer<typeof reviewWriteSchema>

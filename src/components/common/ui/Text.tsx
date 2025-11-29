@@ -1,12 +1,14 @@
-import type { ColorKeys } from '@/styles/color'
-import { cn } from '@/utils/cn'
 import { cva, type VariantProps } from 'class-variance-authority'
+import * as React from 'react'
 import { forwardRef } from 'react'
 import {
   Animated,
   type Text as RNText,
   type TextProps as RNTextProps,
+  type TextStyle,
 } from 'react-native'
+import { type ColorKeys, flattenColorKeys } from '@/styles/color'
+import { cn } from '@/utils/cn'
 
 export const textVariants = cva('tracking-[-0.6px]', {
   variants: {
@@ -54,7 +56,6 @@ export const textVariants = cva('tracking-[-0.6px]', {
       'sub-alert': 'text-sub-alert',
       'sub-black': 'text-sub-black',
       'sub-white': 'text-sub-white',
-      'sub-04': 'text-sub-04',
     },
   },
 })
