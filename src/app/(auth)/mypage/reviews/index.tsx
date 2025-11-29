@@ -5,9 +5,11 @@ import { REVIEW_MOCK } from '@/app/_components/ReviewStep'
 import { Screen } from '@/components/common/ui/Screen'
 import { Header } from '@/components/Header'
 import { ReviewCard } from '@/components/ReviewCard'
+import { useRouter } from 'expo-router'
 
 export default function Reviews() {
   const insets = useSafeAreaInsets()
+  const router = useRouter()
 
   return (
     <Screen
@@ -23,7 +25,15 @@ export default function Reviews() {
         contentContainerClassName="gap-5 py-6"
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ReviewCard {...item} hideImage />}
+        renderItem={({ item }) => (
+          <ReviewCard
+            {...item}
+            hideImage
+            onPress={() =>
+              router.push(`/review-detail/${item.id}?from=mypage-reviews`)
+            }
+          />
+        )}
       />
       <LinearGradient
         colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.1)', '#000000']}
