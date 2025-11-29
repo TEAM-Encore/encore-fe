@@ -43,7 +43,7 @@ const MOCK_REVIEW_DATA = {
   averageRating: 2.8,
   soundQuality: 'GOOD' as const,
   facilityQuality: 'GOOD' as const,
-  seatViewImage: 'https://via.placeholder.com/320x137',
+  seatViewImage: 'https://picsum.photos/seed/seatview/320/274', // TODO: API 연동 시 실제 이미지 URL로 변경
   soundQualityReason:
     '전반적으로 시설이 만족스러웠습니다. 배우들의 발란과 넘버의 퀄리티가 매우 만족스러웠 재관람 할 의사가 있음.',
   facilityQualityReason:
@@ -77,8 +77,7 @@ export default function ReviewDetail() {
   }
 
   const handleEdit = () => {
-    // TODO: 수정 화면 연동
-    router.push('/review-write')
+    router.push(`/review-edit/${params.id}`)
   }
 
   const handleDelete = () => {
@@ -242,11 +241,13 @@ export default function ReviewDetail() {
               </Text>
 
               {/* 시야 이미지 */}
-              <View className="overflow-hidden rounded-lg">
+              <View className="overflow-hidden rounded-lg bg-gray-10">
                 <Image
                   source={{ uri: review.seatViewImage }}
-                  // TODO: api 연동시 bg제거
-                  className="h-[137px] w-full bg-white"
+                  style={{
+                    width: '100%',
+                    height: 137,
+                  }}
                   resizeMode="cover"
                 />
               </View>

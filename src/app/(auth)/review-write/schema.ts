@@ -32,3 +32,8 @@ export const reviewWriteSchema = z.object({
 })
 
 export type ReviewWriteFormType = z.infer<typeof reviewWriteSchema>
+
+// review-edit도 동일한 schema 사용
+export const reviewEditSchema = reviewWriteSchema
+
+export type ReviewEditFormType = z.infer<typeof reviewEditSchema>
