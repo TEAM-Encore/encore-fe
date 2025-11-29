@@ -8,6 +8,7 @@ import { InfoDialog } from '@/components/InfoDialog'
 import { RatingSlider } from '@/components/RatingSlider'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
+import { toast } from '@/components/Toaster'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
@@ -55,6 +56,8 @@ export default function ReviewWriteStep6() {
 
   const handleComplete = () => {
     const values = form.getValues()
+    // TODO: API 연동 - 리뷰 등록 요청
+    toast.show('10포인트를 획득했어요')
     router.push('/')
   }
 
