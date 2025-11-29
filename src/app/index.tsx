@@ -9,10 +9,10 @@ import { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { LogoText } from './(auth)/login/components/LogoText'
 import AddReviewBottomSheet from './_components/AddReviewBottomSheet'
 import ReviewStep from './_components/ReviewStep'
 import TicketbookStep from './_components/TicketbookStep'
+import LogoText from './(auth)/login/components/LogoText'
 
 const tabs = [
   { label: '후기글', value: 'review' },

@@ -5,7 +5,7 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
-import { MypageSection } from '../_components/MypageSection'
+import MypageSection from '../_components/MypageSection'
 
 export default function Account() {
   return (
@@ -36,7 +36,7 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
-                        router.replace('/')
+                        router.replace('/login')
                       }}
                     />
                   ),
@@ -56,7 +56,7 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
-                        router.replace('/')
+                        router.replace('/login')
                       }}
                     />
                   ),

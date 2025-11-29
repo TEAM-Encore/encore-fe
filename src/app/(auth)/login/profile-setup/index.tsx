@@ -10,7 +10,7 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { FormTextField } from '@/components/TextField'
-import { GalleryBottomSheet } from './components/GalleryBottomSheet'
+import GalleryBottomSheet from './components/GalleryBottomSheet'
 import { type LoginFormType, loginSchema } from './schema'
 
 export default function ProfileSetup() {

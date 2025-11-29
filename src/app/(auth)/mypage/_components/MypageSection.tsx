@@ -16,7 +16,7 @@ interface MypageSectionProps {
   items: MypageSectionItem[]
 }
 
-export function MypageSection({ title, items }: MypageSectionProps) {
+function MypageSection({ title, items }: MypageSectionProps) {
   return (
     <Col gap={12}>
       {title && (
@@ -78,3 +78,5 @@ export function MypageSection({ title, items }: MypageSectionProps) {
     </Col>
   )
 }
+
+export default MypageSection

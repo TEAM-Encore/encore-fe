@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
-import { GalleryBottomSheet } from '@/app/(auth)/login/profile-setup/components/GalleryBottomSheet'
+import GalleryBottomSheet from '@/app/(auth)/login/profile-setup/components/GalleryBottomSheet'
 import {
   type LoginFormType,
   loginSchema,

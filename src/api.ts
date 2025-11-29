@@ -1,4 +1,5 @@
 import { Api } from 'api'
+import { getToken } from './lib/storage'
 
 function customFetch(
   input: RequestInfo | URL,
@@ -27,6 +28,17 @@ export const api = ((): Api<unknown>['api'] => {
     customFetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const response = await customFetch(input, init)
       return response
+    },
+    securityWorker: async () => {
+      const accessToken = await getToken('accessToken')
+      if (accessToken) {
+        return {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      }
+      return {}
     },
   })
 
