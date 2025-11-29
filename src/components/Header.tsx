@@ -11,7 +11,7 @@ export function Header({
   className,
 }: PropsWithStrictChildren<{ progress?: number; className?: string }>) {
   return (
-    <Row align="center" className={cn('relative h-[70px] px-5', className)}>
+    <Row align="center" className={cn('relative h-[66px] px-5', className)}>
       {children}
       {progress !== undefined && <Progress progress={progress} />}
     </Row>

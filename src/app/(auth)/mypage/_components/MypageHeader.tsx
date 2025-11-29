@@ -13,14 +13,14 @@ export default function MypageHeader() {
           마이페이지
         </Text>
       </Header.Center>
-      <Header.Right>
+      <Header.Right className='pr-[7px]'>
         <Row
           align="center"
           gap={6}
-          className="rounded-lg bg-gray-11 p-3"
+          className="rounded-lg bg-gray-11 px-3 py-2.5"
           onPress={() => router.push('/mypage/point')}
         >
-          <Icon name="Point" size={14} color="#FFDD56" />
+          <Icon name="Point" size={15} color="#FFDD56" />
           <Text variant="subhead-02" color="primary-04">
             15
           </Text>
