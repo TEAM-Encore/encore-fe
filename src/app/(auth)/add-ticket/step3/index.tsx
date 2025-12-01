@@ -9,7 +9,7 @@ import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Text } from '@/components/common/ui/Text'
 import { Search } from '@/components/search/Search'
-import { AddTicketHeader } from '../components/AddTicketHeader'
+import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
 const ACTORS = [

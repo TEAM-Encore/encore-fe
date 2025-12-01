@@ -9,7 +9,7 @@ import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { saveToken } from '@/lib/storage'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
-import { ProviderEnum2 } from '../../../../codegen/__generated__/api_sdk'
+import { ProviderEnum2 } from 'api'
 
 const termsProps: TextProps = {
   color: 'gray-01',
@@ -29,7 +29,7 @@ export default function Index() {
     provider: (ProviderEnum2)[keyof ProviderEnum2],
   ) => {
     try {
-      const response = await api.getLoginUrl({ provider: provider as ProviderEnum2 })
+      const response = await api().getLoginUrl({ provider: provider as ProviderEnum2 })
       const url = response.url as string
 
       const result = await WebBrowser.openAuthSessionAsync(
