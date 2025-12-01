@@ -8,7 +8,7 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
-import { PointItem } from '../_components/PointItem'
+import PointItem from '../_components/PointItem'
 
 const MOCK = [
   {
@@ -111,18 +111,18 @@ export default function Point() {
       <Row
         align="center"
         justify="space-between"
-        className="absolute bottom-[23px] z-[9998] mx-5 w-full rounded-[10px] bg-gray-10 p-[14px]"
+        className="absolute bottom-[23px] z-[9998] mx-5 w-full rounded-[10px] bg-primary-04 p-[14px]"
         onPress={() => router.push('/mypage/point/guide')}
       >
         <Col>
-          <Text variant="caption" color="gray-03">
+          <Text variant="caption" color="gray-12" className='leading-[18px]'>
             포인트가 궁금해요!
           </Text>
-          <Text variant="subhead-03" color="gray-03">
+          <Text variant="subhead-03" color="gray-12" className='leading-[22px]'>
             포인트 안내 페이지
           </Text>
         </Col>
-        <Icon name="ArrowLeft" size={24} className="rotate-180 text-gray-01" />
+        <Icon name="ArrowLeft" size={24} className="rotate-180 text-gray-12" />
       </Row>
     </Screen>
   )
