@@ -14,6 +14,7 @@
     "genapi": "ts-node codegen/generate_api.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.11",
     "@expo/vector-icons": "^14.1.0",
     "@gorhom/bottom-sheet": "^5.1.8",
     "@hookform/resolvers": "^5.2.1",
