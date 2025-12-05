@@ -30,7 +30,13 @@ export const schema = z.object({
    */
   hall: z.string().min(1),
 
-  actorIds: z.array(z.number()),
+  actors: z.array(
+    z.object({
+      id: z.number(),
+      name: z.string(),
+      imageUrl: z.string(),
+    }),
+  ),
   ticketImageUrl: z.string().optional(),
   noTicketUpload: z.boolean(),
 })

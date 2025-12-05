@@ -56,7 +56,7 @@ export function TimePicker({
             <Col center className="h-[67px] w-[22px] self-start">
               <Text className="text-[52px] text-gray-06">:</Text>
             </Col>
-            <Col flex={1} gap={6}>
+            <Col flex={1} gap={14}>
               <TimePickerInput value={__minute} onChangeText={setMinute} />
               <Text variant="subhead-long-02" className="text-gray-01">
                 분

@@ -1,14 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { router, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Image } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
+import { ticketQueries } from '@/apis/ticket/queries'
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/common/icons/Icon'
-import { Col, Flex, Row } from '@/components/common/ui/Flex'
+import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
+import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Search } from '@/components/search/Search'
+import { useDebounce } from '@/hooks/useDebounce'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
@@ -40,6 +45,15 @@ export default function Step3() {
     | 'hall'
   > = JSON.parse(params.data)
 
+  const [keyword, setKeyword] = useState('')
+  const [selectState, setSelectState] = useState(false)
+
+  const { data } = useQuery(
+    ticketQueries.searchActors({
+      keyword: useDebounce(keyword, 150),
+    }),
+  )
+
   const form = useForm<
     Pick<
       FormType,
@@ -51,7 +65,7 @@ export default function Step3() {
       | 'viewedDate'
       | 'showTime'
       | 'hall'
-      | 'actorIds'
+      | 'actors'
     >
   >({
     resolver: zodResolver(
@@ -64,7 +78,7 @@ export default function Step3() {
         viewedDate: true,
         showTime: true,
         hall: true,
-        actorIds: true,
+        actors: true,
       }),
     ),
     defaultValues: {
@@ -76,11 +90,9 @@ export default function Step3() {
       viewedDate: parsedData.viewedDate,
       showTime: parsedData.showTime,
       hall: parsedData.hall,
-      actorIds: [],
+      actors: [],
     },
   })
-
-  const [searchValue, setSearchValue] = useState('')
 
   const onSubmit = form.handleSubmit((data) => {
     router.push({
@@ -111,57 +123,107 @@ export default function Step3() {
       </Col>
       <Search
         placeholder="배우 이름 검색하기"
-        value={searchValue}
-        onChangeText={setSearchValue}
-        onDelete={() => setSearchValue('')}
+        value={keyword}
+        onChangeText={(text) => {
+          setKeyword(text)
+          setSelectState(false)
+        }}
+        onDelete={() => setKeyword('')}
       />
-      <FlatList
-        data={ACTORS}
-        style={{ flexGrow: 0 }}
-        renderItem={({ item }) => (
-          <Row
-            key={item.id}
-            align="center"
-            gap={16}
-            onPress={() => {
-              const actors = form.watch('actorIds') ?? []
-              actors.push(item.id)
-              form.setValue('actorIds', actors)
-            }}
-            className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
-          >
-            <Flex className="size-[53px] rounded-md bg-gray-05" />
-            <Text variant="body-02" className="text-gray-01">
-              {item.name}
-            </Text>
-          </Row>
-        )}
-        contentContainerClassName="gap-3 mt-4"
-      />
-      <FlatList
-        data={form.watch('actorIds')}
-        horizontal
-        renderItem={({ item }) => (
-          <Col gap={4} center className="relative h-[100px] w-[78px]">
-            <Col className="size-[72px] rounded-md bg-gray-05" />
-            <Text variant="body-02" className="text-gray-01">
-              {ACTORS.find((actor) => actor.id === item)?.name}
-            </Text>
-            <Icon
-              name="XCircle"
-              size={20}
+      <Spacing size={16} />
+      {!selectState && (
+        <FlatList
+          data={data?.data}
+          renderItem={({ item }) => (
+            <Row
+              key={item.id}
+              align="center"
+              gap={16}
               onPress={() => {
-                form.setValue(
-                  'actorIds',
-                  form.watch('actorIds')?.filter((id) => id !== item),
-                )
+                const actors = form.watch('actors') ?? []
+
+                setSelectState(true)
+
+                if (item.id) {
+                  if (actors.some((actor) => actor.id === item.id)) {
+                    return
+                  }
+
+                  form.setValue(
+                    'actors',
+                    [
+                      ...actors,
+                      {
+                        id: item.id,
+                        name: item.name ?? '',
+                        imageUrl: item.actor_image_url ?? '',
+                      },
+                    ],
+                    {
+                      shouldValidate: true,
+                    },
+                  )
+                }
               }}
-              className="-top-2 -right-1 absolute"
-            />
-          </Col>
-        )}
-        contentContainerClassName="gap-[10px] mt-[23px]"
-      />
+              className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
+            >
+              <Image
+                source={{ uri: item.actor_image_url }}
+                width={53}
+                height={53}
+                className="rounded-md"
+                resizeMode="cover"
+              />
+              <Text variant="body-02" className="text-gray-01">
+                {item.name}
+              </Text>
+            </Row>
+          )}
+          contentContainerClassName="gap-3 "
+        />
+      )}
+
+      {selectState && (
+        <Row wrap="wrap" gap={10} className="mt-[23px]">
+          {form.watch('actors')?.map((item) => (
+            <Col
+              key={item.id}
+              gap={4}
+              center
+              className="relative h-[100px] w-[78px]"
+            >
+              <Image
+                source={{
+                  uri: item.imageUrl,
+                }}
+                width={72}
+                height={72}
+                className="rounded-md"
+                resizeMode="cover"
+              />
+              <Text variant="body-02" className="text-gray-01">
+                {item.name}
+              </Text>
+              <Icon
+                name="XCircle"
+                size={20}
+                onPress={() => {
+                  form.setValue(
+                    'actors',
+                    form
+                      .watch('actors')
+                      ?.filter((actor) => actor.id !== item.id),
+                    {
+                      shouldValidate: true,
+                    },
+                  )
+                }}
+                className="-top-2 -right-1 absolute"
+              />
+            </Col>
+          ))}
+        </Row>
+      )}
     </Screen>
   )
 }
