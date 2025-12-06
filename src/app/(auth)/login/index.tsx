@@ -9,11 +9,7 @@ import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { saveToken } from '@/lib/storage'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
-
-const PROVIDER = {
-  KAKAO: 'KAKAO',
-  GOOGLE: 'GOOGLE',
-} as const
+import { ProviderEnum2 } from 'api'
 
 const termsProps: TextProps = {
   color: 'gray-01',
@@ -30,10 +26,10 @@ export default function Index() {
   }
 
   const onLogin = async (
-    provider: (typeof PROVIDER)[keyof typeof PROVIDER],
+    provider: (ProviderEnum2)[keyof ProviderEnum2],
   ) => {
     try {
-      const response = await api.getLoginUrl({ provider })
+      const response = await api().getLoginUrl({ provider: provider as ProviderEnum2 })
       const url = response.url as string
 
       const result = await WebBrowser.openAuthSessionAsync(
@@ -81,10 +77,10 @@ export default function Index() {
 
         <Col gap={52} className="w-full">
           <Col gap={16} className="w-full">
-            <LoginButton type="Kakao" onPress={() => onLogin(PROVIDER.KAKAO)} />
+            <LoginButton type="Kakao" onPress={() => onLogin('KAKAO')} />
             <LoginButton
               type="Google"
-              onPress={() => onLogin(PROVIDER.GOOGLE)}
+              onPress={() => onLogin('GOOGLE')}
             />
           </Col>
           <Text {...termsProps} className="text-center">

@@ -13,7 +13,7 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
-import { AddTicketHeader } from '../components/AddTicketHeader'
+import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
 export default function Step2() {

@@ -10,7 +10,7 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Search } from '@/components/search/Search'
 import { SearchItem } from '@/components/search/SearchItem'
-import { AddTicketHeader } from '../components/AddTicketHeader'
+import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
 export default function Step1() {

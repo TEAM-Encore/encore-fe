@@ -13,7 +13,7 @@ let instance: Api<unknown>['api'] | null = null
 /**
  * 토큰 로직 추가 필요
  */
-export const api = ((): Api<unknown>['api'] => {
+export function api(): Api<unknown>['api'] {
   if (instance) {
     return instance
   }
@@ -29,9 +29,20 @@ export const api = ((): Api<unknown>['api'] => {
       const response = await customFetch(input, init)
       return response
     },
+    securityWorker: async () => {
+      const accessToken = await getToken('accessToken')
+      if (accessToken) {
+        return {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      }
+      return {}
+    },
   })
 
   instance = __instance.api as Api<unknown>['api']
 
   return instance
-})()
+}
