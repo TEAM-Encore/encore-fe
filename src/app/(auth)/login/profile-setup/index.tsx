@@ -13,6 +13,8 @@ import { FormTextField } from '@/components/TextField'
 import GalleryBottomSheet from './components/GalleryBottomSheet'
 import { type LoginFormType, loginSchema } from './schema'
 import * as ImagePicker from 'expo-image-picker'
+import { api } from '@/api'
+import { router } from 'expo-router'
 
 export default function ProfileSetup() {
   const form = useForm<LoginFormType>({
@@ -24,8 +26,21 @@ export default function ProfileSetup() {
     },
   })
 
-  const onSubmit = form.handleSubmit(() => {
+  const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
     // do something
+
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/users/me`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        "nick_name": data.nickname,
+        "profile_image_url": data.image,
+      }),
+    })
+    
+    if (response.status === 200) router.push('/')
   })
 
   const onOpenGallery = async () => {
@@ -46,34 +61,28 @@ export default function ProfileSetup() {
   }
 
   const onDeletePhoto = () => {
-    console.log('onDeletePhoto')
+    form.setValue('image', undefined)
   }
 
-  const onUploadImage =  async (fileName: string, uri: string) => {
-try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API_HOST}/api/v1/image/presigned-url`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          "image_name": fileName,
-          "category": "profile"
-        }),
-      })
-
-      const uploadUrl = await response.text()
+  const onUploadImage = async (fileName: string, uri: string) => {
+    try {
+      const response = await api.saveImage({ imageName: fileName })
+      const uploadUrl = response as string
       const blob = await fetch(uri).then(r => r.blob())
 
       const uploadResponse = await fetch(uploadUrl, {
         method: 'PUT',
+        headers: {
+          'Content-Type': blob.type,
+        },
         body: blob,
       })
 
       const r = await uploadResponse.text()
-      
 
-      console.log(r)
+
+      form.setValue('image', r)
+      router.push('/')
 
     } catch (error) {
       console.error(error)
@@ -89,7 +98,6 @@ try {
         },
       })
       const data = await response.json()
-
       if (data.data?.is_valid) {
         form.clearErrors('nickname')
         return;
@@ -103,7 +111,7 @@ try {
           form.setError('nickname', { message: '중복되는 닉네임이에요' })
           break;
         case 3006: case 3007:
-          form.setError('nickname', { message: ' 여백 없이 한글, 영문, 숫자만 가능해요.' })
+          form.setError('nickname', { message: '여백 없이 한글, 영문, 숫자만 가능해요.' })
           break;
         default:
           form.setError('nickname', { message: '금칙어가 포함된 닉네임이에요.' })
@@ -123,7 +131,7 @@ try {
         </Header>
       }
       fixedButton={
-        <Button disabled={!form.formState.isValid} onPress={onSubmit}>
+        <Button disabled={!form.watch('nickname') /* || !form.watch('image')*/} onPress={onSubmit}>
           시작하기
         </Button>
       }
@@ -143,7 +151,7 @@ try {
       <Flex center>
         <Avatar
           source={{ uri: form.watch('image') || undefined }}
-          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={() => { }} />)}
+          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={onDeletePhoto} />)}
         />
       </Flex>
 
