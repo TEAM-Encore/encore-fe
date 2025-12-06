@@ -38,7 +38,7 @@ export default function ProfileSetup() {
       }),
     })
     
-    if (response.status === 200) router.push('/')
+    if (response.status === 200) router.replace('/')
   })
 
   const onOpenGallery = async () => {
@@ -64,7 +64,7 @@ export default function ProfileSetup() {
 
   const onUploadImage = async (fileName: string, uri: string) => {
     try {
-      const response = await api.saveImage({ imageName: fileName })
+      const response = await api().saveImage({ imageName: fileName })
       const uploadUrl = response as string
       const blob = await fetch(uri).then(r => r.blob())
 
