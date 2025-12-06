@@ -27,8 +27,6 @@ export default function ProfileSetup() {
   })
 
   const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
-    // do something
-
     const response = await fetch(`${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/users/me`, {
       method: 'PATCH',
       headers: {
