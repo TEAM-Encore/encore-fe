@@ -5,6 +5,7 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
+import { deleteToken } from '@/lib/storage'
 import MypageSection from '../_components/MypageSection'
 
 export default function Account() {
@@ -36,6 +37,7 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
+                        deleteToken('accessToken')
                         router.replace('/login')
                       }}
                     />

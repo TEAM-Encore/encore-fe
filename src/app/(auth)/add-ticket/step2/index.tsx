@@ -20,7 +20,9 @@ export default function Step2() {
   const params = useLocalSearchParams<{
     data: string
   }>()
-  const parsedData: Pick<FormType, 'musicalId'> = JSON.parse(params.data)
+  const parsedData: Pick<FormType, 'musicalId' | 'hall'> = JSON.parse(
+    params.data,
+  )
   const router = useRouter()
   const form = useForm<
     Pick<
@@ -58,7 +60,7 @@ export default function Step2() {
         hour: '00',
         minute: '00',
       },
-      hall: '',
+      hall: parsedData.hall,
     },
   })
 
@@ -205,11 +207,12 @@ export default function Step2() {
             name="hall"
             render={({ field: { value, onChange, onBlur, ref } }) => (
               <TextInput
+                readOnly
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 ref={ref}
-                className="h-10 rounded-[4px] bg-gray-10 px-3 py-[10px] text-body-1 text-gray-01"
+                className="h-10 rounded-[4px] bg-gray-10 px-3 py-[10px] text-body-1 text-gray-07"
               />
             )}
           />

@@ -2,6 +2,7 @@ import { TextInput, View } from 'react-native'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { Icon } from '../common/icons/Icon'
+import { Row } from '../common/ui/Flex'
 
 type SearchProps = React.ComponentProps<typeof TextInput> & {
   onDelete: VoidFunction
@@ -10,7 +11,7 @@ type SearchProps = React.ComponentProps<typeof TextInput> & {
 
 export function Search({ className, onDelete, value, ...rest }: SearchProps) {
   return (
-    <View className="relative w-full">
+    <Row className="relative w-full">
       <Icon
         name="Search"
         size={18}
@@ -35,6 +36,6 @@ export function Search({ className, onDelete, value, ...rest }: SearchProps) {
           onPress={onDelete}
         />
       )}
-    </View>
+    </Row>
   )
 }

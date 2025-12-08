@@ -102,7 +102,7 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
                     <Flex
                       key={index}
                       center
-                      disabled={dayjs(day).isBefore(dayjs().startOf('day'))}
+                      disabled={dayjs(day).isAfter(dayjs().startOf('day'))}
                       flex={1}
                       className={cn('relative size-[35px]')}
                       onPress={() => {
@@ -123,7 +123,7 @@ export function Calendar({ isOpen, close, date, onConfirm }: CalendarProps) {
                         <Text
                           variant="subhead-03"
                           className={cn('z-10 text-white', {
-                            'text-gray-07': dayjs(day).isBefore(
+                            'text-gray-07': dayjs(day).isAfter(
                               dayjs().startOf('day'),
                             ),
                             'text-primary-04': dayjs(day).isSame(

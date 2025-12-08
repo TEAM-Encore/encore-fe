@@ -1,3 +1,4 @@
+import type { ProviderEnum2 } from 'api'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { Image, View } from 'react-native'
@@ -9,7 +10,6 @@ import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { saveToken } from '@/lib/storage'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
-import { ProviderEnum2 } from 'api'
 
 const termsProps: TextProps = {
   color: 'gray-01',
@@ -25,11 +25,11 @@ export default function Index() {
     await WebBrowser.openBrowserAsync(url)
   }
 
-  const onLogin = async (
-    provider: (ProviderEnum2)[keyof ProviderEnum2],
-  ) => {
+  const onLogin = async (provider: ProviderEnum2[keyof ProviderEnum2]) => {
     try {
-      const response = await api().getLoginUrl({ provider: provider as ProviderEnum2 })
+      const response = await api().getLoginUrl({
+        provider: provider as ProviderEnum2,
+      })
       const url = response.url as string
 
       const result = await WebBrowser.openAuthSessionAsync(
@@ -78,10 +78,7 @@ export default function Index() {
         <Col gap={52} className="w-full">
           <Col gap={16} className="w-full">
             <LoginButton type="Kakao" onPress={() => onLogin('KAKAO')} />
-            <LoginButton
-              type="Google"
-              onPress={() => onLogin('GOOGLE')}
-            />
+            <LoginButton type="Google" onPress={() => onLogin('GOOGLE')} />
           </Col>
           <Text {...termsProps} className="text-center">
             가입하면 앙코르의{' '}
