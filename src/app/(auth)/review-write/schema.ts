@@ -32,3 +32,7 @@ export const reviewWriteSchema = z.object({
 })
 
 export type ReviewWriteFormType = z.infer<typeof reviewWriteSchema>
+
+export const reviewEditSchema = reviewWriteSchema
+
+export type ReviewEditFormType = z.infer<typeof reviewEditSchema>
