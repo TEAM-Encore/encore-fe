@@ -9,14 +9,19 @@ import { Header } from '@/components/Header'
 import { InfoBadge } from '@/components/InfoBadge'
 import { InfoDialog } from '@/components/InfoDialog'
 import { RatingSlider } from '@/components/RatingSlider'
+import { ReportBottomSheet } from '@/components/ReportBottomSheet'
 import { ReviewInfoSection } from '@/components/ReviewInfoSection'
 import { TicketCard } from '@/components/TicketCard'
 import { toast } from '@/components/Toaster'
+import { showPointRewardToast } from '@/utils/pointReward'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
+import React from 'react'
 import { Image, Pressable, ScrollView, View } from 'react-native'
 
 // TODO: API 연동 시 제거
+type LikeType = 'FOLLOW_UP_RECOMMENDATION' | 'FULL_OF_TIPS' | 'THOROUGH_ANALYSIS' | 'NONE'
+
 const MOCK_REVIEW_DATA = {
   id: '1',
   title: '비더슈탄트 5회차 관람 후기',
@@ -24,8 +29,17 @@ const MOCK_REVIEW_DATA = {
     nickname: '뮤사랑',
     avatarUrl: undefined,
   },
-  likes: 9,
-  isOwnPost: true, // 자신의 글인지 여부
+  // API 스키마: ReviewDetailRes
+  is_my_review: false,
+  like_res: {
+    like_type: 'NONE' as LikeType,
+    like_count_res: {
+      total_like_count: 9,
+      follow_up_like_count: 3,
+      full_of_tips_like_count: 4,
+      thorough_analysis_like_count: 2,
+    },
+  },
   ticket: {
     posterUrl: 'https://via.placeholder.com/66x92',
     showName: '비더슈탄트',
@@ -44,7 +58,7 @@ const MOCK_REVIEW_DATA = {
   averageRating: 2.8,
   soundQuality: 'GOOD' as const,
   facilityQuality: 'GOOD' as const,
-  seatViewImage: 'https://picsum.photos/seed/seatview/320/274', // TODO: API 연동 시 실제 이미지 URL로 변경
+  seatViewImage: 'https://picsum.photos/seed/seatview/320/274',
   soundQualityReason:
     '전반적으로 시설이 만족스러웠습니다. 배우들의 발란과 넘버의 퀄리티가 매우 만족스러웠 재관람 할 의사가 있음.',
   facilityQualityReason:
@@ -73,6 +87,10 @@ export default function ReviewDetail() {
 
   const review = MOCK_REVIEW_DATA
 
+  const [isLiked, setIsLiked] = React.useState(
+    review.like_res?.like_type !== 'NONE'
+  )
+
   const handleBack = () => {
     router.back()
   }
@@ -92,7 +110,6 @@ export default function ReviewDetail() {
         onTopPress={() => {
           // TODO: API 연동 - 삭제 요청
 
-          // 진입 경로에 따라 라우팅
           if (params.from === 'home') {
             router.push('/')
           } else if (params.from === 'mypage-reviews') {
@@ -105,10 +122,32 @@ export default function ReviewDetail() {
     ))
   }
 
-  const handleLike = () => {
-    if (review.isOwnPost) {
+  const handleLike = async () => {
+    if (review.is_my_review) {
       toast.show('자신의 글에 좋아요를 누를 수 없어요.')
+      return
     }
+
+    // TODO: API 연동 - PATCH /api/mvp/review/{reviewId}/like
+    setIsLiked(!isLiked)
+
+    // 명세: 좋아요 직후 5포인트 획득 토스트 (1일 1회)
+    if (!isLiked) {
+      await showPointRewardToast(5)
+    }
+  }
+
+  const handleReport = () => {
+    overlay.open((ov) => (
+      <ReportBottomSheet
+        {...ov}
+        onReport={(reason) => {
+          // TODO: API 연동 - POST /api/mvp/review/{reviewId}/report
+          console.log('신고 사유:', reason)
+          toast.show('신고가 접수되었어요')
+        }}
+      />
+    ))
   }
 
   const handleNumberHelp = () => {
@@ -135,17 +174,30 @@ export default function ReviewDetail() {
           </Header.Left>
           <Header.Center>후기글</Header.Center>
           <Header.Right>
-            <Dropdown.Root>
-              <Dropdown.Trigger>
-                <Icon name="More" size={24} className="text-white" />
-              </Dropdown.Trigger>
-              <Dropdown.Content position="left">
-                <Dropdown.Item onPress={handleEdit}>수정</Dropdown.Item>
-                <Dropdown.Item variant="destructive" onPress={handleDelete}>
-                  삭제
-                </Dropdown.Item>
-              </Dropdown.Content>
-            </Dropdown.Root>
+            {review.is_my_review ? (
+              <Dropdown.Root>
+                <Dropdown.Trigger>
+                  <Icon name="More" size={24} className="text-white" />
+                </Dropdown.Trigger>
+                <Dropdown.Content position="left">
+                  <Dropdown.Item onPress={handleEdit}>수정</Dropdown.Item>
+                  <Dropdown.Item variant="destructive" onPress={handleDelete}>
+                    삭제
+                  </Dropdown.Item>
+                </Dropdown.Content>
+              </Dropdown.Root>
+            ) : (
+              <Dropdown.Root>
+                <Dropdown.Trigger>
+                  <Icon name="More" size={24} className="text-white" />
+                </Dropdown.Trigger>
+                <Dropdown.Content position="left">
+                  <Dropdown.Item variant="destructive" onPress={handleReport}>
+                    신고
+                  </Dropdown.Item>
+                </Dropdown.Content>
+              </Dropdown.Root>
+            )}
           </Header.Right>
         </Header>
       }
@@ -160,15 +212,21 @@ export default function ReviewDetail() {
             <Pressable onPress={handleLike}>
               <Row align="center" gap={4}>
                 <Icon
-                  name="Like"
-                  size={16}
-                  className={review.isOwnPost ? 'text-gray-11' : 'text-gray-01'}
+                  name={isLiked ? 'Like' : 'StrokeHeart'}
+                  size={isLiked ? 16 : 18}
+                  className={
+                    review.is_my_review
+                      ? 'text-gray-11'
+                      : isLiked
+                        ? 'text-sub-point'
+                        : 'text-gray-01'
+                  }
                 />
                 <Text
                   variant="body-02"
-                  className={review.isOwnPost ? 'text-gray-11' : 'text-gray-01'}
+                  className={review.is_my_review ? 'text-gray-11' : 'text-gray-01'}
                 >
-                  {review.likes}
+                  {review.like_res?.like_count_res?.total_like_count ?? 0}
                 </Text>
               </Row>
             </Pressable>
