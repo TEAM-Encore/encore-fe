@@ -19,10 +19,14 @@ export default function ReviewStep() {
 
   const { rows, fetchNextPage, hasNextPage, isFetchingNextPage, isFetching } =
     useInfiniteList({
-      queryKey: ['reviews', sort],
+      key: 'reviews',
       fn: api().getReviewList,
       params: {
         userId: 10010,
+        pageable: {
+          page: 0,
+          size: 9999999,
+        },
       },
     })
 
