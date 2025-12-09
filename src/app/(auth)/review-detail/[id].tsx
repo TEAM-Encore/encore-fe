@@ -3,6 +3,7 @@ import { Icon } from '@/components/common/icons/Icon'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Text } from '@/components/common/ui/Text'
+import { Dialog } from '@/components/Dialog'
 import { Dropdown } from '@/components/Dropdown'
 import { Header } from '@/components/Header'
 import { InfoBadge } from '@/components/InfoBadge'
@@ -81,8 +82,27 @@ export default function ReviewDetail() {
   }
 
   const handleDelete = () => {
-    // TODO: 삭제
-    console.log('Delete review')
+    overlay.open((ov) => (
+      <Dialog
+        {...ov}
+        title="후기글 삭제할까요?"
+        description="삭제한 후기는 되돌릴 수 없어요."
+        top="확인"
+        bottom="취소"
+        onTopPress={() => {
+          // TODO: API 연동 - 삭제 요청
+
+          // 진입 경로에 따라 라우팅
+          if (params.from === 'home') {
+            router.push('/')
+          } else if (params.from === 'mypage-reviews') {
+            router.push('/mypage/reviews')
+          } else {
+            router.back()
+          }
+        }}
+      />
+    ))
   }
 
   const handleLike = () => {
