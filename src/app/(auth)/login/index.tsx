@@ -42,7 +42,7 @@ export default function Index() {
         const token = parsed.searchParams.get('token')
 
         if (token) {
-          await saveToken('accessToken', token).then(() =>
+          await saveToken('tempToken', token).then(() =>
             router.push('/login/profile-setup'),
           )
         }
