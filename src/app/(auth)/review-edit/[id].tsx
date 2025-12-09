@@ -116,21 +116,17 @@ export default function ReviewEdit() {
     router.back()
   }
 
-  const handleSave = () => {
-    if (!form.formState.isValid || !selectedSeatViewImage) {
+  const handleSave = form.handleSubmit(
+    (values) => {
+      // TODO: API 연동 - 수정 내용 저장
+      console.log('Save review', values)
+
+      router.back()
+    },
+    () => {
       toast.show('모든 항목을 올바르게 입력해주세요.')
-      return
-    }
-
-    // TODO: API 연동 - 수정 내용 저장
-    const values = form.getValues()
-    console.log('Save review', {
-      ...values,
-      selectedSeatViewImage,
-    })
-
-    router.back()
-  }
+    },
+  )
 
   const handleImageSelect = (imageId: string) => {
     setSelectedSeatViewImage(imageId)
