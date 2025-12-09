@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { FlatList } from 'react-native'
+import { useRouter } from 'expo-router'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
 import SortSelector from './SortSelector'
@@ -61,6 +62,7 @@ const tabs = [
 ]
 
 export default function ReviewStep() {
+  const router = useRouter()
   const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -81,7 +83,12 @@ export default function ReviewStep() {
         ref={flatListRef}
         contentContainerClassName="px-5 gap-5 pb-6"
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ReviewCard {...item} />}
+        renderItem={({ item }) => (
+          <ReviewCard
+            {...item}
+            onPress={() => router.push(`/review-detail/${item.id}?from=home`)}
+          />
+        )}
       />
     </>
   )
