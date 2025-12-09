@@ -5,7 +5,7 @@ import { Col } from '@/components/common/ui/Flex'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { TicketBook } from '@/components/TicketBook'
-import { SortSelector } from './SortSelector'
+import SortSelector from './SortSelector'
 
 export const MOCK = [
   {
