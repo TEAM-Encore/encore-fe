@@ -15,7 +15,14 @@ type OverlayProps = {
   unmount?: VoidFunction
 }
 
+type CommonResponse<T> = {
+  code?: number
+  message?: string
+  data?: T
+  timestamp?: string
+}
+
 declare module '*.png' {
-  const value: string;
-  export default value;
+  const value: string
+  export default value
 }
