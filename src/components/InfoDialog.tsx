@@ -1,4 +1,4 @@
-import { Modal, Pressable, useWindowDimensions } from 'react-native'
+import { Modal, useWindowDimensions } from 'react-native'
 import { FadeIn, FadeOut } from 'react-native-reanimated'
 import { Icon } from './common/icons/Icon'
 import { Col } from './common/ui/Flex'
@@ -32,13 +32,13 @@ export function InfoDialog({
           style={{ width: dims.width - 108 }}
           className="rounded-lg bg-gray-10 px-6 py-7"
         >
-          <Pressable
+          <Icon
+            name="Close"
+            size={24}
+            className="absolute top-4 right-4 z-10 text-gray-01"
             onPress={close}
-            className="absolute top-4 right-4 z-10"
             hitSlop={8}
-          >
-            <Icon name="Close" size={24} className="text-gray-01" />
-          </Pressable>
+          />
 
           <Col gap={4} className="mt-2">
             <Text variant="subhead-02" className="text-gray-01">
