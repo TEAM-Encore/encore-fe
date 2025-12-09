@@ -15,6 +15,8 @@ import { type LoginFormType, loginSchema } from './schema'
 import * as ImagePicker from 'expo-image-picker'
 import { api } from '@/api'
 import { router } from 'expo-router'
+import { deleteToken, getToken, saveToken } from '@/lib/storage'
+import { useState } from 'react'
 
 export default function ProfileSetup() {
   const form = useForm<LoginFormType>({
@@ -26,22 +28,29 @@ export default function ProfileSetup() {
     },
   })
 
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
+
   const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/users/me`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        "nick_name": data.nickname,
-        "profile_image_url": data.image,
-      }),
-    })
-    
-    if (response.status === 200) router.replace('/')
+    try {
+      const response = await api().patchUserInfo({
+        nick_name: data.nickname,
+        profile_image_url: data.image,
+      })
+
+      if (response.code === 1000) {
+        const tmp = await getToken('tempToken') as string
+        await saveToken('accessToken', tmp)
+        await deleteToken('tempToken')
+        router.replace('/')
+      }
+    } catch (error) {
+      console.error(error)
+    }
   })
 
   const onOpenGallery = async () => {
+    overlay.close('gallery')
+    
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: false,
@@ -50,38 +59,38 @@ export default function ProfileSetup() {
       base64: true,
     })
 
-    const fileName = result?.assets?.[0]?.fileName
+    const blob = result?.assets?.[0]?.file
     const uri = result?.assets?.[0]?.uri
+    const fileName = result?.assets?.[0]?.fileName
 
-    if (!fileName || !uri) return
+    if (!fileName) return
 
-    onUploadImage(fileName, uri)
+    onUploadImage(fileName, blob, uri)
   }
 
   const onDeletePhoto = () => {
     form.setValue('image', undefined)
+    setImageUrl(undefined)
+    overlay.close('gallery')
   }
 
-  const onUploadImage = async (fileName: string, uri: string) => {
+  const onUploadImage = async (fileName: string, blob: File | undefined, uri: string | undefined) => {
     try {
-      const response = await api().saveImage({ imageName: fileName })
-      const uploadUrl = response as string
-      const blob = await fetch(uri).then(r => r.blob())
+      const response = await api().saveImage({ image_name: fileName }) as {file_path: string, upload_url: string}
+      const {upload_url, file_path} = response
 
-      const uploadResponse = await fetch(uploadUrl, {
+      const uploadResponse = await fetch(upload_url, {
         method: 'PUT',
         headers: {
-          'Content-Type': blob.type,
+          'Content-Type': blob?.type || 'image/jpeg',
         },
         body: blob,
       })
 
-      const r = await uploadResponse.text()
-
-
-      form.setValue('image', r)
-      router.push('/')
-
+      if (uploadResponse.ok) {
+        form.setValue('image', file_path)
+        setImageUrl(uri)
+      }
     } catch (error) {
       console.error(error)
     }
@@ -89,19 +98,14 @@ export default function ProfileSetup() {
 
   const onCheckNickname = async () => {
     try {
-      const response = await fetch(`${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/users/nickname-validation?nickname=${form.watch('nickname')}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      const data = await response.json()
-      if (data.data?.is_valid) {
+      const response = await api().validateUserNickname({ nickname: form.watch('nickname') })
+      const data = response.data;
+      if (data?.is_valid) {
         form.clearErrors('nickname')
         return;
       };
-
-      switch (data.code) {
+    } catch (error: any) {
+      switch (error.code) {
         case 3004: case 3005:
           form.setError('nickname', { message: '6글자가 초과되었어요.' })
           break;
@@ -115,8 +119,6 @@ export default function ProfileSetup() {
           form.setError('nickname', { message: '금칙어가 포함된 닉네임이에요.' })
           break;
       }
-    } catch (error) {
-      console.error(error)
     }
   }
 
@@ -129,7 +131,7 @@ export default function ProfileSetup() {
         </Header>
       }
       fixedButton={
-        <Button disabled={!form.watch('nickname') /* || !form.watch('image')*/} onPress={onSubmit}>
+        <Button disabled={!form.formState.isValid} onPress={onSubmit}>
           시작하기
         </Button>
       }
@@ -148,8 +150,8 @@ export default function ProfileSetup() {
       <Spacing size={24} />
       <Flex center>
         <Avatar
-          source={{ uri: form.watch('image') || undefined }}
-          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={onDeletePhoto} />)}
+          source={{ uri: imageUrl }}
+          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={onDeletePhoto} />, {overlayId: 'gallery'})}
         />
       </Flex>
 
