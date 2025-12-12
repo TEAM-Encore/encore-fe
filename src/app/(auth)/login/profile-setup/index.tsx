@@ -15,7 +15,6 @@ import { type LoginFormType, loginSchema } from './schema'
 import * as ImagePicker from 'expo-image-picker'
 import { api } from '@/api'
 import { router } from 'expo-router'
-import { useState } from 'react'
 import { useImageUpload } from '@/hooks/useImageUpload'
 
 export default function ProfileSetup() {
@@ -27,8 +26,6 @@ export default function ProfileSetup() {
       nickname: '',
     },
   })
-
-  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined)
 
   const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
     try {
@@ -65,13 +62,11 @@ export default function ProfileSetup() {
 
     const url = await uploadImage({ uri, fileName })
     form.setValue('image', url)
-    setImageUrl(url)
   }
 
   const onDeletePhoto = () => {
     overlay.unmount('gallery')
     form.setValue('image', undefined)
-    setImageUrl(undefined)
   }
 
   const onCheckNickname = async () => {
@@ -128,7 +123,7 @@ export default function ProfileSetup() {
       <Spacing size={24} />
       <Flex center>
         <Avatar
-          source={{ uri: imageUrl }}
+          source={{ uri: form.watch('image') }}
           onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={onDeletePhoto} />, { overlayId: 'gallery' })}
         />
       </Flex>
