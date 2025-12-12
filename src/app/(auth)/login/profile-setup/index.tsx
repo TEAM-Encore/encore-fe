@@ -15,8 +15,8 @@ import { type LoginFormType, loginSchema } from './schema'
 import * as ImagePicker from 'expo-image-picker'
 import { api } from '@/api'
 import { router } from 'expo-router'
-import { deleteToken, getToken, saveToken } from '@/lib/storage'
 import { useState } from 'react'
+import { useImageUpload } from '@/hooks/useImageUpload'
 
 export default function ProfileSetup() {
   const form = useForm<LoginFormType>({
@@ -38,9 +38,6 @@ export default function ProfileSetup() {
       })
 
       if (response.code === 1000) {
-        const tmp = await getToken('tempToken') as string
-        await saveToken('accessToken', tmp)
-        await deleteToken('tempToken')
         router.replace('/')
       }
     } catch (error) {
@@ -48,9 +45,11 @@ export default function ProfileSetup() {
     }
   })
 
+  const uploadImage = useImageUpload()
+
   const onOpenGallery = async () => {
-    overlay.close('gallery')
-    
+    overlay.unmount('gallery')
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: false,
@@ -59,41 +58,20 @@ export default function ProfileSetup() {
       base64: true,
     })
 
-    const blob = result?.assets?.[0]?.file
     const uri = result?.assets?.[0]?.uri
     const fileName = result?.assets?.[0]?.fileName
 
-    if (!fileName) return
+    if (!fileName || !uri) return
 
-    onUploadImage(fileName, blob, uri)
+    const url = await uploadImage({ uri, fileName })
+    form.setValue('image', url)
+    setImageUrl(url)
   }
 
   const onDeletePhoto = () => {
+    overlay.unmount('gallery')
     form.setValue('image', undefined)
     setImageUrl(undefined)
-    overlay.close('gallery')
-  }
-
-  const onUploadImage = async (fileName: string, blob: File | undefined, uri: string | undefined) => {
-    try {
-      const response = await api().saveImage({ image_name: fileName }) as {file_path: string, upload_url: string}
-      const {upload_url, file_path} = response
-
-      const uploadResponse = await fetch(upload_url, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': blob?.type || 'image/jpeg',
-        },
-        body: blob,
-      })
-
-      if (uploadResponse.ok) {
-        form.setValue('image', file_path)
-        setImageUrl(uri)
-      }
-    } catch (error) {
-      console.error(error)
-    }
   }
 
   const onCheckNickname = async () => {
@@ -151,7 +129,7 @@ export default function ProfileSetup() {
       <Flex center>
         <Avatar
           source={{ uri: imageUrl }}
-          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={onDeletePhoto} />, {overlayId: 'gallery'})}
+          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={onDeletePhoto} />, { overlayId: 'gallery' })}
         />
       </Flex>
 
