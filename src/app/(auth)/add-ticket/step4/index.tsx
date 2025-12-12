@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
 import { Image } from 'react-native'
+import { api } from '@/api'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { Checkbox } from '@/components/Checkbox'
@@ -12,6 +13,8 @@ import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
+import { toast } from '@/components/Toaster'
+import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
@@ -22,6 +25,8 @@ export default function Step4() {
   }>()
   const parsedData: FormType = JSON.parse(params.data)
   const router = useRouter()
+
+  const user = useUser()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -77,19 +82,54 @@ export default function Step4() {
     })
 
     if (result.assets?.[0]) {
-      // const image = await api().saveImage({
-      //   image: result.assets[0].uri,
-      // })
-      // if (image.imageUrl) {
-      //   form.setValue('ticketImageUrl', image.data.url)
-      // }
+      const response = await api().saveImage({
+        image_name: result.assets[0].fileName || Date.now().toString(),
+      })
+      if (response.upload_url) {
+        const fileRes = await fetch(result.assets[0].uri)
+        const uploadResponse = await fetch(response.upload_url, {
+          body: await fileRes.blob(),
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'image/jpeg',
+          },
+        })
 
-      form.setValue('ticketImageUrl', result.assets[0].uri)
+        if (uploadResponse.ok) {
+          const res = await api().viewImage({
+            file_path: response.file_path,
+          })
+
+          if (res.url) {
+            form.setValue('ticketImageUrl', res.url)
+          }
+        }
+      }
     }
   }
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log(data)
+  const onSubmit = form.handleSubmit(async (data) => {
+    if (!user?.id) return
+
+    await api().createTicket(
+      {
+        userId: user?.id,
+      },
+      {
+        musical_id: data.musicalId,
+        viewed_date: data.viewedDate,
+        show_time: `${data.showTime.hour}:${data.showTime.minute}`,
+        floor: Number(data.floor),
+        zone: data.zone,
+        col: data.col,
+        number: data.seatNumber,
+        actor_ids: data.actors.map((actor) => actor.id),
+        ticket_image_url: data.ticketImageUrl,
+      },
+    )
+
+    toast.show('티켓을 등록했어요.')
+    router.push('/')
   })
 
   return (

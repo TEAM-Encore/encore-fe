@@ -17,17 +17,6 @@ import { useDebounce } from '@/hooks/useDebounce'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
-const ACTORS = [
-  {
-    id: 1,
-    name: '옥주현',
-  },
-  {
-    id: 2,
-    name: '서경수',
-  },
-]
-
 export default function Step3() {
   const params = useLocalSearchParams<{
     data: string
@@ -37,8 +26,8 @@ export default function Step3() {
     FormType,
     | 'musicalId'
     | 'floor'
-    | 'area'
-    | 'row'
+    | 'zone'
+    | 'col'
     | 'seatNumber'
     | 'viewedDate'
     | 'showTime'
@@ -59,8 +48,8 @@ export default function Step3() {
       FormType,
       | 'musicalId'
       | 'floor'
-      | 'area'
-      | 'row'
+      | 'zone'
+      | 'col'
       | 'seatNumber'
       | 'viewedDate'
       | 'showTime'
@@ -72,8 +61,8 @@ export default function Step3() {
       schema.pick({
         musicalId: true,
         floor: true,
-        area: true,
-        row: true,
+        zone: true,
+        col: true,
         seatNumber: true,
         viewedDate: true,
         showTime: true,
@@ -84,8 +73,8 @@ export default function Step3() {
     defaultValues: {
       musicalId: parsedData.musicalId,
       floor: parsedData.floor,
-      area: parsedData.area,
-      row: parsedData.row,
+      zone: parsedData.zone,
+      col: parsedData.col,
       seatNumber: parsedData.seatNumber,
       viewedDate: parsedData.viewedDate,
       showTime: parsedData.showTime,
