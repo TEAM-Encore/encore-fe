@@ -7,7 +7,7 @@ import { TicketBook } from '@/components/TicketBook'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useState } from 'react'
-import { FlatList, View } from 'react-native'
+import { FlatList } from 'react-native'
 
 // TODO: api 연동 후 Mock data 삭제
 const mockTickets = [
@@ -75,7 +75,7 @@ export default function ReviewWritePage() {
                 top="확인"
                 bottom="취소"
                 onTopPress={() => {
-                  router.back()
+                  router.push('/')
                 }}
               />
             ))

@@ -3,15 +3,15 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "npm run genapi && expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "npm run genapi && expo start --android",
+    "ios": "npm run genapi && expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
     "icon": "tsx ./src/generate-icons.ts",
     "icon:current": "tsx ./src/generate-icons.ts --current-color",
-    "genapi": "ts-node codegen/generate_api.ts"
+    "genapi": "tsx codegen/generate_api.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",

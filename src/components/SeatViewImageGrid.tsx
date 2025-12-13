@@ -9,6 +9,7 @@ type SeatViewImageGridProps = {
   onImageSelect: (imageId: string) => void
   onRefresh: () => void
   images: Array<{ id: string; url: string }>
+  className?: string
 }
 
 export function SeatViewImageGrid({
@@ -16,9 +17,10 @@ export function SeatViewImageGrid({
   onImageSelect,
   onRefresh,
   images,
+  className,
 }: SeatViewImageGridProps) {
   return (
-    <View>
+    <View className={cn(className)}>
       <View className="mb-3 items-end">
         <Pressable onPress={onRefresh} hitSlop={8}>
           <Row align="center" gap={4}>
@@ -45,19 +47,18 @@ export function SeatViewImageGrid({
                 <Pressable
                   key={image.id}
                   onPress={() => onImageSelect(image.id)}
-                  className="flex-1"
+                  style={{ flex: 1 }}
                 >
                   <View
-                    className={cn(
-                      'aspect-[3/2] overflow-hidden rounded-[6px] bg-gray-11',
-                      {
-                        'opacity-20': selectedImage && !isSelected,
-                      },
-                    )}
+                    className="overflow-hidden rounded-[6px] bg-gray-10"
+                    style={{
+                      aspectRatio: 3 / 2,
+                      opacity: selectedImage && !isSelected ? 0.2 : 1,
+                    }}
                   >
                     <Image
                       source={{ uri: image.url }}
-                      className="h-full w-full"
+                      style={{ width: '100%', height: '100%' }}
                       resizeMode="cover"
                     />
                   </View>

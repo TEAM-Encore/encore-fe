@@ -1,9 +1,9 @@
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList } from 'react-native'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
 import SortSelector from './SortSelector'
-import { useInfiniteQuery } from '@tanstack/react-query'
 
 const tabs = [
   { label: '인기순', value: 'likecount' },
@@ -11,49 +11,46 @@ const tabs = [
 ]
 
 export default function ReviewStep() {
-  const [sort, setSort] = useState(tabs[0].value)
+  const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
+    tabs[0].value,
+  )
 
   const flatListRef = useRef<FlatList>(null)
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useInfiniteQuery({
-    queryKey: ['reviews', sort],
-    queryFn: async ({ pageParam }) => {      
-      const params = new URLSearchParams({
-        page: '0',
-        sort: sort,
-      })
-      
-      const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/review/list?${params}`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
+    useInfiniteQuery({
+      queryKey: ['reviews', sort],
+      queryFn: async ({ pageParam }) => {
+        const params = new URLSearchParams({
+          page: '0',
+          sort: sort,
+        })
+
+        const response = await fetch(
+          `${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/review/list?${params}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
           },
-        }
-      )
-      const json = await response.json()
-      return json.data
-    },
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => {
-      if (lastPage?.last) return undefined
-      const content = lastPage?.content ?? []
-      return content[content.length - 1]?.review_id
-    },
-  })
+        )
+        const json = await response.json()
+        return json.data
+      },
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) => {
+        if (lastPage?.last) return undefined
+        const content = lastPage?.content ?? []
+        return content[content.length - 1]?.review_id
+      },
+    })
 
   const reviews = data?.pages.flatMap((page) => page?.content ?? []) ?? []
 
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false })
-  }, [sort])
+  }, [])
 
   return (
     <>
@@ -78,7 +75,9 @@ export default function ReviewStep() {
         }}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-          isFetchingNextPage ? <ActivityIndicator style={{ padding: 20 }} /> : null
+          isFetchingNextPage ? (
+            <ActivityIndicator style={{ padding: 20 }} />
+          ) : null
         }
         ListEmptyComponent={
           isLoading ? <ActivityIndicator style={{ padding: 20 }} /> : null
