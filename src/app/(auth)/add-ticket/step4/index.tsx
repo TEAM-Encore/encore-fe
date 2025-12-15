@@ -129,7 +129,8 @@ export default function Step4() {
     )
 
     toast.show('티켓을 등록했어요.')
-    router.push('/')
+
+    router.dismissTo('/')
   })
 
   return (
