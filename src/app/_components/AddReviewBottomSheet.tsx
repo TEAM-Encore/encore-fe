@@ -1,5 +1,7 @@
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
+import { api } from '@/api'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { ArrowRight, Edit, Ticket } from '@/components/common/icons/svgs'
@@ -22,6 +24,19 @@ export default function AddReviewBottomSheet({
     close()
     unmount?.()
   }
+
+  const { data } = useQuery({
+    queryKey: ['ticket'],
+    queryFn: async () => {
+      const response = await api().getTicketList({
+        userId: 0,
+        dateRange: '30',
+      })
+      return response.data
+    },
+  })
+
+  console.log(data)
 
   return (
     <BottomSheet.Root isOpen close={onClose}>
@@ -56,7 +71,10 @@ export default function AddReviewBottomSheet({
           align="center"
           className="border-b border-b-gray-09 px-6 py-[18px]"
           onPress={() => {
-            // router.push("/review-write")
+            if (data?.length && data.length > 0) {
+              router.push('/review-write')
+              return
+            }
             overlay.open((o) => (
               <Dialog
                 {...o}
