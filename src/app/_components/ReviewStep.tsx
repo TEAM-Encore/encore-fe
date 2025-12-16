@@ -11,40 +11,47 @@ const tabs = [
 ]
 
 export default function ReviewStep() {
+  const flatListRef = useRef<FlatList>(null)
+
   const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
 
-  const flatListRef = useRef<FlatList>(null)
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error,
+  } = useInfiniteQuery({
+    queryKey: ['reviews', sort],
+    queryFn: async ({ pageParam }) => {
+      const params = new URLSearchParams({
+        page: '0',
+        size: '3',
+        sort: sort,
+      })
+      if (pageParam != null) params.set('cursor', String(pageParam))
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useInfiniteQuery({
-      queryKey: ['reviews', sort],
-      queryFn: async ({ pageParam }) => {
-        const params = new URLSearchParams({
-          page: '0',
-          sort: sort,
-        })
-
-        const response = await fetch(
-          `${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/review/list?${params}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/review/list?${params}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
           },
-        )
-        const json = await response.json()
-        return json.data
-      },
-      initialPageParam: 0,
-      getNextPageParam: (lastPage) => {
-        if (lastPage?.last) return undefined
-        const content = lastPage?.content ?? []
-        return content[content.length - 1]?.review_id
-      },
-    })
+        },
+      )
+      return response.json().then((data) => data.data)
+    },
+    initialPageParam: undefined as number | undefined,
+    getNextPageParam: (lastPage) => {
+      return lastPage?.nextCursor ?? undefined
+    },
+  })
+
+  console.log(error)
 
   const reviews = data?.pages.flatMap((page) => page?.content ?? []) ?? []
 
