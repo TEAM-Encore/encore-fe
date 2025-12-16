@@ -13,11 +13,14 @@ import { Text } from '@/components/common/ui/Text'
 import { Search } from '@/components/search/Search'
 import { SearchItem } from '@/components/search/SearchItem'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useUser } from '@/providers/user.provider'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
 export default function Step1() {
   const [keyword, setKeyword] = useState('')
+
+  const user = useUser()
 
   const { data } = useQuery(
     musicalQueries.searchMusicals({

@@ -29,8 +29,8 @@ export default function Step2() {
       FormType,
       | 'musicalId'
       | 'floor'
-      | 'area'
-      | 'row'
+      | 'zone'
+      | 'col'
       | 'seatNumber'
       | 'viewedDate'
       | 'showTime'
@@ -41,8 +41,8 @@ export default function Step2() {
       schema.pick({
         musicalId: true,
         floor: true,
-        area: true,
-        row: true,
+        zone: true,
+        col: true,
         seatNumber: true,
         viewedDate: true,
         showTime: true,
@@ -53,8 +53,8 @@ export default function Step2() {
       musicalId: parsedData.musicalId,
       viewedDate: dayjs().format('YYYY-MM-DD'),
       floor: '',
-      area: '',
-      row: '',
+      zone: '',
+      col: '',
       seatNumber: '',
       showTime: {
         hour: '00',
@@ -111,7 +111,7 @@ export default function Step2() {
               <FormTextField
                 variant="short"
                 control={form.control}
-                name="area"
+                name="zone"
               />
               <Text variant="body-01" className="text-white">
                 구역
@@ -121,7 +121,7 @@ export default function Step2() {
               <FormTextField
                 variant="short"
                 control={form.control}
-                name="row"
+                name="col"
               />
               <Text variant="body-01" className="text-white">
                 열
