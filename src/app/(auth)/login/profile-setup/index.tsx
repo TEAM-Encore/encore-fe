@@ -1,7 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import * as ImagePicker from 'expo-image-picker'
+import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
 import { StatusBar } from 'react-native'
+import { api } from '@/api'
 import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
 import { Col, Flex } from '@/components/common/ui/Flex'
@@ -10,12 +13,9 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { FormTextField } from '@/components/TextField'
+import { uploadImage } from '@/utils/upload-image'
 import GalleryBottomSheet from './components/GalleryBottomSheet'
 import { type LoginFormType, loginSchema } from './schema'
-import * as ImagePicker from 'expo-image-picker'
-import { api } from '@/api'
-import { router } from 'expo-router'
-import { uploadImage } from '@/utils/upload-image'
 
 export default function ProfileSetup() {
   const form = useForm<LoginFormType>({
@@ -42,7 +42,6 @@ export default function ProfileSetup() {
     }
   })
 
-
   const onOpenGallery = async () => {
     overlay.unmount('gallery')
 
@@ -54,7 +53,9 @@ export default function ProfileSetup() {
       base64: true,
     })
 
-    const url = await uploadImage(result?.assets?.[0] as ImagePicker.ImagePickerAsset) as string
+    const url = (await uploadImage(
+      result?.assets?.[0] as ImagePicker.ImagePickerAsset,
+    )) as string
     form.setValue('image', url)
   }
 
@@ -65,26 +66,34 @@ export default function ProfileSetup() {
 
   const onCheckNickname = async () => {
     try {
-      const response = await api().validateUserNickname({ nickname: form.watch('nickname') })
-      const data = response.data;
+      const response = await api().validateUserNickname({
+        nickname: form.watch('nickname'),
+      })
+      const data = response.data
       if (data?.is_valid) {
         form.clearErrors('nickname')
-        return;
-      };
+        return
+      }
     } catch (error: any) {
       switch (error.code) {
-        case 3004: case 3005:
+        case 3004:
+        case 3005:
           form.setError('nickname', { message: '6글자가 초과되었어요.' })
-          break;
+          break
         case 3003:
           form.setError('nickname', { message: '중복되는 닉네임이에요' })
-          break;
-        case 3006: case 3007:
-          form.setError('nickname', { message: '여백 없이 한글, 영문, 숫자만 가능해요.' })
-          break;
+          break
+        case 3006:
+        case 3007:
+          form.setError('nickname', {
+            message: '여백 없이 한글, 영문, 숫자만 가능해요.',
+          })
+          break
         default:
-          form.setError('nickname', { message: '금칙어가 포함된 닉네임이에요.' })
-          break;
+          form.setError('nickname', {
+            message: '금칙어가 포함된 닉네임이에요.',
+          })
+          break
       }
     }
   }
@@ -117,8 +126,19 @@ export default function ProfileSetup() {
       <Spacing size={24} />
       <Flex center>
         <Avatar
-          source={{ uri: form.watch('image') }}
-          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} onOpenGallery={onOpenGallery} onDeletePhoto={onDeletePhoto} />, { overlayId: 'gallery' })}
+          imageUrl={form.watch('image')}
+          onUpload={() =>
+            overlay.open(
+              (o) => (
+                <GalleryBottomSheet
+                  {...o}
+                  onOpenGallery={onOpenGallery}
+                  onDeletePhoto={onDeletePhoto}
+                />
+              ),
+              { overlayId: 'gallery' },
+            )
+          }
         />
       </Flex>
 
