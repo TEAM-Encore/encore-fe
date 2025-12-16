@@ -1,23 +1,10 @@
-import { getToken } from '@/lib/storage'
 import { Providers } from '@/providers/Providers'
 import '@/styles/globals.css'
 import { useFonts } from 'expo-font'
-import { router, SplashScreen, Stack, usePathname } from 'expo-router'
+import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 
 export default function RootLayout() {
-  const pathname = usePathname();
-
-  useEffect(() => {
-    const checkAccess = async () => {
-      const preventNavigate = ['/login', '/login/profile-setup'];
-      const isLoggedIn = await getToken('accessToken')
-      if (!isLoggedIn && !preventNavigate.includes(pathname)) router.replace('/login')
-    }
-
-    checkAccess().catch(console.error)
-  }, [pathname])
-
   const [fontsLoaded, error] = useFonts({
     'Pretendard-Thin': require('@/assets/fonts/Pretendard-Thin.otf'),
     'Pretendard-ExtraLight': require('@/assets/fonts/Pretendard-ExtraLight.otf'),
