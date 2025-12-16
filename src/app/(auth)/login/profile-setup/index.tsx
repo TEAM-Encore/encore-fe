@@ -15,7 +15,7 @@ import { type LoginFormType, loginSchema } from './schema'
 import * as ImagePicker from 'expo-image-picker'
 import { api } from '@/api'
 import { router } from 'expo-router'
-import { useImageUpload } from '@/hooks/useImageUpload'
+import { uploadImage } from '@/utils/upload-image'
 
 export default function ProfileSetup() {
   const form = useForm<LoginFormType>({
@@ -42,7 +42,6 @@ export default function ProfileSetup() {
     }
   })
 
-  const uploadImage = useImageUpload()
 
   const onOpenGallery = async () => {
     overlay.unmount('gallery')
@@ -55,12 +54,7 @@ export default function ProfileSetup() {
       base64: true,
     })
 
-    const uri = result?.assets?.[0]?.uri
-    const fileName = result?.assets?.[0]?.fileName
-
-    if (!fileName || !uri) return
-
-    const url = await uploadImage({ uri, fileName })
+    const url = await uploadImage(result?.assets?.[0] as ImagePicker.ImagePickerAsset) as string
     form.setValue('image', url)
   }
 
