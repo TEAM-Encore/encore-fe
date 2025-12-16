@@ -8,8 +8,8 @@ export const schema = z.object({
    * 관람좌석
    */
   floor: z.string().min(1),
-  area: z.string().min(1),
-  row: z.string().min(1),
+  zone: z.string().min(1),
+  col: z.string().min(1),
   seatNumber: z.string().min(1),
 
   /**
