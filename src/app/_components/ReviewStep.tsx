@@ -1,9 +1,10 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList } from 'react-native'
+import { api } from '@/api'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
+import { useInfiniteList } from '@/hooks/useInfiniteList'
 import { useUser } from '@/providers/user.provider'
 import SortSelector from './SortSelector'
 
@@ -22,33 +23,14 @@ export default function ReviewStep() {
   )
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useInfiniteQuery({
+    useInfiniteList({
       queryKey: ['reviews', sort],
-      queryFn: async ({ pageParam }) => {
-        const params = new URLSearchParams({
-          cursor: pageParam?.toString() ?? '',
-          'pageable.page': '0',
-          'pageable.size': '3',
-          'pageable.sort': sort,
-          userId: String(user?.id),
-        })
-        if (pageParam != null) params.set('cursor', String(pageParam))
-
-        const response = await fetch(
-          `${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/review/list?${params}`,
-          {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        )
-        return response.json().then((data) => data.data)
-      },
-      initialPageParam: undefined as number | undefined,
-      getNextPageParam: (lastPage) => {
-        return lastPage?.nextCursor ?? undefined
-      },
+      fn: api().getReviewList,
+      params: (cursor) => ({
+        cursor,
+        pageable: { page: 0, size: 3, sort: [sort] },
+        userId: user?.id ?? 0,
+      }),
     })
 
   const reviews = data?.pages.flatMap((page) => page?.content ?? []) ?? []
