@@ -12,7 +12,8 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 80
+    "lineWidth": 80,
+    "formatWithErrors": true
   },
   "linter": {
     "enabled": true,
@@ -30,8 +31,7 @@
       },
       "suspicious": {
         "noArrayIndexKey": "off",
-        "useIterableCallbackReturn": "off",
-        "useConst": "off"
+        "useIterableCallbackReturn": "off"
       }
     }
   },

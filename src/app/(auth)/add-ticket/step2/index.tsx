@@ -20,15 +20,17 @@ export default function Step2() {
   const params = useLocalSearchParams<{
     data: string
   }>()
-  const parsedData: Pick<FormType, 'musicalId'> = JSON.parse(params.data)
+  const parsedData: Pick<FormType, 'musicalId' | 'hall'> = JSON.parse(
+    params.data,
+  )
   const router = useRouter()
   const form = useForm<
     Pick<
       FormType,
       | 'musicalId'
       | 'floor'
-      | 'area'
-      | 'row'
+      | 'zone'
+      | 'col'
       | 'seatNumber'
       | 'viewedDate'
       | 'showTime'
@@ -39,8 +41,8 @@ export default function Step2() {
       schema.pick({
         musicalId: true,
         floor: true,
-        area: true,
-        row: true,
+        zone: true,
+        col: true,
         seatNumber: true,
         viewedDate: true,
         showTime: true,
@@ -51,14 +53,14 @@ export default function Step2() {
       musicalId: parsedData.musicalId,
       viewedDate: dayjs().format('YYYY-MM-DD'),
       floor: '',
-      area: '',
-      row: '',
+      zone: '',
+      col: '',
       seatNumber: '',
       showTime: {
         hour: '00',
         minute: '00',
       },
-      hall: '',
+      hall: parsedData.hall,
     },
   })
 
@@ -109,7 +111,7 @@ export default function Step2() {
               <FormTextField
                 variant="short"
                 control={form.control}
-                name="area"
+                name="zone"
               />
               <Text variant="body-01" className="text-white">
                 구역
@@ -119,7 +121,7 @@ export default function Step2() {
               <FormTextField
                 variant="short"
                 control={form.control}
-                name="row"
+                name="col"
               />
               <Text variant="body-01" className="text-white">
                 열
@@ -205,11 +207,12 @@ export default function Step2() {
             name="hall"
             render={({ field: { value, onChange, onBlur, ref } }) => (
               <TextInput
+                readOnly
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 ref={ref}
-                className="h-10 rounded-[4px] bg-gray-10 px-3 py-[10px] text-body-1 text-gray-01"
+                className="h-10 rounded-[4px] bg-gray-10 px-3 py-[10px] text-body-1 text-gray-07"
               />
             )}
           />

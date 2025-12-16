@@ -1,8 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FlatList } from 'react-native'
+import { musicalQueries } from '@/apis/musical/queries'
 import { Button } from '@/components/Button'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -10,13 +12,24 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Search } from '@/components/search/Search'
 import { SearchItem } from '@/components/search/SearchItem'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useUser } from '@/providers/user.provider'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
 export default function Step1() {
-  const [searchValue, setSearchValue] = useState('')
-  const form = useForm<Pick<FormType, 'musicalId'>>({
-    resolver: zodResolver(schema.pick({ musicalId: true })),
+  const [keyword, setKeyword] = useState('')
+
+  const user = useUser()
+
+  const { data } = useQuery(
+    musicalQueries.searchMusicals({
+      keyword: useDebounce(keyword, 150),
+      pageable: {},
+    }),
+  )
+  const form = useForm<Pick<FormType, 'musicalId' | 'hall'>>({
+    resolver: zodResolver(schema.pick({ musicalId: true, hall: true })),
   })
 
   const router = useRouter()
@@ -51,31 +64,25 @@ export default function Step1() {
       <Spacing size={29} />
       <Search
         placeholder="공연명 검색하기"
-        value={searchValue}
-        onChangeText={setSearchValue}
-        onDelete={() => setSearchValue('')}
+        value={keyword}
+        onChangeText={setKeyword}
+        onDelete={() => setKeyword('')}
       />
       <FlatList
-        data={[
-          {
-            id: 1,
-            name: '알라딘 (3연)',
-          },
-          {
-            id: 2,
-            name: '알라딘 (3연)',
-          },
-        ]}
+        data={data?.data?.content ?? []}
         renderItem={({ item }) => (
           <SearchItem
-            selected={form.watch('musicalId') === item.id}
+            selected={form.watch('musicalId') === item.musical_id}
             onPress={() => {
-              form.setValue('musicalId', item.id, {
+              form.setValue('musicalId', item.musical_id ?? 0, {
+                shouldValidate: true,
+              })
+              form.setValue('hall', item.location ?? '', {
                 shouldValidate: true,
               })
             }}
           >
-            {item.name}
+            {item.title + ' ' + item.location}
           </SearchItem>
         )}
         contentContainerClassName="gap-2 mt-4"
