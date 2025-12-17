@@ -1,7 +1,7 @@
 import { Providers } from '@/providers/Providers'
 import '@/styles/globals.css'
 import { useFonts } from 'expo-font'
-import { Slot, SplashScreen, Stack } from 'expo-router'
+import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 
 export default function RootLayout() {

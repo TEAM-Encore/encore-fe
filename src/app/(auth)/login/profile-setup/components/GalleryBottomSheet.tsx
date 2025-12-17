@@ -3,14 +3,15 @@ import { Icon } from '@/components/common/icons/Icon'
 import { Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 
-function GalleryBottomSheet({ isOpen, close, unmount }: OverlayProps) {
+interface GalleryBottomSheetProps extends OverlayProps {
+  onOpenGallery: () => void
+  onDeletePhoto: () => void
+}
+
+function GalleryBottomSheet({ onOpenGallery, onDeletePhoto, ...props }: GalleryBottomSheetProps) {
   return (
     <BottomSheet.Root
-      isOpen={isOpen}
-      close={() => {
-        close()
-        unmount?.()
-      }}
+      {...props}
       backgroundColor="#FFFFFF"
       borderTopRadius={20}
     >
@@ -20,6 +21,7 @@ function GalleryBottomSheet({ isOpen, close, unmount }: OverlayProps) {
           justify="center"
           gap={10}
           className="h-[68px] bg-white py-5"
+          onPress={onOpenGallery}
         >
           <Icon name="Image" size={24} className="text-gray-09" />
           <Text variant="subhead-long-03" color="gray-09">
@@ -31,6 +33,7 @@ function GalleryBottomSheet({ isOpen, close, unmount }: OverlayProps) {
           justify="center"
           gap={10}
           className="h-[68px] bg-white py-5"
+          onPress={onDeletePhoto}
         >
           <Icon name="Delete" size={24} className="text-sub-alert" />
           <Text variant="subhead-long-03" color="sub-alert">
