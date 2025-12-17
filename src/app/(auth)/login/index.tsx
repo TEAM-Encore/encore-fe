@@ -42,25 +42,18 @@ export default function Index() {
         const token = parsed.searchParams.get('token')
 
         if (token) {
-          await saveToken('accessToken', token).then(async () =>
-          {
-            const res = await fetch(`${process.env.EXPO_PUBLIC_API_HOST}/api/mvp/users/me`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            })
+          await saveToken('accessToken', token).then(async () => {
+            const response = await api().getMyInfo()
 
-            const { code, data } = await res.json()
-            
+            const { code, data } = response
+
             if (code === 1000) {
               await saveToken('userInfo', JSON.stringify(data))
               router.replace('/')
             } else {
               router.push('/login/profile-setup')
             }
-          }
-          )
+          })
         }
       }
     } catch (error) {
