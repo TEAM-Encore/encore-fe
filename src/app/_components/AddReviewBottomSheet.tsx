@@ -36,8 +36,6 @@ export default function AddReviewBottomSheet({
     },
   })
 
-  console.log(data)
-
   return (
     <BottomSheet.Root isOpen close={onClose}>
       <BottomSheet.Content className="z-[9999]">
