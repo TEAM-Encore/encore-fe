@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query'
-import type { SearchActorsParams } from 'api'
+import type { GetTicketDetailParams, SearchActorsParams } from 'api'
 import { api } from '@/api'
 import { ticketKeys } from './keys'
 
@@ -9,5 +9,13 @@ export const ticketQueries = {
       queryKey: ticketKeys.searchActors(params),
       queryFn: () => api().searchActors(params),
       enabled: !!params.keyword,
+    }),
+
+  ticketDetail: (params: GetTicketDetailParams) =>
+    queryOptions({
+      queryKey: ticketKeys.ticketDetail(params),
+      queryFn: () => api().getTicketDetail(params),
+      select: (data) => data.data,
+      enabled: !!params.userId && !!params.ticketId,
     }),
 }

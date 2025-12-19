@@ -20,7 +20,9 @@ export default function AddReviewBottomSheet({
 
   const onClose = () => {
     close()
-    unmount?.()
+    setTimeout(() => {
+      unmount?.()
+    }, 300)
   }
 
   return (
