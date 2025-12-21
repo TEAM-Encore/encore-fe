@@ -42,9 +42,18 @@ export default function Index() {
         const token = parsed.searchParams.get('token')
 
         if (token) {
-          await saveToken('accessToken', token).then(() =>
-            router.push('/login/profile-setup'),
-          )
+          await saveToken('accessToken', token).then(async () => {
+            const response = await api().getMyInfo()
+
+            const { code, data } = response
+
+            if (code === 1000) {
+              await saveToken('userInfo', JSON.stringify(data))
+              router.replace('/')
+            } else {
+              router.push('/login/profile-setup')
+            }
+          })
         }
       }
     } catch (error) {
