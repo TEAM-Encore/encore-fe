@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FlatList } from 'react-native'
-import { api } from '@/api'
+import { ticketQueries } from '@/apis/ticket/queries'
 import { Ticket } from '@/components/common/icons/svgs'
 import { Col } from '@/components/common/ui/Flex'
 import { Spacing } from '@/components/common/ui/Spacing'
@@ -22,26 +22,21 @@ export default function TicketbookStep() {
     tabs[0].value,
   )
 
-  const { data } = useQuery({
-    queryKey: ['ticket', sort],
-    queryFn: async () => {
-      const dateRange = sort === 'all' ? '30' : sort === 'week' ? '7' : '0'
-      const response = await api().getTicketList({
-        userId: user?.id as number,
-        dateRange,
-      })
-      return response.data
-    },
-  })
+  const { data } = useQuery(
+    ticketQueries.getTicketList({
+      userId: user?.id as number,
+      dateRange: sort === 'all' ? '30' : sort === 'week' ? '7' : '0',
+    }),
+  )
 
   return (
     <>
       <SortSelector tabs={tabs} value={sort} onChange={setSort} />
       <Spacing size={1} />
 
-      {data?.length && data.length > 0 ? (
+      {data?.data?.length && data?.data?.length > 0 ? (
         <FlatList
-          data={data}
+          data={data?.data ?? []}
           contentContainerClassName="px-5 gap-5 pb-6"
           keyExtractor={(item) => item.id?.toString() ?? ''}
           renderItem={({ item }) => (
