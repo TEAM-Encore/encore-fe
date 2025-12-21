@@ -22,18 +22,18 @@ export default function ReviewStep() {
     tabs[0].value,
   )
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useInfiniteList({
-      queryKey: ['reviews', sort],
-      fn: api().getReviewList,
-      params: (cursor) => ({
-        cursor,
-        pageable: { page: 0, size: 3, sort: [sort] },
-        userId: user?.id ?? 0,
-      }),
-    })
-
-  const reviews = data?.pages.flatMap((page) => page?.content ?? []) ?? []
+  const {
+    items: reviews,
+    loadMore,
+    ...queryProps
+  } = useInfiniteList({
+    queryKey: ['reviews', sort],
+    fn: api().getReviewList,
+    params: {
+      pageable: { page: 0, size: 3, sort: [sort] },
+      userId: user?.id ?? 0,
+    },
+  })
 
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false })
@@ -46,8 +46,7 @@ export default function ReviewStep() {
       <FlatList
         data={reviews}
         ref={flatListRef}
-        contentContainerClassName="px-5 gap-5 pb-6"
-        keyExtractor={(item) => item.review_id}
+        contentContainerClassName="px-5 gap-5"
         renderItem={({ item }) => (
           <ReviewCard
             title={item.title}
@@ -57,19 +56,20 @@ export default function ReviewStep() {
             onPress={() => router.push(`/review-detail/${item.review_id}`)}
           />
         )}
-        onEndReached={() => {
-          if (hasNextPage && !isFetchingNextPage) fetchNextPage()
-        }}
+        onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
-          isFetchingNextPage ? (
+          queryProps.isFetchingNextPage ? (
             <ActivityIndicator style={{ padding: 20 }} />
           ) : null
         }
         ListEmptyComponent={
-          isLoading ? <ActivityIndicator style={{ padding: 20 }} /> : null
+          queryProps.isLoading ? (
+            <ActivityIndicator style={{ padding: 20 }} />
+          ) : null
         }
       />
+      <Spacing size={24} />
     </>
   )
 }

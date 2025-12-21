@@ -1,28 +1,53 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-interface CursorBasedData {
-  nextCursor?: number
-  content?: unknown[]
+interface TResponse<TItem> {
+  data?: {
+    nextCursor?: number
+    content?: TItem[]
+    hasNext?: boolean
+  }
 }
 
-interface UseInfiniteListProps<TParams, TData extends CursorBasedData> {
+interface UseInfiniteListProps<
+  TParams extends { cursor?: number },
+  TItem,
+  TData extends TResponse<TItem>,
+> {
   queryKey: string[]
-  fn: (params: TParams) => Promise<{ data?: TData }>
-  params: (pageParam: number | undefined) => TParams
+  fn: (params: TParams) => Promise<TData>
+  params: Omit<TParams, 'cursor'>
 }
 
-export const useInfiniteList = <TParams, TData extends CursorBasedData>({
+export const useInfiniteList = <
+  TParams extends { cursor?: number },
+  TItem,
+  TData extends TResponse<TItem>,
+>({
   queryKey,
   fn,
   params,
-}: UseInfiniteListProps<TParams, TData>) => {
-  return useInfiniteQuery({
+}: UseInfiniteListProps<TParams, TItem, TData>) => {
+  const query = useInfiniteQuery({
     queryKey,
     queryFn: async ({ pageParam }) => {
-      const response = await fn(params(pageParam))
+      const response = await fn({ ...params, cursor: pageParam } as TParams)
       return response.data
     },
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage?.nextCursor ?? undefined,
   })
+
+  const items = query.data?.pages.flatMap((page) => page?.content ?? []) ?? []
+
+  const loadMore = () => {
+    if (query.hasNextPage && !query.isFetchingNextPage) {
+      query.fetchNextPage()
+    }
+  }
+
+  return {
+    ...query,
+    items,
+    loadMore,
+  }
 }
