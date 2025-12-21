@@ -29,14 +29,16 @@ export default function TicketbookStep() {
     }),
   )
 
+  const tickets = data?.data ?? []
+
   return (
     <>
       <SortSelector tabs={tabs} value={sort} onChange={setSort} />
       <Spacing size={1} />
 
-      {data?.data?.length && data?.data?.length > 0 ? (
+      {tickets?.length && tickets?.length > 0 ? (
         <FlatList
-          data={data?.data ?? []}
+          data={tickets ?? []}
           contentContainerClassName="px-5 gap-5 pb-6"
           keyExtractor={(item) => item.id?.toString() ?? ''}
           renderItem={({ item }) => (
