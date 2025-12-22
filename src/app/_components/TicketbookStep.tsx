@@ -50,10 +50,16 @@ export const MOCK = [
   },
 ]
 
-const tabs = [{ label: '전체', value: 'all' }, { label: '최근 1주', value: 'week' }, { label: '최근 1달', value: 'month' }]
+const tabs = [
+  { label: '전체', value: 'all' },
+  { label: '최근 1주', value: 'week' },
+  { label: '최근 1달', value: 'month' },
+]
 
 export default function TicketbookStep() {
-  const [sort, setSort] = useState<typeof tabs[number]['value']>(tabs[0].value)
+  const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
+    tabs[0].value,
+  )
 
   return (
     <>
