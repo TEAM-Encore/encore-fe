@@ -8,6 +8,7 @@ import { ArrowRight, Edit, Ticket } from '@/components/common/icons/svgs'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
+import { useUser } from '@/providers/user.provider'
 
 interface AddReviewBottomSheetProps extends OverlayProps {
   close: VoidFunction
@@ -19,6 +20,7 @@ export default function AddReviewBottomSheet({
   unmount,
 }: AddReviewBottomSheetProps) {
   const router = useRouter()
+  const user = useUser()
 
   const onClose = () => {
     close()
@@ -27,7 +29,7 @@ export default function AddReviewBottomSheet({
 
   const { data } = useQuery(
     ticketQueries.getTicketList({
-      userId: 0,
+      userId: user?.id ?? 0,
       dateRange: '30',
     }),
   )
