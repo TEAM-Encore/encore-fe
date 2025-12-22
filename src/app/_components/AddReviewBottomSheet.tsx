@@ -1,11 +1,14 @@
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
+import { ticketQueries } from '@/apis/ticket/queries'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { ArrowRight, Edit, Ticket } from '@/components/common/icons/svgs'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
+import { useUser } from '@/providers/user.provider'
 
 interface AddReviewBottomSheetProps extends OverlayProps {
   close: VoidFunction
@@ -17,11 +20,21 @@ export default function AddReviewBottomSheet({
   unmount,
 }: AddReviewBottomSheetProps) {
   const router = useRouter()
+  const user = useUser()
 
   const onClose = () => {
     close()
     unmount?.()
   }
+
+  const { data } = useQuery(
+    ticketQueries.getTicketList({
+      userId: user?.id ?? 0,
+      dateRange: '30',
+    }),
+  )
+
+  const tickets = data?.data ?? []
 
   return (
     <BottomSheet.Root isOpen close={onClose}>
@@ -56,7 +69,10 @@ export default function AddReviewBottomSheet({
           align="center"
           className="border-b border-b-gray-09 px-6 py-[18px]"
           onPress={() => {
-            // router.push("/review-write")
+            if (tickets?.length && tickets.length > 0) {
+              router.push('/review-write')
+              return
+            }
             overlay.open((o) => (
               <Dialog
                 {...o}
