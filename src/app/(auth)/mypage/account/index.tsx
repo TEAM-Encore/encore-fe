@@ -6,9 +6,12 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
 import { deleteToken } from '@/lib/storage'
+import { useAuth } from '@/providers/user.provider'
 import MypageSection from '../_components/MypageSection'
 
 export default function Account() {
+  const { logout } = useAuth()
+
   return (
     <Screen
       header={
@@ -37,7 +40,7 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
-                        deleteToken('accessToken')
+                        logout()
                         router.replace('/login')
                       }}
                     />

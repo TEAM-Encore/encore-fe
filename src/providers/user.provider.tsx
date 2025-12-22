@@ -1,6 +1,6 @@
 import { decodeJwt } from 'jose'
 import { useCallback, useEffect, useState } from 'react'
-import { getToken } from '@/lib/storage'
+import { deleteToken, getToken } from '@/lib/storage'
 import { createSafeContext } from '@/utils/create-safe-context'
 
 type User = {
@@ -12,9 +12,18 @@ type User = {
   sub: string
 }
 
-const [Provider, useUser] = createSafeContext<User | undefined>('UserContext')
+type UserContext = {
+  user: User | undefined
+  logout: VoidFunction
+}
 
-export { useUser }
+const [Provider, useAuth] = createSafeContext<UserContext>('UserContext')
+
+export { useAuth }
+
+export const useUser = () => {
+  return useAuth().user
+}
 
 export function UserProvider({ children }: PropsWithStrictChildren) {
   const [user, setUser] = useState<User>()
@@ -26,11 +35,25 @@ export function UserProvider({ children }: PropsWithStrictChildren) {
 
       setUser(decoded)
     }
-  }, [setUser])
+  }, [])
+
+  const logout = useCallback(async () => {
+    await deleteToken('accessToken')
+    setUser(undefined)
+  }, [])
 
   useEffect(() => {
     sync()
   }, [sync])
 
-  return <Provider value={user}>{children}</Provider>
+  return (
+    <Provider
+      value={{
+        user,
+        logout,
+      }}
+    >
+      {children}
+    </Provider>
+  )
 }
