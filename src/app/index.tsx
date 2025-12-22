@@ -1,18 +1,19 @@
-import { Feather, Search, UserLinear } from '@/components/common/icons/svgs'
-import { Flex, Row } from '@/components/common/ui/Flex'
-import { Screen } from '@/components/common/ui/Screen'
-import { Text } from '@/components/common/ui/Text'
 import { LinearGradient } from 'expo-linear-gradient'
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Feather, Search, UserLinear } from '@/components/common/icons/svgs'
+import { Flex, Row } from '@/components/common/ui/Flex'
+import { Screen } from '@/components/common/ui/Screen'
+import { Text } from '@/components/common/ui/Text'
+import { useUser } from '@/providers/user.provider'
 import AddReviewBottomSheet from './_components/AddReviewBottomSheet'
 import ReviewStep from './_components/ReviewStep'
 import TicketbookStep from './_components/TicketbookStep'
-import LogoText from './(auth)/login/components/LogoText'
+import LogoText from './login/components/LogoText'
 
 const tabs = [
   { label: '후기글', value: 'review' },
@@ -21,12 +22,17 @@ const tabs = [
 
 export default function Index() {
   const router = useRouter()
+  const user = useUser()
   const [selected, setSelected] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
 
   const translateX = useSharedValue(0)
   const insets = useSafeAreaInsets()
+
+  // if (!user) {
+  //   return <Redirect href="/login" />
+  // }
 
   useEffect(() => {
     const selectedIndex = tabs.findIndex((tab) => tab.value === selected)

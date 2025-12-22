@@ -67,6 +67,7 @@ export function ReviewCard({
           variant="body-01"
           className={cn('text-gray-07', 'mt-[6px]')}
           numberOfLines={2}
+          flex={1}
           ellipsizeMode="tail"
         >
           {summary}

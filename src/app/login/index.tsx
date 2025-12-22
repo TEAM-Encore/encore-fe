@@ -48,7 +48,7 @@ export default function Index() {
             const { code, data } = response
 
             if (code === 1000) {
-              await saveToken('userInfo', JSON.stringify(data))
+              // await saveToken('userInfo', JSON.stringify(data))
               router.replace('/')
             } else {
               router.push('/login/profile-setup')
@@ -64,7 +64,7 @@ export default function Index() {
   return (
     <View className="flex-1">
       <Image
-        source={require('../../../../assets/images/login-bg.png')}
+        source={require('@/assets/images/login-bg.png')}
         className="absolute h-full w-full"
         resizeMode="cover"
       />

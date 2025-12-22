@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
-import GalleryBottomSheet from '@/app/(auth)/login/profile-setup/components/GalleryBottomSheet'
+import GalleryBottomSheet from '@/app/login/profile-setup/components/GalleryBottomSheet'
 import {
   type LoginFormType,
   loginSchema,
-} from '@/app/(auth)/login/profile-setup/schema'
+} from '@/app/login/profile-setup/schema'
 import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
 import { Col, Flex } from '@/components/common/ui/Flex'
