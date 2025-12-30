@@ -1,6 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
+import { userQueries } from '@/apis/user/queries'
 import GalleryBottomSheet from '@/app/login/profile-setup/components/GalleryBottomSheet'
 import {
   type LoginFormType,
@@ -16,18 +19,30 @@ import { Header } from '@/components/Header'
 import { FormTextField } from '@/components/TextField'
 
 export default function Profile() {
+  const { data } = useQuery(userQueries.getMyInfo())
+  const { mutateAsync } = useMutation(userQueries.patchUserInfo())
+
   const form = useForm<LoginFormType>({
     mode: 'onSubmit',
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      image: undefined,
-      nickname: '',
+      image: data?.data?.profile_image_url,
+      nickname: data?.data?.nickname,
     },
   })
 
-  const onSubmit = () => {
-    // TODO: 프로필 수정 로직 구현
-  }
+  const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
+    await mutateAsync(
+      {
+        nick_name: data.nickname,
+        profile_image_url: data.image,
+      },
+      {
+        onSuccess: () => router.replace('/'),
+        onError: (error) => console.error(error),
+      },
+    )
+  })
 
   return (
     <Screen
@@ -46,7 +61,13 @@ export default function Profile() {
             if (form.watch('image')) {
               // TODO: 사진 없는 경우 갤러리로 바로 이동
             } else {
-              overlay.open((o) => <GalleryBottomSheet {...o} />)
+              overlay.open((o) => (
+                <GalleryBottomSheet
+                  {...o}
+                  onOpenGallery={() => {}}
+                  onDeletePhoto={() => {}}
+                />
+              ))
             }
           }}
         />

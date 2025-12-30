@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
+import { userQueries } from '@/apis/user/queries'
 import { Avatar } from '@/components/Avatar'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -32,13 +34,15 @@ const MOCK: Record<string, MypageSectionItem[]> = {
 }
 
 export default function Index() {
+  const { data } = useQuery(userQueries.getMyInfo())
+
   return (
     <Screen header={<MypageHeader />} scrollable>
       <Spacing size={21} />
       <Col gap={20} center>
-        <Avatar />
+        <Avatar imageUrl={data?.data?.profile_image_url ?? undefined} />
         <Text variant="subhead-04" color="gray-01">
-          뮤사랑
+          {data?.data?.nickname ?? ''}
         </Text>
       </Col>
       <Spacing size={10} />
