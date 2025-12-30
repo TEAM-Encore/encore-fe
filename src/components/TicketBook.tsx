@@ -87,7 +87,7 @@ export function TicketBook({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {attendees.join(' ')}
+              {date}
             </Text>
           </Row>
 
