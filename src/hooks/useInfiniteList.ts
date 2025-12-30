@@ -37,7 +37,8 @@ export const useInfiniteList = <
     getNextPageParam: (lastPage) => lastPage?.nextCursor ?? undefined,
   })
 
-  const items = query.data?.pages.flatMap((page) => page?.content ?? []) ?? []
+  const items: TItem[] =
+    query.data?.pages.flatMap((page) => page?.content ?? []) ?? []
 
   const loadMore = () => {
     if (query.hasNextPage && !query.isFetchingNextPage) {

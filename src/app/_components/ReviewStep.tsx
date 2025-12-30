@@ -1,3 +1,8 @@
+import type {
+  GetReviewListData,
+  GetReviewListParams,
+  ReviewGetListRes,
+} from 'api'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList } from 'react-native'
@@ -26,14 +31,16 @@ export default function ReviewStep() {
     items: reviews,
     loadMore,
     ...queryProps
-  } = useInfiniteList({
-    queryKey: ['reviews', sort],
-    fn: api().getReviewList,
-    params: {
-      pageable: { page: 0, size: 3, sort: [sort] },
-      userId: user?.id ?? 0,
+  } = useInfiniteList<GetReviewListParams, ReviewGetListRes, GetReviewListData>(
+    {
+      queryKey: ['reviews', sort],
+      fn: api().getReviewList,
+      params: {
+        pageable: { page: 0, size: 3, sort: [sort] },
+        userId: user?.id ?? 0,
+      },
     },
-  })
+  )
 
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false })
@@ -49,10 +56,10 @@ export default function ReviewStep() {
         contentContainerClassName="px-5 gap-5"
         renderItem={({ item }) => (
           <ReviewCard
-            title={item.title}
-            summary={item.content ?? ''}
-            author={item.nickname ?? ''}
-            likes={item.like_count ?? 0}
+            title={item?.title ?? ''}
+            summary={item.content as string}
+            author={item.nickname as string}
+            likes={item.like_count as number}
             onPress={() => router.push(`/review-detail/${item.review_id}`)}
           />
         )}
