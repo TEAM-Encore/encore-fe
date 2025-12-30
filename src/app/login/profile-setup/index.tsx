@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
 import { StatusBar } from 'react-native'
 import { api } from '@/api'
+import { userQueries } from '@/apis/user/queries'
 import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
 import { Col, Flex } from '@/components/common/ui/Flex'
@@ -27,19 +29,19 @@ export default function ProfileSetup() {
     },
   })
 
+  const { mutateAsync } = useMutation(userQueries.patchUserInfo())
+
   const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
-    try {
-      const response = await api().patchUserInfo({
+    await mutateAsync(
+      {
         nick_name: data.nickname,
         profile_image_url: data.image,
-      })
-
-      if (response.code === 1000) {
-        router.replace('/')
-      }
-    } catch (error) {
-      console.error(error)
-    }
+      },
+      {
+        onSuccess: () => router.replace('/'),
+        onError: (error) => console.error(error),
+      },
+    )
   })
 
   const onOpenGallery = async () => {

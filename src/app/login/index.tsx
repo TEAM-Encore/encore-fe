@@ -42,18 +42,17 @@ export default function Index() {
         const token = parsed.searchParams.get('token')
 
         if (token) {
-          await saveToken('accessToken', token).then(async () => {
-            const response = await api().getMyInfo()
+          await saveToken('accessToken', token)
+          const response = await api().getMyInfo()
 
-            const { code, data } = response
+          const { code } = response
 
-            if (code === 1000) {
-              // await saveToken('userInfo', JSON.stringify(data))
-              router.replace('/')
-            } else {
-              router.push('/login/profile-setup')
-            }
-          })
+          if (code === 1000) {
+            // await saveToken('userInfo', JSON.stringify(data))
+            router.replace('/')
+          } else {
+            router.push('/login/profile-setup')
+          }
         }
       }
     } catch (error) {
@@ -64,7 +63,7 @@ export default function Index() {
   return (
     <View className="flex-1">
       <Image
-        source={require('@/assets/images/login-bg.png')}
+        source={require('../../../assets/images/login-bg.png')}
         className="absolute h-full w-full"
         resizeMode="cover"
       />
