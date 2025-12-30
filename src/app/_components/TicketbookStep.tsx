@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { router } from 'expo-router'
 import { useState } from 'react'
 import { FlatList } from 'react-native'
 import { ticketQueries } from '@/apis/ticket/queries'
@@ -50,6 +51,7 @@ export default function TicketbookStep() {
                 item.actors?.map((actor) => actor.name as string) ?? []
               }
               posterUrl={item.musical_image_url ?? ''}
+              onPress={() => router.push(`/ticket-detail/${item.id}`)}
             />
           )}
         />
