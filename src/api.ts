@@ -13,7 +13,7 @@ let instance: Api<unknown>['api'] | null = null
 /**
  * 토큰 로직 추가 필요
  */
-export function api(): Api<unknown>['api'] {
+export function api(unuseToken: boolean = true): Api<unknown>['api'] {
   if (instance) {
     return instance
   }
@@ -31,7 +31,7 @@ export function api(): Api<unknown>['api'] {
     },
     securityWorker: async () => {
       const accessToken = await getToken('accessToken')
-      if (accessToken) {
+      if (accessToken && !unuseToken) {
         return {
           headers: {
             Authorization: `Bearer ${accessToken}`,
