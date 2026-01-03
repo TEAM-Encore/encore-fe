@@ -1,9 +1,6 @@
-import { queryOptions } from '@tanstack/react-query'
-import type {
-  GetMyPostPaginationParams,
-  ValidateUserNicknameParams,
-} from 'api'
 import { api } from '@/api'
+import { queryOptions } from '@tanstack/react-query'
+import type { GetMyPostPaginationParams, ValidateUserNicknameParams } from 'api'
 import { userKeys } from './keys'
 
 export const userQueries = {

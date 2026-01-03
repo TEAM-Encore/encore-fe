@@ -11,8 +11,10 @@ import { Header } from '@/components/Header'
 import { FormTextField } from '@/components/TextField'
 import { toast } from '@/components/Toaster'
 import { cn } from '@/utils/cn'
+import { uploadImage } from '@/utils/upload-image'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
+import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useState } from 'react'
@@ -47,6 +49,28 @@ export default function ProfileSetup() {
   })
 
   const { mutate: updateProfile, isPending: isSubmitting } = usePatchUserInfo()
+
+  const onOpenGallery = async () => {
+    overlay.unmount('gallery')
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: false,
+      aspect: [1, 1],
+      quality: 1,
+      base64: true,
+    })
+
+    const url = (await uploadImage(
+      result?.assets?.[0] as ImagePicker.ImagePickerAsset,
+    )) as string
+    form.setValue('image', url)
+  }
+
+  const onDeletePhoto = () => {
+    overlay.unmount('gallery')
+    form.setValue('image', undefined)
+  }
 
   const handleNicknameCheck = async () => {
     const currentNickname = form.getValues('nickname')
@@ -151,7 +175,19 @@ export default function ProfileSetup() {
       <Spacing size={24} />
       <Flex center>
         <Avatar
-          onUpload={() => overlay.open((o) => <GalleryBottomSheet {...o} />)}
+          imageUrl={form.watch('image')}
+          onUpload={() =>
+            overlay.open(
+              (o) => (
+                <GalleryBottomSheet
+                  {...o}
+                  onOpenGallery={onOpenGallery}
+                  onDeletePhoto={onDeletePhoto}
+                />
+              ),
+              { overlayId: 'gallery' },
+            )
+          }
         />
       </Flex>
 

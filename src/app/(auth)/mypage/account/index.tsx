@@ -1,5 +1,3 @@
-import { router } from 'expo-router'
-import { overlay } from 'overlay-kit'
 import { useLogout } from '@/apis/user/mutations'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -7,6 +5,8 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
 import { useAuth } from '@/providers/user.provider'
+import { router } from 'expo-router'
+import { overlay } from 'overlay-kit'
 import MypageSection from '../_components/MypageSection'
 
 export default function Account() {
@@ -43,7 +43,7 @@ export default function Account() {
                         o.close()
                         logout(undefined, {
                           onSuccess: () => {
-                            clearUser() // 사용자 상태 초기화
+                            clearUser()
                             router.replace('/login')
                           },
                         })

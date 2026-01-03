@@ -4,7 +4,6 @@ import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 
-// Reactotron 초기화 (개발 환경에서만)
 if (__DEV__) {
   require('@/config/reactotron')
 }
