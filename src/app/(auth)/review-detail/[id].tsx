@@ -20,7 +20,11 @@ import React from 'react'
 import { Image, Pressable, ScrollView, View } from 'react-native'
 
 // TODO: API 연동 시 제거
-type LikeType = 'FOLLOW_UP_RECOMMENDATION' | 'FULL_OF_TIPS' | 'THOROUGH_ANALYSIS' | 'NONE'
+type LikeType =
+  | 'FOLLOW_UP_RECOMMENDATION'
+  | 'FULL_OF_TIPS'
+  | 'THOROUGH_ANALYSIS'
+  | 'NONE'
 
 const MOCK_REVIEW_DATA = {
   id: '1',
@@ -88,7 +92,7 @@ export default function ReviewDetail() {
   const review = MOCK_REVIEW_DATA
 
   const [isLiked, setIsLiked] = React.useState(
-    review.like_res?.like_type !== 'NONE'
+    review.like_res?.like_type !== 'NONE',
   )
 
   const handleBack = () => {
@@ -131,7 +135,6 @@ export default function ReviewDetail() {
     // TODO: API 연동 - PATCH /api/mvp/review/{reviewId}/like
     setIsLiked(!isLiked)
 
-    // 명세: 좋아요 직후 5포인트 획득 토스트 (1일 1회)
     if (!isLiked) {
       await showPointRewardToast(5)
     }
@@ -224,7 +227,9 @@ export default function ReviewDetail() {
                 />
                 <Text
                   variant="body-02"
-                  className={review.is_my_review ? 'text-gray-11' : 'text-gray-01'}
+                  className={
+                    review.is_my_review ? 'text-gray-11' : 'text-gray-01'
+                  }
                 >
                   {review.like_res?.like_count_res?.total_like_count ?? 0}
                 </Text>
