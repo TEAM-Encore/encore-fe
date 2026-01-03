@@ -1,16 +1,17 @@
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
+import { useLogout } from '@/apis/user/mutations'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
-import { deleteToken } from '@/lib/storage'
 import { useAuth } from '@/providers/user.provider'
 import MypageSection from '../_components/MypageSection'
 
 export default function Account() {
-  const { logout } = useAuth()
+  const { mutate: logout } = useLogout()
+  const { clearUser } = useAuth()
 
   return (
     <Screen
@@ -40,8 +41,12 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
-                        logout()
-                        router.replace('/login')
+                        logout(undefined, {
+                          onSuccess: () => {
+                            clearUser() // 사용자 상태 초기화
+                            router.replace('/login')
+                          },
+                        })
                       }}
                     />
                   ),
