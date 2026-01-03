@@ -1,13 +1,12 @@
-import type { ProviderEnum2 } from 'api'
-import { router } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
-import { Image, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { api } from '@/api'
 import { Col } from '@/components/common/ui/Flex'
 import { Text, type TextProps } from '@/components/common/ui/Text'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { saveToken } from '@/lib/storage'
+import { router } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
+import { Image, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
 
@@ -25,11 +24,9 @@ export default function Index() {
     await WebBrowser.openBrowserAsync(url)
   }
 
-  const onLogin = async (provider: ProviderEnum2[keyof ProviderEnum2]) => {
+  const onLogin = async (provider: 'KAKAO' | 'GOOGLE' | 'APPLE') => {
     try {
-      const response = await api().getLoginUrl({
-        provider: provider as ProviderEnum2,
-      })
+      const response = await api().getLoginUrl(provider)
       const url = response.url as string
 
       const result = await WebBrowser.openAuthSessionAsync(
