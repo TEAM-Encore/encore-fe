@@ -12,7 +12,7 @@ export const userQueries = {
     }),
   getMyInfo: () =>
     queryOptions({
-      queryKey: userKeys.all,
+      queryKey: [userKeys.all, userKeys.myInfo],
       queryFn: api().getMyInfo,
     }),
 }
