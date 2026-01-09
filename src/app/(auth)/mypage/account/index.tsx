@@ -1,5 +1,7 @@
+import { useMutation } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
+import { userMutations } from '@/apis/user/mutations'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
@@ -11,6 +13,9 @@ import MypageSection from '../_components/MypageSection'
 
 export default function Account() {
   const { logout } = useAuth()
+  const { mutate: deleteMyAccount } = useMutation(
+    userMutations.deleteMyAccount(),
+  )
 
   return (
     <Screen
@@ -61,6 +66,8 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
+                        deleteMyAccount(undefined)
+                        deleteToken('accessToken')
                         router.replace('/login')
                       }}
                     />
