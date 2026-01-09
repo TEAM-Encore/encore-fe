@@ -101,7 +101,7 @@ export default function AddReviewBottomSheet({
           <ArrowRight width={24} height={24} className="text-gray-01" />
         </Row>
         <Row center className="px-5 py-4">
-          <Button onPress={onClose}>확인</Button>
+          <Button onPress={onClose}>닫기</Button>
         </Row>
       </BottomSheet.Content>
     </BottomSheet.Root>
