@@ -11,7 +11,7 @@
     "lint": "expo lint",
     "icon": "tsx ./src/generate-icons.ts",
     "icon:current": "tsx ./src/generate-icons.ts --current-color",
-    "genapi": "tsx codegen/generate_api.ts"
+    "genapi": "tsx codegen/generate_api.tsx"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.1.0",
