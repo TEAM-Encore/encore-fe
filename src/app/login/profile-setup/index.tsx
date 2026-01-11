@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { ActivityIndicator, StatusBar } from 'react-native'
 import { userMutations } from '@/apis/user/mutations'
@@ -39,6 +39,16 @@ export default function ProfileSetup() {
     },
   })
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: form.reset is stable
+  useEffect(() => {
+    if (myInfo?.data) {
+      form.reset({
+        profile_image_url: myInfo.data.profile_image_url ?? undefined,
+        nick_name: myInfo.data.nickname ?? '',
+      })
+    }
+  }, [myInfo])
+
   const profile_image_url = useWatch({
     control: form.control,
     name: 'profile_image_url',
@@ -52,6 +62,7 @@ export default function ProfileSetup() {
   const { mutate: validateUserNickname } = useMutation(
     userMutations.validateUserNickname(),
   )
+  const { mutate: setupComplete } = useMutation(userMutations.setupComplete())
 
   const onCheckNickname = async () => {
     setIsCheckingNickname(true)
@@ -97,7 +108,10 @@ export default function ProfileSetup() {
     setIsSubmitting(true)
 
     patchUserInfo(data, {
-      onSuccess: () => router.replace('/'),
+      onSuccess: () => {
+        setupComplete(undefined)
+        router.replace('/')
+      },
       onError: (error) => toast.show(error.message),
       onSettled: () => setIsSubmitting(false),
     })
