@@ -39,14 +39,12 @@ export default function Index() {
       if (result.type === 'success') {
         const parsed = new URL(result.url)
         const token = parsed.searchParams.get('token')
+        const isInitialized = parsed.searchParams.get('isInitialized')
 
         if (token) {
           await saveToken('accessToken', token)
-          const { code } = await queryClient.fetchQuery(
-            userQueries.setupComplete(),
-          )
 
-          if (code === 1000) {
+          if (isInitialized === 'true') {
             router.replace('/')
           } else {
             router.push('/login/profile-setup')
