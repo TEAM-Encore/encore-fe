@@ -42,7 +42,9 @@ export default function Index() {
 
         if (token) {
           await saveToken('accessToken', token)
-          const { code } = await queryClient.fetchQuery(userQueries.getMyInfo())
+          const { code } = await queryClient.fetchQuery(
+            userQueries.setupComplete(),
+          )
 
           if (code === 1000) {
             router.replace('/')
