@@ -10,14 +10,9 @@ export const userQueries = {
       queryFn: () => api().getLoginUrl(provider),
       enabled: !!provider,
     }),
-  getMyInfo: (userId: string) =>
+  getMyInfo: () =>
     queryOptions({
-      queryKey: userKeys.myInfo(userId),
+      queryKey: userKeys.myInfo(),
       queryFn: api().getMyInfo,
-    }),
-  setupComplete: () =>
-    queryOptions({
-      queryKey: userKeys.setupComplete(),
-      queryFn: api().setupComplete,
     }),
 }

@@ -16,4 +16,8 @@ export const userMutations = {
     mutationOptions({
       mutationFn: api().deleteMyAccount,
     }),
+  setupComplete: () =>
+    mutationOptions({
+      mutationFn: api().setupComplete,
+    }),
 }
