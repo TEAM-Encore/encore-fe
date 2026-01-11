@@ -66,9 +66,12 @@ export default function Account() {
                       bottom="취소"
                       onTopPress={() => {
                         o.close()
-                        deleteMyAccount(undefined)
-                        deleteToken('accessToken')
-                        router.replace('/login')
+                        deleteMyAccount(undefined, {
+                          onSuccess: () => {
+                            logout()
+                            router.replace('/login')
+                          },
+                        })
                       }}
                     />
                   ),
