@@ -1,16 +1,16 @@
+import type { UserSignupReqProvider } from 'api'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { Image, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { api } from '@/api'
+import { userQueries } from '@/apis/user/queries'
 import { Col } from '@/components/common/ui/Flex'
 import { Text, type TextProps } from '@/components/common/ui/Text'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
+import { queryClient } from '@/lib/query-client'
 import { saveToken } from '@/lib/storage'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
-
-type ProviderEnum = 'KAKAO' | 'GOOGLE' | 'APPLE'
 
 const termsProps: TextProps = {
   color: 'gray-01',
@@ -26,33 +26,29 @@ export default function Index() {
     await WebBrowser.openBrowserAsync(url)
   }
 
-  const onLogin = async (provider: ProviderEnum) => {
+  const onLogin = async (provider: UserSignupReqProvider) => {
     try {
-      const response = await api().getLoginUrl(provider)
-      const url = response.url as string
-
-      const result = await WebBrowser.openAuthSessionAsync(
-        url,
-        'encore://oauth',
+      const response = await queryClient.fetchQuery(
+        userQueries.getLoginUrl(provider),
       )
+      const url = response.url as string
+      const redirectUri = 'encore://oauth'
+
+      const result = await WebBrowser.openAuthSessionAsync(url, redirectUri)
 
       if (result.type === 'success') {
         const parsed = new URL(result.url)
         const token = parsed.searchParams.get('token')
+        const isInitialized = parsed.searchParams.get('isInitialized')
 
         if (token) {
-          await saveToken('accessToken', token).then(async () => {
-            const response = await api().getMyInfo()
+          await saveToken('accessToken', token)
 
-            const { code, data } = response
-
-            if (code === 1000) {
-              // await saveToken('userInfo', JSON.stringify(data))
-              router.replace('/')
-            } else {
-              router.push('/login/profile-setup')
-            }
-          })
+          if (isInitialized === 'true') {
+            router.replace('/')
+          } else {
+            router.push('/login/profile-setup')
+          }
         }
       }
     } catch (error) {
