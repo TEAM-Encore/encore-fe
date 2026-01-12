@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { ActivityIndicator, StatusBar } from 'react-native'
 import { userMutations } from '@/apis/user/mutations'
@@ -55,23 +55,16 @@ export default function ProfileSetup() {
   })
   const nick_name = useWatch({ control: form.control, name: 'nick_name' })
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isCheckingNickname, setIsCheckingNickname] = useState(false)
-
-  const { mutate: patchUserInfo } = useMutation(userMutations.patchUserInfo())
-  const { mutate: validateUserNickname } = useMutation(
-    userMutations.validateUserNickname(),
+  const { mutate: patchUserInfo, isPending } = useMutation(
+    userMutations.patchUserInfo(),
   )
+  const { mutate: validateUserNickname, isPending: isCheckingNickname } =
+    useMutation(userMutations.validateUserNickname())
   const { mutate: setupComplete } = useMutation(userMutations.setupComplete())
 
   const onCheckNickname = async () => {
-    setIsCheckingNickname(true)
     const isValid = await form.trigger('nick_name')
-
-    if (!isValid) {
-      setIsCheckingNickname(false)
-      return
-    }
+    if (!isValid) return
 
     validateUserNickname(
       { nickname: nick_name },
@@ -105,15 +98,12 @@ export default function ProfileSetup() {
   }
 
   const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
-    setIsSubmitting(true)
-
     patchUserInfo(data, {
       onSuccess: () => {
         setupComplete(undefined)
         router.replace('/')
       },
       onError: (error) => toast.show(error.message),
-      onSettled: () => setIsSubmitting(false),
     })
   })
 
@@ -127,10 +117,10 @@ export default function ProfileSetup() {
       }
       fixedButton={
         <Button
-          disabled={!form.formState.isValid || isSubmitting}
+          disabled={!form.formState.isValid || isPending}
           onPress={onSubmit}
         >
-          {isSubmitting ? <ActivityIndicator /> : '시작하기'}
+          {isPending ? <ActivityIndicator /> : '시작하기'}
         </Button>
       }
     >
