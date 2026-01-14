@@ -98,7 +98,17 @@ export default function ProfileSetup() {
   }
 
   const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
-    patchUserInfo(data, {
+    const payload: Partial<LoginFormType> = {}
+
+    if (data.nick_name !== myInfo?.data?.nickname) {
+      payload.nick_name = data.nick_name
+    }
+
+    if (data.profile_image_url !== myInfo?.data?.profile_image_url) {
+      payload.profile_image_url = data.profile_image_url
+    }
+
+    patchUserInfo(payload, {
       onSuccess: () => {
         setupComplete(undefined)
         router.replace('/')
