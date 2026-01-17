@@ -23,11 +23,11 @@ export default function ReviewStep() {
   )
 
   const {
-    items: reviews,
-    loadMore,
+    rows: reviews,
+    fetchNextPage,
     ...queryProps
   } = useInfiniteList({
-    queryKey: ['reviews', sort],
+    queryKey: 'reviews',
     fn: api().getReviewList,
     params: {
       pageable: { page: 0, size: 3, sort: [sort] },
@@ -56,7 +56,7 @@ export default function ReviewStep() {
             onPress={() => router.push(`/review-detail/${item.review_id}`)}
           />
         )}
-        onEndReached={loadMore}
+        onEndReached={fetchNextPage}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
           queryProps.isFetchingNextPage ? (

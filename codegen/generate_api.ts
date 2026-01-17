@@ -19,7 +19,7 @@ import 'dotenv/config'
   }
 
   await generateApi({
-    name: 'api_sdk.ts',
+    fileName: 'api_sdk.ts',
     input: localFilePath,
     output: path.resolve(process.cwd(), './codegen/__generated__'),
     extractRequestBody: true,

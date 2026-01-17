@@ -20,10 +20,10 @@ export function Search({ className, onDelete, value, ...rest }: SearchProps) {
       <TextInput
         value={value}
         placeholderTextColor={colors.gray['07']}
-        placeholderClassName="text-[16px]"
+        placeholderClassName="text-input-02"
         textAlignVertical="center"
         className={cn(
-          'h-[48px] w-full rounded-[8px] bg-gray-10 px-[43px] text-[16px] text-gray-01',
+          'h-10 w-full rounded-[8px] bg-gray-10 px-[43px] text-gray-01',
           className,
         )}
         {...rest}

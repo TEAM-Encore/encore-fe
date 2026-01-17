@@ -22,7 +22,6 @@ export default function Step1() {
   const { data } = useQuery(
     musicalQueries.searchMusicals({
       keyword: useDebounce(keyword, 150),
-      pageable: {},
     }),
   )
   const form = useForm<Pick<FormType, 'musicalId' | 'hall'>>({

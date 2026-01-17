@@ -1,4 +1,4 @@
-import type { UserSignupReqProvider } from 'api'
+import type { UserSignupReqProviderEnum } from 'api'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { Image, View } from 'react-native'
@@ -26,7 +26,7 @@ export default function Index() {
     await WebBrowser.openBrowserAsync(url)
   }
 
-  const onLogin = async (provider: UserSignupReqProvider) => {
+  const onLogin = async (provider: UserSignupReqProviderEnum) => {
     try {
       const response = await queryClient.fetchQuery(
         userQueries.getLoginUrl(provider),
