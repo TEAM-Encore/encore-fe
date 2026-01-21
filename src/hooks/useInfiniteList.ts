@@ -1,45 +1,42 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
-interface TResponse<TItem> {
-  data?: {
-    nextCursor?: number
-    content?: TItem[]
-    hasNext?: boolean
-  }
+type CommonResponse<T> = {
+  timestamp?: string
+  code?: number
+  message?: string
+  data?: InternalResponse<T>
 }
 
-interface UseInfiniteListProps<
-  TParams extends { cursor?: number },
-  TItem,
-  TData extends TResponse<TItem>,
-> {
-  queryKey: string[]
-  fn: (params: TParams) => Promise<TData>
-  params: Omit<TParams, 'cursor'>
+type Params = { cursor?: number | string }
+
+type InternalResponse<T> = {
+  nextCursor?: number
+  content?: T[]
+  hasNext?: boolean
 }
 
-export const useInfiniteList = <
-  TParams extends { cursor?: number },
-  TItem,
-  TData extends TResponse<TItem>,
->({
+type Options<T, P extends Params = Params> = {
+  queryKey: string
+  fn: (params: P) => Promise<CommonResponse<T>>
+  params: Omit<P, 'cursor'>
+}
+
+export const useInfiniteList = <T, P extends Params = Params>({
   queryKey,
   fn,
   params,
-}: UseInfiniteListProps<TParams, TItem, TData>) => {
+}: Options<T, P>) => {
   const query = useInfiniteQuery({
-    queryKey,
-    queryFn: async ({ pageParam }) => {
-      const response = await fn({ ...params, cursor: pageParam } as TParams)
-      return response.data
-    },
+    queryKey: [queryKey, params],
+    queryFn: ({ pageParam }) => fn({ ...params, cursor: pageParam } as P),
     initialPageParam: undefined as number | undefined,
-    getNextPageParam: (lastPage) => lastPage?.nextCursor ?? undefined,
+    getNextPageParam: (lastPage) => lastPage?.data?.nextCursor ?? undefined,
   })
 
-  const items = query.data?.pages.flatMap((page) => page?.content ?? []) ?? []
+  const rows =
+    query.data?.pages.flatMap((page) => page?.data?.content ?? []) ?? []
 
-  const loadMore = () => {
+  const fetchNextPage = () => {
     if (query.hasNextPage && !query.isFetchingNextPage) {
       query.fetchNextPage()
     }
@@ -47,7 +44,7 @@ export const useInfiniteList = <
 
   return {
     ...query,
-    items,
-    loadMore,
+    rows,
+    fetchNextPage,
   }
 }

@@ -148,22 +148,17 @@ export default function ProfileSetup() {
       <Spacing size={24} />
       <Flex center>
         <Avatar
-          imageUrl={profile_image_url}
+          imageUrl={profile_image_url || undefined}
           onUpload={() =>
-            overlay.open(
-              (o) => (
-                <GalleryBottomSheet
-                  {...o}
-                  onOpenGallery={(url) =>
-                    form.setValue('profile_image_url', url)
-                  }
-                  onDeletePhoto={() =>
-                    form.setValue('profile_image_url', undefined)
-                  }
-                />
-              ),
-              { overlayId: 'gallery' },
-            )
+            overlay.open((o) => (
+              <GalleryBottomSheet
+                {...o}
+                onOpenGallery={(url) => form.setValue('profile_image_url', url)}
+                onDeletePhoto={() =>
+                  form.setValue('profile_image_url', undefined)
+                }
+              />
+            ))
           }
         />
       </Flex>
