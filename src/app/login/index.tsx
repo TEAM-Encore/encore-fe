@@ -1,14 +1,14 @@
-import type { UserSignupReqProviderEnum } from 'api'
-import { router } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
-import { Image, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { userQueries } from '@/apis/user/queries'
 import { Col } from '@/components/common/ui/Flex'
 import { Text, type TextProps } from '@/components/common/ui/Text'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { queryClient } from '@/lib/query-client'
 import { saveToken } from '@/lib/storage'
+import type { UserSignupReqProvider } from 'api'
+import { router } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
+import { Image, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
 
@@ -26,7 +26,7 @@ export default function Index() {
     await WebBrowser.openBrowserAsync(url)
   }
 
-  const onLogin = async (provider: UserSignupReqProviderEnum) => {
+  const onLogin = async (provider: UserSignupReqProvider) => {
     try {
       const response = await queryClient.fetchQuery(
         userQueries.getLoginUrl(provider),

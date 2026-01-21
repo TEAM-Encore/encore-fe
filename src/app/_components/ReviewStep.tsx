@@ -1,11 +1,11 @@
-import { useRouter } from 'expo-router'
-import { useEffect, useRef, useState } from 'react'
-import { ActivityIndicator, FlatList } from 'react-native'
 import { api } from '@/api'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
 import { useUser } from '@/providers/user.provider'
+import { useRouter } from 'expo-router'
+import { useEffect, useRef, useState } from 'react'
+import { ActivityIndicator, FlatList } from 'react-native'
 import SortSelector from './SortSelector'
 
 const tabs = [
@@ -30,7 +30,7 @@ export default function ReviewStep() {
     queryKey: 'reviews',
     fn: api().getReviewList,
     params: {
-      pageable: { page: 0, size: 3, sort: [sort] },
+      sort: 'id', // TODO: 채윤님, defualt값이 id?
       userId: user?.id ?? 0,
     },
   })

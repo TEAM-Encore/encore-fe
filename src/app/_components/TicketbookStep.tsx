@@ -1,6 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
-import { FlatList } from 'react-native'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { Ticket } from '@/components/common/icons/svgs'
 import { Col } from '@/components/common/ui/Flex'
@@ -8,6 +5,10 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { TicketBook } from '@/components/TicketBook'
 import { useUser } from '@/providers/user.provider'
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
+import { useState } from 'react'
+import { FlatList } from 'react-native'
 import SortSelector from './SortSelector'
 
 const tabs = [
@@ -18,6 +19,7 @@ const tabs = [
 
 export default function TicketbookStep() {
   const user = useUser()
+  const router = useRouter()
   const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -50,6 +52,11 @@ export default function TicketbookStep() {
                 item.actors?.map((actor) => actor.name as string) ?? []
               }
               posterUrl={item.musical_image_url ?? ''}
+              onPress={() => {
+                if (!item.id) return
+
+                router.push(`/ticket-detail/${item.id}`)
+              }}
             />
           )}
         />

@@ -1,13 +1,13 @@
 import { queryOptions } from '@tanstack/react-query'
-import type { UserSignupReqProviderEnum } from 'api'
+import type { UserSignupReqProvider } from 'api'
 import { api } from '@/api'
 import { userKeys } from './keys'
 
 export const userQueries = {
-  getLoginUrl: (provider: UserSignupReqProviderEnum) =>
+  getLoginUrl: (provider: UserSignupReqProvider) =>
     queryOptions({
       queryKey: userKeys.all,
-      queryFn: () => api().getLoginUrl({ provider }),
+      queryFn: () => api().getLoginUrl(provider),
       enabled: !!provider,
     }),
   getMyInfo: () =>

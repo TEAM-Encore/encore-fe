@@ -1,8 +1,7 @@
 import { execSync } from 'child_process'
+import 'dotenv/config'
 import path from 'path'
 import { generateApi } from 'swagger-typescript-api'
-import 'dotenv/config'
-
 ;(async () => {
   const remoteUrl = `${process.env.EXPO_PUBLIC_API_HOST}/v3/api-docs`
   const localFilePath = path.resolve(process.cwd(), './swagger.json')
@@ -19,7 +18,7 @@ import 'dotenv/config'
   }
 
   await generateApi({
-    fileName: 'api_sdk.ts',
+    name: 'api_sdk.ts',
     input: localFilePath,
     output: path.resolve(process.cwd(), './codegen/__generated__'),
     extractRequestBody: true,

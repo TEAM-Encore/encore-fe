@@ -1,10 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as ImagePicker from 'expo-image-picker'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useForm } from 'react-hook-form'
-import { Image } from 'react-native'
 import { api } from '@/api'
+import { ticketMutations } from '@/apis/ticket/mutations'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
 import { Checkbox } from '@/components/Checkbox'
@@ -16,6 +11,12 @@ import { Text } from '@/components/common/ui/Text'
 import { toast } from '@/components/Toaster'
 import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as ImagePicker from 'expo-image-picker'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useForm } from 'react-hook-form'
+import { Image } from 'react-native'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
@@ -35,6 +36,8 @@ export default function Step4() {
       noTicketUpload: false,
     },
   })
+
+  const { mutate } = ticketMutations.createTicket()
 
   const onTicketChange = () => {
     overlay.open((ov) => (
@@ -111,22 +114,18 @@ export default function Step4() {
   const onSubmit = form.handleSubmit(async (data) => {
     if (!user?.id) return
 
-    await api().createTicket(
-      {
-        userId: user?.id,
-      },
-      {
-        musical_id: data.musicalId,
-        viewed_date: data.viewedDate,
-        show_time: `${data.showTime.hour}:${data.showTime.minute}`,
-        floor: Number(data.floor),
-        zone: data.zone,
-        col: data.col,
-        number: data.seatNumber,
-        actor_ids: data.actors.map((actor) => actor.id),
-        ticket_image_url: data.ticketImageUrl,
-      },
-    )
+    mutate({
+      userId: user?.id,
+      musical_id: data.musicalId,
+      viewed_date: data.viewedDate,
+      show_time: `${data.showTime.hour}:${data.showTime.minute}`,
+      floor: Number(data.floor),
+      zone: data.zone,
+      col: data.col,
+      number: data.seatNumber,
+      actor_ids: data.actors.map((actor) => actor.id),
+      ticket_image_url: data.ticketImageUrl,
+    })
 
     toast.show('티켓을 등록했어요.')
 

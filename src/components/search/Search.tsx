@@ -1,15 +1,22 @@
-import { TextInput, View } from 'react-native'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
+import { TextInput } from 'react-native'
 import { Icon } from '../common/icons/Icon'
 import { Row } from '../common/ui/Flex'
 
 type SearchProps = React.ComponentProps<typeof TextInput> & {
   onDelete: VoidFunction
   value?: string
+  height: '48' | '40'
 }
 
-export function Search({ className, onDelete, value, ...rest }: SearchProps) {
+export function Search({
+  className,
+  onDelete,
+  value,
+  height = '48',
+  ...rest
+}: SearchProps) {
   return (
     <Row className="relative w-full">
       <Icon
@@ -23,7 +30,11 @@ export function Search({ className, onDelete, value, ...rest }: SearchProps) {
         placeholderClassName="text-input-02"
         textAlignVertical="center"
         className={cn(
-          'h-10 w-full rounded-[8px] bg-gray-10 px-[43px] text-gray-01',
+          'w-full rounded-[8px] bg-gray-10 px-[43px] text-gray-01',
+          {
+            'h-[48px]': height === '48',
+            'h-[40px]': height === '40',
+          },
           className,
         )}
         {...rest}
