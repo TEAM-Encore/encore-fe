@@ -1,3 +1,4 @@
+import { reviewMutations } from '@/apis/review/mutations'
 import { reviewQueries } from '@/apis/review/queries'
 import { Avatar } from '@/components/Avatar'
 import { Icon } from '@/components/common/icons/Icon'
@@ -48,6 +49,9 @@ export default function ReviewDetail() {
   const { data: reviewResponse, isLoading: isReviewLoading } = useQuery(
     reviewQueries.getReview({ reviewId, userId }),
   )
+
+  // 좋아요 mutation
+  const { mutate: likeReview, isPending: isLiking } = reviewMutations.likeReview()
 
   // 시야 이미지 목록 조회
   const { data: viewImageResponse } = useQuery(reviewQueries.getViewImage())
@@ -103,18 +107,24 @@ export default function ReviewDetail() {
     ))
   }
 
-  const handleLike = async () => {
+  const handleLike = () => {
     if (reviewData?.is_my_review) {
       toast.show('자신의 글에 좋아요를 누를 수 없어요.')
       return
     }
 
-    // TODO: API 연동 - PATCH /api/mvp/review/{reviewId}/like
-    setIsLiked(!isLiked)
+    if (isLiking) return
 
-    if (!isLiked) {
-      await showPointRewardToast(5)
-    }
+    likeReview(
+      { reviewId, userId },
+      {
+        onSuccess: () => {
+          if (!isLiked) {
+            showPointRewardToast(5)
+          }
+        },
+      },
+    )
   }
 
   const handleReport = () => {

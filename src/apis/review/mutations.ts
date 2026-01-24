@@ -1,11 +1,6 @@
 import { api } from '@/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type {
-  DeleteReviewParams,
-  LikeReviewParams,
-  ReportReviewParams,
-  ReviewCreateReq,
-} from 'api'
+import type { LikeReviewParams, ReviewCreateReq } from 'api'
 import { reviewKeys } from './keys'
 
 export const reviewMutations = {
@@ -15,17 +10,6 @@ export const reviewMutations = {
     return useMutation({
       mutationFn: ({ userId, ...data }: { userId: number } & ReviewCreateReq) =>
         api().createReview({ userId }, data),
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: reviewKeys.list.all() })
-      },
-    })
-  },
-
-  deleteReview: () => {
-    const queryClient = useQueryClient()
-
-    return useMutation({
-      mutationFn: (params: DeleteReviewParams) => api().deleteReview(params),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: reviewKeys.list.all() })
       },
@@ -45,12 +29,6 @@ export const reviewMutations = {
           }),
         })
       },
-    })
-  },
-
-  reportReview: () => {
-    return useMutation({
-      mutationFn: (params: ReportReviewParams) => api().reportReview(params),
     })
   },
 }
