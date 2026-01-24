@@ -1,8 +1,3 @@
-import type {
-  GetReviewListData,
-  GetReviewListParams,
-  ReviewGetListRes,
-} from 'api'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList } from 'react-native'
@@ -28,19 +23,17 @@ export default function ReviewStep() {
   )
 
   const {
-    items: reviews,
-    loadMore,
+    rows: reviews,
+    fetchNextPage,
     ...queryProps
-  } = useInfiniteList<GetReviewListParams, ReviewGetListRes, GetReviewListData>(
-    {
-      queryKey: ['reviews', sort],
-      fn: api().getReviewList,
-      params: {
-        pageable: { page: 0, size: 3, sort: [sort] },
-        userId: user?.id ?? 0,
-      },
+  } = useInfiniteList({
+    queryKey: 'reviews',
+    fn: api().getReviewList,
+    params: {
+      pageable: { page: 0, size: 3, sort: [sort] },
+      userId: user?.id ?? 0,
     },
-  )
+  })
 
   useEffect(() => {
     flatListRef.current?.scrollToOffset({ offset: 0, animated: false })
@@ -63,7 +56,7 @@ export default function ReviewStep() {
             onPress={() => router.push(`/review-detail/${item.review_id}`)}
           />
         )}
-        onEndReached={loadMore}
+        onEndReached={fetchNextPage}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
           queryProps.isFetchingNextPage ? (

@@ -1,16 +1,18 @@
-import { mutationOptions, queryOptions } from '@tanstack/react-query'
-import type { UserPatchReq } from 'api'
+import { queryOptions } from '@tanstack/react-query'
+import type { UserSignupReqProviderEnum } from 'api'
 import { api } from '@/api'
 import { userKeys } from './keys'
 
 export const userQueries = {
-  getMyInfo: () =>
+  getLoginUrl: (provider: UserSignupReqProviderEnum) =>
     queryOptions({
       queryKey: userKeys.all,
-      queryFn: () => api(true).getMyInfo(),
+      queryFn: () => api().getLoginUrl({ provider }),
+      enabled: !!provider,
     }),
-  patchUserInfo: () =>
-    mutationOptions({
-      mutationFn: (data: UserPatchReq) => api(true).patchUserInfo(data),
+  getMyInfo: () =>
+    queryOptions({
+      queryKey: userKeys.myInfo(),
+      queryFn: api().getMyInfo,
     }),
 }

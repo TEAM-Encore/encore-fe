@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { router } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { useState } from 'react'
 import { FlatList } from 'react-native'
 import { ticketQueries } from '@/apis/ticket/queries'
@@ -19,6 +19,7 @@ const tabs = [
 
 export default function TicketbookStep() {
   const user = useUser()
+  const router = useRouter()
   const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -51,7 +52,11 @@ export default function TicketbookStep() {
                 item.actors?.map((actor) => actor.name as string) ?? []
               }
               posterUrl={item.musical_image_url ?? ''}
-              onPress={() => router.push(`/ticket-detail/${item.id}`)}
+              onPress={() => {
+                if (!item.id) return
+
+                router.push(`/ticket-detail/${item.id}`)
+              }}
             />
           )}
         />

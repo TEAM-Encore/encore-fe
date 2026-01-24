@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import * as ImagePicker from 'expo-image-picker'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useForm } from 'react-hook-form'
-import { StatusBar } from 'react-native'
-import { api } from '@/api'
+import { useEffect } from 'react'
+import { useForm, useWatch } from 'react-hook-form'
+import { ActivityIndicator, StatusBar } from 'react-native'
+import { userMutations } from '@/apis/user/mutations'
 import { userQueries } from '@/apis/user/queries'
 import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
@@ -15,90 +15,107 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { FormTextField } from '@/components/TextField'
-import { uploadImage } from '@/utils/upload-image'
+import { toast } from '@/components/Toaster'
 import GalleryBottomSheet from './components/GalleryBottomSheet'
 import { type LoginFormType, loginSchema } from './schema'
 
+const NICKNAME_ERROR = {
+  LENGTH: '닉네임은 3자 이상 6자 이내여야 합니다.',
+  DUPLICATE: '이미 존재하는 닉네임입니다.',
+  INVALID_CHAR: '닉네임은 한글, 영어, 숫자만 가능합니다.',
+  WHITESPACE: '닉네임에 공백이 포함되면 안됩니다.',
+  INVALID: '유효하지 않은 닉네임입니다.',
+} as const
+
 export default function ProfileSetup() {
+  const { data: myInfo } = useQuery(userQueries.getMyInfo())
+
   const form = useForm<LoginFormType>({
     mode: 'onSubmit',
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      image: undefined,
-      nickname: '',
+      profile_image_url: myInfo?.data?.profile_image_url ?? undefined,
+      nick_name: myInfo?.data?.nickname ?? '',
     },
   })
 
-  const { mutateAsync } = useMutation(userQueries.patchUserInfo())
+  // biome-ignore lint/correctness/useExhaustiveDependencies: form.reset is stable
+  useEffect(() => {
+    if (myInfo?.data) {
+      form.reset({
+        profile_image_url: myInfo.data.profile_image_url ?? undefined,
+        nick_name: myInfo.data.nickname ?? '',
+      })
+    }
+  }, [myInfo])
 
-  const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
-    await mutateAsync(
-      {
-        nick_name: data.nickname,
-        profile_image_url: data.image,
-      },
-      {
-        onSuccess: () => router.replace('/'),
-        onError: (error) => console.error(error),
-      },
-    )
+  const profile_image_url = useWatch({
+    control: form.control,
+    name: 'profile_image_url',
   })
+  const nick_name = useWatch({ control: form.control, name: 'nick_name' })
 
-  const onOpenGallery = async () => {
-    overlay.unmount('gallery')
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: false,
-      aspect: [1, 1],
-      quality: 1,
-      base64: true,
-    })
-
-    const url = (await uploadImage(
-      result?.assets?.[0] as ImagePicker.ImagePickerAsset,
-    )) as string
-    form.setValue('image', url)
-  }
-
-  const onDeletePhoto = () => {
-    overlay.unmount('gallery')
-    form.setValue('image', undefined)
-  }
+  const { mutate: patchUserInfo, isPending } = useMutation(
+    userMutations.patchUserInfo(),
+  )
+  const { mutate: validateUserNickname, isPending: isCheckingNickname } =
+    useMutation(userMutations.validateUserNickname())
+  const { mutate: setupComplete } = useMutation(userMutations.setupComplete())
 
   const onCheckNickname = async () => {
-    try {
-      const response = await api().validateUserNickname({
-        nickname: form.watch('nickname'),
-      })
-      const data = response.data
-      if (data?.is_valid) {
-        form.clearErrors('nickname')
-        return
-      }
-    } catch (error: any) {
-      switch (error.code) {
-        case 3004:
-        case 3005:
-          form.setError('nickname', { message: '6글자가 초과되었어요.' })
-          break
-        case 3003:
-          form.setError('nickname', { message: '중복되는 닉네임이에요' })
-          break
-        case 3006:
-        case 3007:
-          form.setError('nickname', {
-            message: '여백 없이 한글, 영문, 숫자만 가능해요.',
-          })
-          break
-        default:
-          form.setError('nickname', {
-            message: '금칙어가 포함된 닉네임이에요.',
-          })
-          break
-      }
-    }
+    const isValid = await form.trigger('nick_name')
+    if (!isValid) return
+
+    validateUserNickname(
+      { nickname: nick_name },
+      {
+        onSuccess: (data) => {
+          if (!data?.data?.is_valid) return
+          form.clearErrors('nick_name')
+        },
+        onError: (error: {
+          timestamp?: string
+          code?: number
+          message?: string
+        }) => {
+          const { code } = error
+          let message: string = NICKNAME_ERROR.INVALID
+
+          if (code === 3003) {
+            message = NICKNAME_ERROR.DUPLICATE
+          } else if (code === 3002 || code === 3004 || code === 3005) {
+            message = NICKNAME_ERROR.LENGTH
+          } else if (code === 3006) {
+            message = NICKNAME_ERROR.INVALID_CHAR
+          } else if (code === 3007) {
+            message = NICKNAME_ERROR.WHITESPACE
+          }
+
+          form.setError('nick_name', { message })
+        },
+      },
+    )
   }
+
+  const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
+    const payload: Partial<LoginFormType> = {}
+
+    if (data.nick_name !== myInfo?.data?.nickname) {
+      payload.nick_name = data.nick_name
+    }
+
+    if (data.profile_image_url !== myInfo?.data?.profile_image_url) {
+      payload.profile_image_url = data.profile_image_url
+    }
+
+    patchUserInfo(payload, {
+      onSuccess: () => {
+        setupComplete(undefined)
+        router.replace('/')
+      },
+      onError: (error) => toast.show(error.message),
+    })
+  })
 
   return (
     <Screen
@@ -109,8 +126,11 @@ export default function ProfileSetup() {
         </Header>
       }
       fixedButton={
-        <Button disabled={!form.formState.isValid} onPress={onSubmit}>
-          시작하기
+        <Button
+          disabled={!form.formState.isValid || isPending}
+          onPress={onSubmit}
+        >
+          {isPending ? <ActivityIndicator /> : '시작하기'}
         </Button>
       }
     >
@@ -128,18 +148,17 @@ export default function ProfileSetup() {
       <Spacing size={24} />
       <Flex center>
         <Avatar
-          imageUrl={form.watch('image')}
+          imageUrl={profile_image_url || undefined}
           onUpload={() =>
-            overlay.open(
-              (o) => (
-                <GalleryBottomSheet
-                  {...o}
-                  onOpenGallery={onOpenGallery}
-                  onDeletePhoto={onDeletePhoto}
-                />
-              ),
-              { overlayId: 'gallery' },
-            )
+            overlay.open((o) => (
+              <GalleryBottomSheet
+                {...o}
+                onOpenGallery={(url) => form.setValue('profile_image_url', url)}
+                onDeletePhoto={() =>
+                  form.setValue('profile_image_url', undefined)
+                }
+              />
+            ))
           }
         />
       </Flex>
@@ -147,7 +166,7 @@ export default function ProfileSetup() {
       <Spacing size={32} />
       <FormTextField
         control={form.control}
-        name="nickname"
+        name="nick_name"
         style={{ paddingRight: 90 }}
         placeholder="닉네임을 입력해주세요."
         placeholderTextColor="#8B8B8B"
@@ -158,9 +177,13 @@ export default function ProfileSetup() {
             className="h-7 w-[64px] rounded-[4px] bg-primary-04"
             onPress={onCheckNickname}
           >
-            <Text variant="caption" color="gray-12">
-              중복 확인
-            </Text>
+            {isCheckingNickname ? (
+              <ActivityIndicator />
+            ) : (
+              <Text variant="caption" color="gray-12">
+                중복 확인
+              </Text>
+            )}
           </Col>
         )}
       />

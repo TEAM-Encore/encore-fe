@@ -1,12 +1,5 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import dayjs from 'dayjs'
-import { router, useLocalSearchParams } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { TextInput } from 'react-native'
-import { FlatList, ScrollView } from 'react-native-gesture-handler'
-import z from 'zod'
+import { ticketMutations } from '@/apis/ticket/mutations'
+import { ticketQueries } from '@/apis/ticket/queries'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Calendar } from '@/components/Calendar'
 import { Icon } from '@/components/common/icons/Icon'
@@ -19,48 +12,64 @@ import { Header } from '@/components/Header'
 import { Search } from '@/components/search/Search'
 import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
+import { toast } from '@/components/Toaster'
+import { useDebounce } from '@/hooks/useDebounce'
+import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { useLocalSearchParams } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Image, TextInput } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import { type FormType, schema } from '../../add-ticket/schema'
-
-const ACTORS = [
-  {
-    id: 1,
-    name: '옥주현',
-  },
-  {
-    id: 2,
-    name: '서경수',
-  },
-  {
-    id: 3,
-    name: '이준호',
-  },
-  {
-    id: 4,
-    name: '김민수',
-  },
-  {
-    id: 5,
-    name: '박준호',
-  },
-]
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
+  const user = useUser()
+
+  const [actorKeyword, setActorKeyword] = useState('')
+
+  const { data } = useSuspenseQuery(
+    ticketQueries.getTicketDetail({
+      ticketId: Number(id),
+      userId: user?.id as number,
+    }),
+  )
+
+  const { data: actors } = useQuery(
+    ticketQueries.searchActors({
+      keyword: useDebounce(actorKeyword, 150),
+    }),
+  )
+
+  const { mutate: updateTicket } = ticketMutations.updateTicket()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
-      floor: '1',
-      area: '1',
-      row: '1',
-      seatNumber: '1',
-      viewedDate: '2025-01-01',
+      musicalId: data?.musical_id ?? 0,
+      floor: data?.floor?.toString() ?? '',
+      zone: data?.zone ?? '',
+      col: data?.col ?? '',
+      seatNumber: data?.number ?? '',
+      viewedDate: data?.viewed_date,
       showTime: {
-        hour: '12',
-        minute: '00',
+        hour: data?.show_time?.hour?.toString() || '00',
+        minute: data?.show_time?.minute?.toString() || '00',
       },
-      hall: '세종문화회관',
+      hall: data?.location ?? '',
+      actors:
+        data?.actors?.map((actor) => ({
+          id: actor.id,
+          name: actor.name,
+          imageUrl: actor.actor_image_url,
+        })) ?? [],
+      ticketImageUrl: data?.ticket_image_url ?? '',
+      noTicketUpload: false,
     },
   })
 
@@ -78,6 +87,29 @@ export default function TicketDetailScreen() {
       />
     ))
   }
+
+  const onSubmit = form.handleSubmit(
+    (data) => {
+      updateTicket({
+        ticketId: Number(id),
+        floor: Number(data.floor),
+        zone: data.zone,
+        col: data.col,
+        number: data.seatNumber,
+        viewed_date: data.viewedDate,
+        show_time: `${data.showTime.hour}:${data.showTime.minute}`,
+        actor_ids: data.actors.map((actor) => actor.id),
+        ticket_image_url: data.ticketImageUrl,
+      })
+
+      toast.show('관람 내역을 수정했어요.')
+
+      setIsEdit(false)
+    },
+    (error) => {
+      console.error(error)
+    },
+  )
 
   return (
     <Screen
@@ -99,11 +131,7 @@ export default function TicketDetailScreen() {
           <Header.Center>관람 내역</Header.Center>
           {isEdit ? (
             <Header.Right>
-              <Text
-                variant="body-02"
-                color="gray-01"
-                onPress={() => setIsEdit(false)}
-              >
+              <Text variant="body-02" color="gray-01" onPress={onSubmit}>
                 확인
               </Text>
             </Header.Right>
@@ -134,7 +162,7 @@ export default function TicketDetailScreen() {
           </Text>
           <Row align="center" className="rounded bg-gray-10 px-3 py-[10px]">
             <Text variant="body-01" color={isEdit ? 'gray-08' : 'gray-01'}>
-              알라딘 [샤롯데시어터]
+              {data?.musical_title}
             </Text>
           </Row>
         </Col>
@@ -151,6 +179,7 @@ export default function TicketDetailScreen() {
                 className={cn({
                   'border-gray-01': isEdit,
                 })}
+                editable={isEdit}
               />
               <Text variant="body-01" className="text-white">
                 층
@@ -160,10 +189,11 @@ export default function TicketDetailScreen() {
               <FormTextField
                 variant="short"
                 control={form.control}
-                name="area"
+                name="zone"
                 className={cn({
                   'border-gray-01': isEdit,
                 })}
+                editable={isEdit}
               />
               <Text variant="body-01" className="text-white">
                 구역
@@ -173,10 +203,11 @@ export default function TicketDetailScreen() {
               <FormTextField
                 variant="short"
                 control={form.control}
-                name="row"
+                name="col"
                 className={cn({
                   'border-gray-01': isEdit,
                 })}
+                editable={isEdit}
               />
               <Text variant="body-01" className="text-white">
                 열
@@ -190,6 +221,7 @@ export default function TicketDetailScreen() {
                 className={cn({
                   'border-gray-01': isEdit,
                 })}
+                editable={isEdit}
               />
               <Text variant="body-01" className="text-white">
                 번
@@ -205,6 +237,7 @@ export default function TicketDetailScreen() {
             align="center"
             gap={8}
             onPress={() => {
+              if (!isEdit) return
               overlay.open(({ isOpen, close }) => (
                 <Calendar
                   isOpen={isOpen}
@@ -236,6 +269,7 @@ export default function TicketDetailScreen() {
             align="center"
             gap={8}
             onPress={() => {
+              if (!isEdit) return
               overlay.open(({ isOpen, close }) => (
                 <TimePicker
                   isOpen={isOpen}
@@ -336,6 +370,12 @@ export default function TicketDetailScreen() {
                   사진 추가
                 </Text>
               </Col>
+            ) : form.watch('ticketImageUrl') ? (
+              <Image
+                source={{ uri: form.watch('ticketImageUrl') }}
+                className="absolute inset-0 h-[176px] rounded-lg"
+                resizeMode="cover"
+              />
             ) : (
               <Text
                 variant="caption"
@@ -349,30 +389,111 @@ export default function TicketDetailScreen() {
             배우
           </Text>
           {isEdit && (
-            <Search onDelete={() => {}} placeholder="추가할 배우 검색하기" />
+            <Search
+              value={actorKeyword}
+              onChangeText={setActorKeyword}
+              height="48"
+              onDelete={() => {
+                setActorKeyword('')
+              }}
+              placeholder="추가할 배우 검색하기"
+            />
           )}
-          <Row align="center" gap={4} wrap="wrap" className="mt-3">
-            {ACTORS.map((actor) => (
-              <Col
-                key={actor.id}
-                align="center"
-                gap={4}
-                className="relative h-[100px] w-[78px]"
-              >
-                {isEdit && (
-                  <Icon
-                    name="XCircle"
-                    size={20}
-                    className="-top-[7px] -right-1 absolute z-10"
+
+          {actorKeyword.length && (
+            <FlatList
+              data={actors?.data ?? []}
+              renderItem={({ item }) => (
+                <Row
+                  key={item.id}
+                  align="center"
+                  gap={16}
+                  onPress={() => {
+                    const actors = form.watch('actors') ?? []
+
+                    if (item.id) {
+                      if (actors.some((actor) => actor.id === item.id)) {
+                        return
+                      }
+
+                      form.setValue(
+                        'actors',
+                        [
+                          ...actors,
+                          {
+                            id: item.id,
+                            name: item.name ?? '',
+                            imageUrl: item.actor_image_url ?? '',
+                          },
+                        ],
+                        {
+                          shouldValidate: true,
+                        },
+                      )
+
+                      setActorKeyword('')
+
+                      console.log(actorKeyword, 'actorKeyword')
+                    }
+                  }}
+                  className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
+                >
+                  <Image
+                    source={{ uri: item.actor_image_url }}
+                    width={53}
+                    height={53}
+                    className="rounded-md"
+                    resizeMode="cover"
                   />
-                )}
-                <Col className="size-[60px] rounded-lg bg-gray-06" />
-                <Text variant="caption" color="gray-01">
-                  {actor.name}
-                </Text>
-              </Col>
-            ))}
-          </Row>
+                  <Text variant="body-02" className="text-gray-01">
+                    {item.name}
+                  </Text>
+                </Row>
+              )}
+              contentContainerClassName="gap-3"
+            />
+          )}
+
+          {!actorKeyword.length && (
+            <Row align="center" gap={4} wrap="wrap" className="mt-3">
+              {form.watch('actors')?.map((actor) => (
+                <Col
+                  key={actor.id}
+                  align="center"
+                  gap={4}
+                  className="relative h-[100px] w-[78px]"
+                >
+                  {isEdit && (
+                    <Icon
+                      name="XCircle"
+                      size={20}
+                      className="-top-[7px] -right-1 absolute z-10"
+                      onPress={() => {
+                        form.setValue(
+                          'actors',
+                          form
+                            .watch('actors')
+                            ?.filter((a) => a.id !== actor.id),
+                          {
+                            shouldValidate: true,
+                          },
+                        )
+                      }}
+                    />
+                  )}
+                  <Image
+                    source={{ uri: actor.imageUrl }}
+                    width={60}
+                    height={60}
+                    className="rounded-lg"
+                  />
+                  <Text variant="caption" color="gray-01">
+                    {actor.name}
+                  </Text>
+                </Col>
+              ))}
+            </Row>
+          )}
         </Col>
       </Col>
     </Screen>

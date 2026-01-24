@@ -1,27 +1,42 @@
+import * as ImagePicker from 'expo-image-picker'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Icon } from '@/components/common/icons/Icon'
 import { Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
+import { uploadImage } from '@/utils/upload-image'
 
 interface GalleryBottomSheetProps extends OverlayProps {
-  onOpenGallery: () => void
+  onOpenGallery: (url: string) => void
   onDeletePhoto: () => void
 }
 
-function GalleryBottomSheet({ onOpenGallery, onDeletePhoto, ...props }: GalleryBottomSheetProps) {
+function GalleryBottomSheet({
+  onOpenGallery,
+  onDeletePhoto,
+  ...props
+}: GalleryBottomSheetProps) {
   return (
-    <BottomSheet.Root
-      {...props}
-      backgroundColor="#FFFFFF"
-      borderTopRadius={20}
-    >
+    <BottomSheet.Root {...props} backgroundColor="#FFFFFF" borderTopRadius={20}>
       <BottomSheet.Content className="bg-white">
         <Row
           align="center"
           justify="center"
           gap={10}
           className="h-[68px] bg-white py-5"
-          onPress={onOpenGallery}
+          onPress={async () => {
+            props.unmount?.()
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ['images'],
+              allowsEditing: false,
+              aspect: [1, 1],
+              quality: 1,
+              base64: true,
+            })
+
+            const asset = result?.assets?.[0] as ImagePicker.ImagePickerAsset
+            const url = (await uploadImage(asset)) as string
+            onOpenGallery(url)
+          }}
         >
           <Icon name="Image" size={24} className="text-gray-09" />
           <Text variant="subhead-long-03" color="gray-09">
@@ -33,7 +48,10 @@ function GalleryBottomSheet({ onOpenGallery, onDeletePhoto, ...props }: GalleryB
           justify="center"
           gap={10}
           className="h-[68px] bg-white py-5"
-          onPress={onDeletePhoto}
+          onPress={() => {
+            props.unmount?.()
+            onDeletePhoto()
+          }}
         >
           <Icon name="Delete" size={24} className="text-sub-alert" />
           <Text variant="subhead-long-03" color="sub-alert">

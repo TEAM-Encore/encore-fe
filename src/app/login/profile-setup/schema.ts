@@ -1,8 +1,8 @@
 import z from 'zod'
 
 export const loginSchema = z.object({
-  image: z.string().optional(),
-  nickname: z
+  profile_image_url: z.string().optional(),
+  nick_name: z
     .string()
     .min(1, '닉네임을 입력해주세요')
     .max(6, '6글자가 초과되었어요.')
