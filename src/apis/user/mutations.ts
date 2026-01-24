@@ -14,10 +14,10 @@ export const userMutations = {
     }),
   deleteMyAccount: () =>
     mutationOptions({
-      mutationFn: api().deleteMyAccount,
+      mutationFn: () => api().deleteMyAccount(),
     }),
   setupComplete: () =>
     mutationOptions({
-      mutationFn: api().setupComplete,
+      mutationFn: () => api().setupComplete(),
     }),
 }
