@@ -1,3 +1,4 @@
+import { reviewMutations } from '@/apis/review/mutations'
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Row } from '@/components/common/ui/Flex'
@@ -9,7 +10,13 @@ import { RatingSlider } from '@/components/RatingSlider'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
 import { toast } from '@/components/Toaster'
+import {
+  useReviewWriteContext,
+  type ReviewWriteData,
+} from '@/contexts/ReviewWriteContext'
+import { useUser } from '@/providers/user.provider'
 import { zodResolver } from '@hookform/resolvers/zod'
+import type { ReviewCreateReq } from 'api'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
@@ -27,8 +34,69 @@ const step6Schema = reviewWriteSchema.pick({
 })
 type Step6FormType = z.infer<typeof step6Schema>
 
+// GOOD/AVERAGE/POOR → 3/2/1 변환
+const qualityLevelMap = {
+  GOOD: 3,
+  AVERAGE: 2,
+  POOR: 1,
+} as const
+
+// Context 데이터를 API 요청 형식으로 변환
+function buildReviewPayload(
+  contextData: ReviewWriteData,
+  formData: Step6FormType,
+): ReviewCreateReq {
+  const ratings = [
+    formData.ratingNumber,
+    formData.ratingStory,
+    formData.ratingRewatch,
+    formData.ratingActing,
+    formData.ratingPerformance,
+  ]
+  const totalRating =
+    ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
+
+  return {
+    ticket_id: contextData.ticketId,
+    title: contextData.title,
+    review_data_req: {
+      view: {
+        view_level: contextData.seatViewImage
+          ? Number.parseInt(contextData.seatViewImage.replace(/\D/g, ''), 10) ||
+            1
+          : 1,
+        view_review: contextData.seatViewComment,
+      },
+      sound: {
+        sound_level: contextData.soundQuality
+          ? qualityLevelMap[contextData.soundQuality]
+          : 2,
+        sound_review: contextData.soundQualityReason,
+      },
+      facility: {
+        facility_level: contextData.facilityQuality
+          ? qualityLevelMap[contextData.facilityQuality]
+          : 2,
+        facility_review: contextData.facilityQualityReason,
+      },
+      rating: {
+        number_rating: formData.ratingNumber,
+        story_rating: formData.ratingStory,
+        revisit_rating: formData.ratingRewatch,
+        actor_rating: formData.ratingActing,
+        performance_rating: formData.ratingPerformance,
+        total_rating: totalRating,
+        rating_review: formData.overallComment,
+      },
+    },
+  }
+}
+
 export default function ReviewWriteStep6() {
   const router = useRouter()
+  const user = useUser()
+  const { data: contextData, reset } = useReviewWriteContext()
+  const createReviewMutation = reviewMutations.createReview()
 
   const form = useForm<Step6FormType>({
     resolver: zodResolver(step6Schema),
@@ -54,11 +122,38 @@ export default function ReviewWriteStep6() {
     ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length
   ).toFixed(1)
 
-  const handleComplete = () => {
-    const values = form.getValues()
-    // TODO: API 연동 - 리뷰 등록 요청
-    toast.show('10포인트를 획득했어요')
-    router.push('/')
+  const handleComplete = async () => {
+    if (!form.formState.isValid) {
+      toast.show('모든 항목을 올바르게 입력해주세요.')
+      return
+    }
+
+    if (!contextData.ticketId) {
+      toast.show('티켓을 선택해주세요.')
+      router.push('/review-write')
+      return
+    }
+
+    if (!user?.id) {
+      toast.show('로그인이 필요합니다.')
+      return
+    }
+
+    const formData = form.getValues()
+    const payload = buildReviewPayload(contextData, formData)
+
+    try {
+      await createReviewMutation.mutateAsync({
+        userId: user.id,
+        ...payload,
+      })
+      toast.show('10포인트를 획득했어요')
+      reset()
+      router.push('/')
+    } catch (error) {
+      console.error('Review creation failed:', error)
+      toast.show('후기 등록에 실패했습니다.')
+    }
   }
 
   const handleClose = () => {
@@ -70,6 +165,7 @@ export default function ReviewWriteStep6() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
+          reset()
           router.push('/')
         }}
       />
@@ -87,6 +183,7 @@ export default function ReviewWriteStep6() {
   }
 
   const isFormValid = form.formState.isValid
+  const isLoading = createReviewMutation.isPending
 
   return (
     <Screen
@@ -101,8 +198,8 @@ export default function ReviewWriteStep6() {
         />
       }
       fixedButton={
-        <Button onPress={handleComplete} disabled={!isFormValid}>
-          등록
+        <Button onPress={handleComplete} disabled={!isFormValid || isLoading}>
+          {isLoading ? '등록 중...' : '등록'}
         </Button>
       }
     >

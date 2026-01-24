@@ -6,6 +6,7 @@ import { Dialog } from '@/components/Dialog'
 import { SeatViewImageGrid } from '@/components/SeatViewImageGrid'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
+import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
@@ -31,6 +32,7 @@ const generateMockImages = () => {
 
 export default function ReviewWriteStep3() {
   const router = useRouter()
+  const { setData, reset } = useReviewWriteContext()
   const [images, setImages] = useState(generateMockImages())
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
@@ -56,7 +58,10 @@ export default function ReviewWriteStep3() {
 
   const handleNext = () => {
     const values = form.getValues()
-    // TODO: 시야 이미지 및 코멘트 저장 로직
+    setData({
+      seatViewImage: values.seatViewImage,
+      seatViewComment: values.seatViewComment,
+    })
     router.push('/review-write/step4')
   }
 
@@ -69,6 +74,7 @@ export default function ReviewWriteStep3() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
+          reset()
           router.push('/')
         }}
       />

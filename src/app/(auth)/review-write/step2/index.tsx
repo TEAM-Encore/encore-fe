@@ -1,10 +1,13 @@
 import { Button } from '@/components/Button'
 import { Screen } from '@/components/common/ui/Screen'
+import { Dialog } from '@/components/Dialog'
 import { StepHeader } from '@/components/StepHeader'
 import { StepIndicator } from '@/components/StepIndicator'
 import { FormTextField } from '@/components/TextField'
+import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
 import type { z } from 'zod'
 import { reviewWriteSchema } from '../schema'
@@ -14,6 +17,7 @@ type Step2FormType = z.infer<typeof step2Schema>
 
 export default function ReviewWriteStep2() {
   const router = useRouter()
+  const { setData, reset } = useReviewWriteContext()
 
   const form = useForm<Step2FormType>({
     resolver: zodResolver(step2Schema),
@@ -24,14 +28,37 @@ export default function ReviewWriteStep2() {
   })
 
   const handleNext = () => {
-    const title = form.getValues('title')
-    // TODO: 제목 저장 로직 (상태 관리 또는 라우터 params)
+    const { title } = form.getValues()
+    setData({ title })
     router.push('/review-write/step3')
+  }
+
+  const handleClose = () => {
+    overlay.open((ov) => (
+      <Dialog
+        {...ov}
+        title="리뷰 작성을 그만할까요?"
+        description="중간에 나갈 시 작성한 내용이 삭제돼요."
+        top="확인"
+        bottom="취소"
+        onTopPress={() => {
+          reset()
+          router.push('/')
+        }}
+      />
+    ))
   }
 
   return (
     <Screen
-      header={<StepHeader title="후기글 추가" currentStep={2} totalSteps={6} />}
+      header={
+        <StepHeader
+          title="후기글 추가"
+          currentStep={2}
+          totalSteps={6}
+          onClose={handleClose}
+        />
+      }
       fixedButton={
         <Button onPress={handleNext} disabled={!form.formState.isValid}>
           다음

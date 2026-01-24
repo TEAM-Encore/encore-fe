@@ -6,6 +6,7 @@ import { Dialog } from '@/components/Dialog'
 import { ReviewOptions } from '@/components/ReviewOptions'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
+import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
@@ -28,6 +29,7 @@ const facilityQualityOptions = [
 
 export default function ReviewWriteStep5() {
   const router = useRouter()
+  const { setData, reset } = useReviewWriteContext()
 
   const form = useForm<Step5FormType>({
     resolver: zodResolver(step5Schema),
@@ -46,6 +48,10 @@ export default function ReviewWriteStep5() {
 
   const handleNext = () => {
     const values = form.getValues()
+    setData({
+      facilityQuality: values.facilityQuality,
+      facilityQualityReason: values.facilityQualityReason,
+    })
     router.push('/review-write/step6')
   }
 
@@ -58,6 +64,7 @@ export default function ReviewWriteStep5() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
+          reset()
           router.push('/')
         }}
       />
