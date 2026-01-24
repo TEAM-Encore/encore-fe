@@ -75,9 +75,8 @@ export default function ProfileSetup({
     validateUserNickname(
       { nickname: nick_name },
       {
-        onSuccess: (data: unknown) => {
-          const validData = data as IResponse<{ is_valid: boolean }>
-          if (!validData?.data?.is_valid) return
+        onSuccess: (data) => {
+          if (!data?.data?.is_valid) return
         },
         onError: (error: {
           timestamp?: string

@@ -8,7 +8,6 @@ import { Header } from '@/components/Header'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
 import { useUser } from '@/providers/user.provider'
-import type { ReviewGetListRes } from '../../../../../codegen/__generated__/Api'
 
 export default function Reviews() {
   const insets = useSafeAreaInsets()
@@ -20,11 +19,12 @@ export default function Reviews() {
     rows: reviews,
     fetchNextPage,
     ...queryProps
-  } = useInfiniteList<ReviewGetListRes>({
+  } = useInfiniteList({
     queryKey: 'reviews',
-    fn: api().getReviewList(),
+    fn: api().getReviewList,
     params: {
-      pageable: { page: 0, size: 3, sort: [] },
+      size: 3,
+      sort: 'created_at',
       userId: user?.id ?? 0,
     },
   })

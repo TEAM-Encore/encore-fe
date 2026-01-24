@@ -30,7 +30,7 @@ export default function ReviewStep() {
     queryKey: 'reviews',
     fn: api().getReviewList,
     params: {
-      pageable: { page: 0, size: 3, sort: [sort] },
+      size: 3,
       userId: user?.id ?? 0,
     },
   })

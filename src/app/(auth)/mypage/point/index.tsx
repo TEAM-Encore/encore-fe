@@ -49,7 +49,9 @@ export default function Point() {
           style={styles.image}
           className="-right-1.5 absolute bottom-1.5 h-[100px] w-[180px] rounded-lg"
         >
-          <Image source={require('@/assets/images/point-bg.png')} />
+          <Image
+            source={require('../../../../../assets/images/point-bg.png')}
+          />
         </Flex>
       </Col>
       <Spacing size={22} />

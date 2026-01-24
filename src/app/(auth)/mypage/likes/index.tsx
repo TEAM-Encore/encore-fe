@@ -6,23 +6,20 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Header } from '@/components/Header'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
-import { useUser } from '@/providers/user.provider'
-import type { ReviewGetListRes } from '../../../../../codegen/__generated__/Api'
 
 export default function Reviews() {
   const insets = useSafeAreaInsets()
-  const user = useUser()
 
   const {
     rows: likes,
     fetchNextPage,
     ...queryProps
-  } = useInfiniteList<ReviewGetListRes>({
+  } = useInfiniteList({
     queryKey: 'reviews',
     fn: api().getMyLikedReviewList,
     params: {
-      pageable: { page: 0, size: 3, sort: [] },
-      userId: user?.id ?? 0,
+      size: 3,
+      sort: 'like_count',
     },
   })
 
