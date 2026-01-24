@@ -10,10 +10,8 @@ import { RatingSlider } from '@/components/RatingSlider'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
 import { toast } from '@/components/Toaster'
-import {
-  useReviewWriteContext,
-  type ReviewWriteData,
-} from '@/contexts/ReviewWriteContext'
+import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
+import type { ReviewWriteData } from '@/contexts/ReviewWriteContext'
 import { useUser } from '@/providers/user.provider'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { ReviewCreateReq } from 'api'
@@ -95,7 +93,7 @@ function buildReviewPayload(
 export default function ReviewWriteStep6() {
   const router = useRouter()
   const user = useUser()
-  const { data: contextData, reset } = useReviewWriteContext()
+  const { data: contextData } = useReviewWriteContext()
   const createReviewMutation = reviewMutations.createReview()
 
   const form = useForm<Step6FormType>({
@@ -123,35 +121,17 @@ export default function ReviewWriteStep6() {
   ).toFixed(1)
 
   const handleComplete = async () => {
-    if (!form.formState.isValid) {
-      toast.show('모든 항목을 올바르게 입력해주세요.')
-      return
-    }
-
-    if (!contextData.ticketId) {
-      toast.show('티켓을 선택해주세요.')
-      router.push('/review-write')
-      return
-    }
-
-    if (!user?.id) {
-      toast.show('로그인이 필요합니다.')
-      return
-    }
-
     const formData = form.getValues()
     const payload = buildReviewPayload(contextData, formData)
 
     try {
       await createReviewMutation.mutateAsync({
-        userId: user.id,
+        userId: user?.id as number,
         ...payload,
       })
       toast.show('10포인트를 획득했어요')
-      reset()
       router.push('/')
-    } catch (error) {
-      console.error('Review creation failed:', error)
+    } catch {
       toast.show('후기 등록에 실패했습니다.')
     }
   }
@@ -165,7 +145,6 @@ export default function ReviewWriteStep6() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          reset()
           router.push('/')
         }}
       />

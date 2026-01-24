@@ -17,7 +17,7 @@ type Step2FormType = z.infer<typeof step2Schema>
 
 export default function ReviewWriteStep2() {
   const router = useRouter()
-  const { setData, reset } = useReviewWriteContext()
+  const { setData } = useReviewWriteContext()
 
   const form = useForm<Step2FormType>({
     resolver: zodResolver(step2Schema),
@@ -42,7 +42,6 @@ export default function ReviewWriteStep2() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          reset()
           router.push('/')
         }}
       />

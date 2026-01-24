@@ -48,7 +48,7 @@ const mockTickets = [
 
 export default function ReviewWritePage() {
   const router = useRouter()
-  const { setData, reset } = useReviewWriteContext()
+  const { setData } = useReviewWriteContext()
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null)
 
   const handleTicketSelect = (ticketId: number) => {
@@ -71,7 +71,6 @@ export default function ReviewWritePage() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          reset()
           router.push('/')
         }}
       />

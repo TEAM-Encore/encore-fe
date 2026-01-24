@@ -29,7 +29,7 @@ const facilityQualityOptions = [
 
 export default function ReviewWriteStep5() {
   const router = useRouter()
-  const { setData, reset } = useReviewWriteContext()
+  const { setData } = useReviewWriteContext()
 
   const form = useForm<Step5FormType>({
     resolver: zodResolver(step5Schema),
@@ -64,7 +64,6 @@ export default function ReviewWriteStep5() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          reset()
           router.push('/')
         }}
       />

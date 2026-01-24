@@ -32,7 +32,7 @@ const generateMockImages = () => {
 
 export default function ReviewWriteStep3() {
   const router = useRouter()
-  const { setData, reset } = useReviewWriteContext()
+  const { setData } = useReviewWriteContext()
   const [images, setImages] = useState(generateMockImages())
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
@@ -74,7 +74,6 @@ export default function ReviewWriteStep3() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          reset()
           router.push('/')
         }}
       />

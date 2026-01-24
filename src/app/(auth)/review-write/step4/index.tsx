@@ -29,7 +29,7 @@ const soundQualityOptions = [
 
 export default function ReviewWriteStep4() {
   const router = useRouter()
-  const { setData, reset } = useReviewWriteContext()
+  const { setData } = useReviewWriteContext()
 
   const form = useForm<Step4FormType>({
     resolver: zodResolver(step4Schema),
@@ -64,7 +64,6 @@ export default function ReviewWriteStep4() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          reset()
           router.push('/')
         }}
       />
