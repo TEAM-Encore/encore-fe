@@ -15,6 +15,7 @@ type User = {
 type UserContext = {
   user: User | undefined
   logout: VoidFunction
+  sync: VoidFunction
 }
 
 const [Provider, useAuth] = createSafeContext<UserContext>('UserContext')
@@ -51,6 +52,7 @@ export function UserProvider({ children }: PropsWithStrictChildren) {
       value={{
         user,
         logout,
+        sync,
       }}
     >
       {children}

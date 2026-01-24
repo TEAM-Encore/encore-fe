@@ -9,6 +9,7 @@ import { Text, type TextProps } from '@/components/common/ui/Text'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { queryClient } from '@/lib/query-client'
 import { saveToken } from '@/lib/storage'
+import { useAuth, useUser } from '@/providers/user.provider'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
 
@@ -21,6 +22,7 @@ WebBrowser.maybeCompleteAuthSession()
 
 export default function Index() {
   const insets = useSafeAreaInsets()
+  const { sync } = useAuth()
 
   const onOpenWebPage = async (url: string) => {
     await WebBrowser.openBrowserAsync(url)
@@ -43,7 +45,7 @@ export default function Index() {
 
         if (token) {
           await saveToken('accessToken', token)
-
+          sync()
           if (isInitialized === 'true') {
             router.replace('/')
           } else {
