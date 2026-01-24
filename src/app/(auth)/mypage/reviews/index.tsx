@@ -1,8 +1,3 @@
-import type {
-  GetReviewListData,
-  GetReviewListParams,
-  ReviewGetListRes,
-} from 'api'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useRouter } from 'expo-router'
 import { ActivityIndicator, FlatList } from 'react-native'
@@ -13,6 +8,7 @@ import { Header } from '@/components/Header'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
 import { useUser } from '@/providers/user.provider'
+import type { ReviewGetListRes } from '../../../../../codegen/__generated__/Api'
 
 export default function Reviews() {
   const insets = useSafeAreaInsets()
@@ -21,19 +17,17 @@ export default function Reviews() {
   const user = useUser()
 
   const {
-    items: reviews,
-    loadMore,
+    rows: reviews,
+    fetchNextPage,
     ...queryProps
-  } = useInfiniteList<GetReviewListParams, ReviewGetListRes, GetReviewListData>(
-    {
-      queryKey: ['reviews'],
-      fn: api().getReviewList,
-      params: {
-        pageable: { page: 0, size: 3, sort: [] },
-        userId: user?.id ?? 0,
-      },
+  } = useInfiniteList<ReviewGetListRes>({
+    queryKey: 'reviews',
+    fn: api().getReviewList(),
+    params: {
+      pageable: { page: 0, size: 3, sort: [] },
+      userId: user?.id ?? 0,
     },
-  )
+  })
 
   return (
     <Screen
@@ -45,12 +39,10 @@ export default function Reviews() {
       }
     >
       <FlatList
-        data={reviews}
+        data={reviews ?? []}
         contentContainerClassName="gap-5 py-6"
         showsVerticalScrollIndicator={false}
-        keyExtractor={(item, index) =>
-          item.review_id?.toString() ?? index.toString()
-        }
+        keyExtractor={(item) => item?.review_id?.toString() ?? ''}
         renderItem={({ item }) => (
           <ReviewCard
             title={item.title ?? ''}
@@ -65,7 +57,7 @@ export default function Reviews() {
             }
           />
         )}
-        onEndReached={loadMore}
+        onEndReached={fetchNextPage}
         onEndReachedThreshold={0.5}
         ListFooterComponent={
           queryProps.isFetchingNextPage ? (
