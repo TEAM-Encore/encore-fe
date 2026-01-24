@@ -30,8 +30,8 @@ export default function ReviewStep() {
     queryKey: 'reviews',
     fn: api().getReviewList,
     params: {
-      size: 3,
       userId: user?.id ?? 0,
+      sort: sort,
     },
   })
 

@@ -7,13 +7,10 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Header } from '@/components/Header'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
-import { useUser } from '@/providers/user.provider'
 
 export default function Reviews() {
   const insets = useSafeAreaInsets()
   const router = useRouter()
-
-  const user = useUser()
 
   const {
     rows: reviews,
@@ -21,11 +18,10 @@ export default function Reviews() {
     ...queryProps
   } = useInfiniteList({
     queryKey: 'reviews',
-    fn: api().getReviewList,
+    fn: api().getMyReviewList,
     params: {
       size: 3,
       sort: 'created_at',
-      userId: user?.id ?? 0,
     },
   })
 
