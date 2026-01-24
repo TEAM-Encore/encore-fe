@@ -1,8 +1,9 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 import { FlatList, Image, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { api } from '@/api'
 import { pointQueries } from '@/apis/point/queries'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
@@ -10,15 +11,37 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
+import { useInfiniteList } from '@/hooks/useInfiniteList'
 import PointItem from '../_components/PointItem'
+
+type PointHistoryItem = {
+  id: number
+  change_amount: number
+  balance_after: number
+  description: string
+  type: 'REVIEW_WRITE' | 'REVIEW_VIEW' | 'DAILY_LIKE'
+  createdAt: string
+}
 
 export default function Point() {
   const insets = useSafeAreaInsets()
 
   const { data: point } = useQuery(pointQueries.getMyBalance())
 
-  const { data } = useInfiniteQuery(pointQueries.getMyPointHistory())
-  const pointHistory = data?.pages.flatMap((page) => page?.data?.content ?? [])
+  const { rows: pointHistory } = useInfiniteList<
+    PointHistoryItem,
+    { cursor?: number }
+  >({
+    queryKey: 'pointHistory',
+    fn: async ({ cursor }) => {
+      const res = await api().getMyPointHistory({
+        page: cursor ?? 0,
+        size: 3,
+      })
+      return res.data
+    },
+    params: {},
+  })
 
   return (
     <Screen
