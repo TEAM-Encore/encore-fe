@@ -39,13 +39,27 @@ if (__DEV__) {
 
     try {
       const response = await originalFetch(...args)
-      const clonedResponse = response.clone()
+
+      // Content-Type 확인하여 바이너리 응답은 body 읽기 스킵
+      // 바이너리 응답에서 clone() 후 json()/text() 호출 시 stream이 소비되어
+      // 원본 response.blob() 호출 시 "Already read" 에러 발생
+      const contentType = response.headers.get('content-type') || ''
+      const isBinaryResponse =
+        contentType.startsWith('image/') ||
+        contentType.startsWith('application/octet-stream') ||
+        contentType.startsWith('video/') ||
+        contentType.startsWith('audio/')
 
       let data
-      try {
-        data = await clonedResponse.json()
-      } catch {
-        data = await clonedResponse.text()
+      if (isBinaryResponse) {
+        data = `[Binary Data: ${contentType}]`
+      } else {
+        const clonedResponse = response.clone()
+        try {
+          data = await clonedResponse.json()
+        } catch {
+          data = await clonedResponse.text()
+        }
       }
 
       console.tron?.display({
