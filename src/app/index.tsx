@@ -9,7 +9,7 @@ import { Feather, Search, UserLinear } from '@/components/common/icons/svgs'
 import { Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Text } from '@/components/common/ui/Text'
-import { useUser } from '@/providers/user.provider'
+import { useAuth } from '@/providers/user.provider'
 import AddReviewBottomSheet from './_components/AddReviewBottomSheet'
 import ReviewStep from './_components/ReviewStep'
 import TicketbookStep from './_components/TicketbookStep'
@@ -22,7 +22,7 @@ const tabs = [
 
 export default function Index() {
   const router = useRouter()
-  const user = useUser()
+  const { user, isLoading } = useAuth()
   const [selected, setSelected] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -34,6 +34,8 @@ export default function Index() {
     const selectedIndex = tabs.findIndex((tab) => tab.value === selected)
     translateX.value = withTiming(selectedIndex * 85, { duration: 300 })
   }, [selected, translateX])
+
+  if (isLoading) return null
 
   if (!user) {
     return <Redirect href="/login" />

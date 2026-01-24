@@ -14,6 +14,7 @@ type User = {
 
 type UserContext = {
   user: User | undefined
+  isLoading: boolean
   logout: VoidFunction
   sync: VoidFunction
 }
@@ -28,13 +29,20 @@ export const useUser = () => {
 
 export function UserProvider({ children }: PropsWithStrictChildren) {
   const [user, setUser] = useState<User>()
+  const [isLoading, setIsLoading] = useState(true)
 
   const sync = useCallback(async () => {
-    const token = await getToken('accessToken')
-    if (token) {
-      const decoded = decodeJwt(token) as User
-
-      setUser(decoded)
+    setIsLoading(true)
+    try {
+      const token = await getToken('accessToken')
+      if (token) {
+        const decoded = decodeJwt(token) as User
+        setUser(decoded)
+      } else {
+        setUser(undefined)
+      }
+    } finally {
+      setIsLoading(false)
     }
   }, [])
 
@@ -51,6 +59,7 @@ export function UserProvider({ children }: PropsWithStrictChildren) {
     <Provider
       value={{
         user,
+        isLoading,
         logout,
         sync,
       }}
