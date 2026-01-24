@@ -11,9 +11,9 @@ function customFetch(
 let instance: Api<unknown>['api'] | null = null
 
 /**
- * 토큰 로직 추가 필요
+ * API 인스턴스 반환
  */
-export function api(unuseToken: boolean = true): Api<unknown>['api'] {
+export function api(): Api<unknown>['api'] {
   if (instance) {
     return instance
   }
@@ -23,7 +23,6 @@ export function api(unuseToken: boolean = true): Api<unknown>['api'] {
     baseApiParams: {
       format: 'json',
       secure: true,
-      // cache: 'no-store',
     },
     customFetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const response = await customFetch(input, init)
@@ -31,7 +30,7 @@ export function api(unuseToken: boolean = true): Api<unknown>['api'] {
     },
     securityWorker: async () => {
       const accessToken = await getToken('accessToken')
-      if (accessToken && !unuseToken) {
+      if (accessToken) {
         return {
           headers: {
             Authorization: `Bearer ${accessToken}`,
