@@ -21,4 +21,5 @@ export const ticketKeys = {
     'getTicketDetail',
     params,
   ],
+  unreviewed: () => [...ticketKeys.all, 'unreviewed'] as const,
 } as const

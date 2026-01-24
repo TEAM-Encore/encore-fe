@@ -8,4 +8,5 @@ export const reviewKeys = {
       [...reviewKeys.list.all(), params] as const,
   },
   detail: (params: GetReviewParams) => [...reviewKeys.all, 'detail', params],
+  viewImage: () => [...reviewKeys.all, 'viewImage'] as const,
 } as const

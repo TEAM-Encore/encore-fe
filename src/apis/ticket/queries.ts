@@ -27,4 +27,9 @@ export const ticketQueries = {
       enabled: !!ticketId && !!userId,
       select: (data) => data.data,
     }),
+  getUnreviewedTicketList: () =>
+    queryOptions({
+      queryKey: ticketKeys.unreviewed(),
+      queryFn: () => api().getUnreviewedTicketList(),
+    }),
 }

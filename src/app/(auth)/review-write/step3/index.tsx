@@ -1,3 +1,4 @@
+import { reviewQueries } from '@/apis/review/queries'
 import { Button } from '@/components/Button'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -8,9 +9,10 @@ import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
 import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ScrollView } from 'react-native'
 import type { z } from 'zod'
@@ -22,19 +24,20 @@ const step3Schema = reviewWriteSchema.pick({
 })
 type Step3FormType = z.infer<typeof step3Schema>
 
-// TODO: API 연동 후 실제 이미지로 교체
-const generateMockImages = () => {
-  return Array.from({ length: 4 }, (_, i) => ({
-    id: `image-${i + 1}-${Date.now()}`,
-    url: `https://via.placeholder.com/400x300?text=Seat+View+${i + 1}`,
-  }))
-}
-
 export default function ReviewWriteStep3() {
   const router = useRouter()
   const { setData } = useReviewWriteContext()
-  const [images, setImages] = useState(generateMockImages())
+  const { data, refetch } = useQuery(reviewQueries.getViewImage())
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+
+  const images = useMemo(() => {
+    return (
+      data?.data?.view_images?.map((img) => ({
+        id: String(img.id ?? ''),
+        url: img.url ?? '',
+      })) ?? []
+    )
+  }, [data])
 
   const form = useForm<Step3FormType>({
     resolver: zodResolver(step3Schema),
@@ -51,7 +54,7 @@ export default function ReviewWriteStep3() {
   }
 
   const handleRefresh = () => {
-    setImages(generateMockImages())
+    refetch()
     setSelectedImage(null)
     form.setValue('seatViewImage', '', { shouldValidate: true })
   }

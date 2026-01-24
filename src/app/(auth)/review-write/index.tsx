@@ -1,3 +1,4 @@
+import { ticketQueries } from '@/apis/ticket/queries'
 import { Button } from '@/components/Button'
 import { Screen } from '@/components/common/ui/Screen'
 import { Dialog } from '@/components/Dialog'
@@ -5,51 +6,19 @@ import { StepHeader } from '@/components/StepHeader'
 import { StepIndicator } from '@/components/StepIndicator'
 import { TicketBook } from '@/components/TicketBook'
 import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
+import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useState } from 'react'
 import { FlatList } from 'react-native'
 
-// TODO: api 연동 후 Mock data 삭제 (미작성 티켓 조회 API 필요)
-const mockTickets = [
-  {
-    id: 1,
-    posterUrl: 'https://via.placeholder.com/88x132',
-    title: '비더슈탄트 [사롯데시어터]',
-    date: '2024.06.21',
-    theaterseat: 'B구역 6열 4번',
-    attendees: ['우선영', '염지은', '하은영', '윤혜원'],
-  },
-  {
-    id: 2,
-    posterUrl: 'https://via.placeholder.com/88x132',
-    title: '비더슈탄트 [사롯데시어터]',
-    date: '2024.06.21',
-    theaterseat: 'B구역 6열 4번',
-    attendees: ['우선영', '염지은', '하은영', '윤혜원'],
-  },
-  {
-    id: 3,
-    posterUrl: 'https://via.placeholder.com/88x132',
-    title: '비더슈탄트 [사롯데시어터]',
-    date: '2024.06.21',
-    theaterseat: 'B구역 6열 4번',
-    attendees: ['우선영', '염지은', '하은영', '윤혜원'],
-  },
-  {
-    id: 4,
-    posterUrl: 'https://via.placeholder.com/88x132',
-    title: '비더슈탄트 [사롯데시어터]',
-    date: '2024.06.21',
-    theaterseat: 'B구역 6열 4번',
-    attendees: ['우선영', '염지은', '하은영', '윤혜원'],
-  },
-]
-
 export default function ReviewWritePage() {
   const router = useRouter()
   const { setData } = useReviewWriteContext()
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null)
+
+  const { data } = useQuery(ticketQueries.getUnreviewedTicketList())
+  const tickets = data?.data ?? []
 
   const handleTicketSelect = (ticketId: number) => {
     setSelectedTicketId(ticketId)
@@ -104,19 +73,29 @@ export default function ReviewWritePage() {
 
       {/* Ticket List */}
       <FlatList
-        data={mockTickets}
+        data={tickets}
         keyExtractor={(item) => String(item.id)}
-        renderItem={({ item }) => (
-          <TicketBook
-            title={item.title}
-            date={item.date}
-            theaterseat={item.theaterseat}
-            attendees={item.attendees}
-            posterUrl={item.posterUrl}
-            active={selectedTicketId === item.id}
-            onPress={() => handleTicketSelect(item.id)}
-          />
-        )}
+        renderItem={({ item }) => {
+          const title = item.location
+            ? `${item.musical_title} [${item.location}]`
+            : item.musical_title ?? ''
+          const date = item.viewed_date?.replace(/-/g, '.') ?? ''
+          const seatParts = [item.zone, item.col, item.number].filter(Boolean)
+          const theaterseat = seatParts.join(' ')
+          const attendees = item.actors?.map((actor) => actor.name ?? '') ?? []
+
+          return (
+            <TicketBook
+              title={title}
+              date={date}
+              theaterseat={theaterseat}
+              attendees={attendees}
+              posterUrl={item.musical_image_url ?? ''}
+              active={selectedTicketId === item.id}
+              onPress={() => item.id && handleTicketSelect(item.id)}
+            />
+          )
+        }}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, gap: 20 }}
       />

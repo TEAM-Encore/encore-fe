@@ -124,6 +124,10 @@ export default function ReviewWriteStep6() {
     const formData = form.getValues()
     const payload = buildReviewPayload(contextData, formData)
 
+    console.log('[ReviewWrite] user:', user)
+    console.log('[ReviewWrite] user.id:', user?.id)
+    console.log('[ReviewWrite] payload:', payload)
+
     try {
       await createReviewMutation.mutateAsync({
         userId: user?.id as number,
