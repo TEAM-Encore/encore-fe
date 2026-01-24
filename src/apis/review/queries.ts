@@ -1,6 +1,6 @@
 import { api } from '@/api'
-import { queryOptions } from '@tanstack/react-query'
 import type { GetReviewParams } from 'api'
+import { queryOptions } from '@tanstack/react-query'
 import { reviewKeys } from './keys'
 
 export const reviewQueries = {
