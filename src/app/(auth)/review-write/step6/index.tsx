@@ -32,14 +32,12 @@ const step6Schema = reviewWriteSchema.pick({
 })
 type Step6FormType = z.infer<typeof step6Schema>
 
-// GOOD/AVERAGE/POOR → 3/2/1 변환
 const qualityLevelMap = {
   GOOD: 3,
   AVERAGE: 2,
   POOR: 1,
 } as const
 
-// Context 데이터를 API 요청 형식으로 변환
 function buildReviewPayload(
   contextData: ReviewWriteData,
   formData: Step6FormType,
