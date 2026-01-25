@@ -1,13 +1,13 @@
+import { useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useState } from 'react'
+import { FlatList } from 'react-native'
 import { Button } from '@/components/Button'
 import { Screen } from '@/components/common/ui/Screen'
 import { Dialog } from '@/components/Dialog'
 import { StepHeader } from '@/components/StepHeader'
 import { StepIndicator } from '@/components/StepIndicator'
 import { TicketBook } from '@/components/TicketBook'
-import { useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useState } from 'react'
-import { FlatList } from 'react-native'
 
 // TODO: api 연동 후 Mock data 삭제
 const mockTickets = [
@@ -64,7 +64,7 @@ export default function ReviewWritePage() {
           title="후기글 추가"
           currentStep={1}
           totalSteps={6}
-          showBack={false}
+          showBack={true}
           showClose={true}
           onClose={() => {
             overlay.open((ov) => (
