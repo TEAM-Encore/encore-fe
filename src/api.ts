@@ -31,6 +31,7 @@ export function api(): Api<unknown>['api'] {
     baseApiParams: {
       format: 'json',
       secure: true,
+      // cache: 'no-store',
     },
     customFetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const response = await customFetch(input, init)

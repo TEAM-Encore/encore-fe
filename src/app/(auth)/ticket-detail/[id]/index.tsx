@@ -23,17 +23,20 @@ import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
 import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
+import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
+  const user = useUser()
 
   const [actorKeyword, setActorKeyword] = useState('')
 
   const { data } = useSuspenseQuery(
     ticketQueries.getTicketDetail({
       ticketId: Number(id),
+      userId: user?.id as number,
     }),
   )
 
@@ -400,7 +403,7 @@ export default function TicketDetailScreen() {
             />
           )}
 
-          {actorKeyword.length > 0 && (
+          {actorKeyword.length && (
             <FlatList
               data={actors?.data ?? []}
               renderItem={({ item }) => (
@@ -454,7 +457,7 @@ export default function TicketDetailScreen() {
             />
           )}
 
-          {actorKeyword.length === 0 && (
+          {!actorKeyword.length && (
             <Row align="center" gap={4} wrap="wrap" className="mt-3">
               {form.watch('actors')?.map((actor) => (
                 <Col

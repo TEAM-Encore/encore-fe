@@ -83,7 +83,6 @@ export default function ProfileSetup({
           code?: number
           message?: string
         }) => {
-          console.log(error)
           const { code } = error
           let message: string = NICKNAME_ERROR.INVALID
 

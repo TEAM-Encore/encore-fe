@@ -5,7 +5,6 @@ import { api } from '@/api'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
-import { useUser } from '@/providers/user.provider'
 import SortSelector from './SortSelector'
 
 const tabs = [
@@ -17,7 +16,6 @@ export default function ReviewStep() {
   const router = useRouter()
   const flatListRef = useRef<FlatList>(null)
 
-  const user = useUser()
   const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -30,7 +28,6 @@ export default function ReviewStep() {
     queryKey: 'reviews',
     fn: api().getReviewList,
     params: {
-      userId: user?.id ?? 0,
       sort: sort,
     },
   })
