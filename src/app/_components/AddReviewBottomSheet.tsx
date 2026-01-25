@@ -8,7 +8,6 @@ import { ArrowRight, Edit, Ticket } from '@/components/common/icons/svgs'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
-import { useUser } from '@/providers/user.provider'
 
 interface AddReviewBottomSheetProps extends OverlayProps {
   close: VoidFunction
@@ -20,19 +19,13 @@ export default function AddReviewBottomSheet({
   unmount,
 }: AddReviewBottomSheetProps) {
   const router = useRouter()
-  const user = useUser()
 
   const onClose = () => {
     close()
     unmount?.()
   }
 
-  const { data } = useQuery(
-    ticketQueries.getTicketList({
-      userId: user?.id ?? 0,
-      dateRange: '30',
-    }),
-  )
+  const { data } = useQuery(ticketQueries.getTicketList({ dateRange: '30' }))
 
   const tickets = data?.data ?? []
 
@@ -49,8 +42,8 @@ export default function AddReviewBottomSheet({
           align="center"
           className="border-b border-b-gray-09 px-6 py-[18px]"
           onPress={() => {
-            router.push('/add-ticket')
             onClose()
+            router.push('/add-ticket')
           }}
         >
           <Ticket width={36} height={36} className="text-gray-01" />
@@ -70,6 +63,7 @@ export default function AddReviewBottomSheet({
           className="border-b border-b-gray-09 px-6 py-[18px]"
           onPress={() => {
             if (tickets?.length && tickets.length > 0) {
+              onClose()
               router.push('/review-write')
               return
             }

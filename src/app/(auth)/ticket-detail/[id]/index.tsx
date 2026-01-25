@@ -23,20 +23,17 @@ import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
 import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
-import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
-  const user = useUser()
 
   const [actorKeyword, setActorKeyword] = useState('')
 
   const { data } = useSuspenseQuery(
     ticketQueries.getTicketDetail({
       ticketId: Number(id),
-      userId: user?.id as number,
     }),
   )
 

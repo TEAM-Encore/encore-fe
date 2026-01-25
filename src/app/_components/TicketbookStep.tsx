@@ -8,7 +8,6 @@ import { Col } from '@/components/common/ui/Flex'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { TicketBook } from '@/components/TicketBook'
-import { useUser } from '@/providers/user.provider'
 import SortSelector from './SortSelector'
 
 const tabs = [
@@ -18,7 +17,6 @@ const tabs = [
 ]
 
 export default function TicketbookStep() {
-  const user = useUser()
   const router = useRouter()
   const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
@@ -26,7 +24,6 @@ export default function TicketbookStep() {
 
   const { data } = useQuery(
     ticketQueries.getTicketList({
-      userId: user?.id as number,
       dateRange: sort === 'all' ? '30' : sort === 'week' ? '7' : '0',
     }),
   )
@@ -47,7 +44,7 @@ export default function TicketbookStep() {
             <TicketBook
               title={item.musical_title ?? ''}
               date={item.viewed_date ?? ''}
-              theaterseat={item.zone ?? ''}
+              theaterseat={`${item.floor}층 ${item.zone}구역 ${item.col}열 ${item.number}번`}
               attendees={
                 item.actors?.map((actor) => actor.name as string) ?? []
               }
