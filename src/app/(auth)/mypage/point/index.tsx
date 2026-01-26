@@ -85,7 +85,9 @@ export default function Point() {
           style={styles.image}
           className="-right-1.5 absolute bottom-1.5 h-[100px] w-[180px] rounded-lg"
         >
-          <Image source={require('@/assets/images/point-bg.png')} />
+          <Image
+            source={require('../../../../../assets/images/point-bg.png')}
+          />
         </Flex>
       </Col>
       <Spacing size={22} />
@@ -115,10 +117,10 @@ export default function Point() {
         onPress={() => router.push('/mypage/point/guide')}
       >
         <Col>
-          <Text variant="caption" color="gray-12" className='leading-[18px]'>
+          <Text variant="caption" color="gray-12" className="leading-[18px]">
             포인트가 궁금해요!
           </Text>
-          <Text variant="subhead-03" color="gray-12" className='leading-[22px]'>
+          <Text variant="subhead-03" color="gray-12" className="leading-[22px]">
             포인트 안내 페이지
           </Text>
         </Col>
