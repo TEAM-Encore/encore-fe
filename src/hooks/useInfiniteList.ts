@@ -19,18 +19,21 @@ type Options<T, P extends Params = Params> = {
   queryKey: string
   fn: (params: P) => Promise<CommonResponse<T>>
   params: Omit<P, 'cursor'>
+  enabled?: boolean
 }
 
 export const useInfiniteList = <T, P extends Params = Params>({
   queryKey,
   fn,
   params,
+  enabled = true,
 }: Options<T, P>) => {
   const query = useInfiniteQuery({
     queryKey: [queryKey, params],
     queryFn: ({ pageParam }) => fn({ ...params, cursor: pageParam } as P),
     initialPageParam: undefined as number | undefined,
     getNextPageParam: (lastPage) => lastPage?.data?.nextCursor ?? undefined,
+    enabled,
   })
 
   const rows =
