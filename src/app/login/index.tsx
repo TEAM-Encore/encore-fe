@@ -1,14 +1,15 @@
+import type { UserSignupReqProvider } from 'api'
+import { router } from 'expo-router'
+import * as WebBrowser from 'expo-web-browser'
+import { Image, View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { userQueries } from '@/apis/user/queries'
 import { Col } from '@/components/common/ui/Flex'
 import { Text, type TextProps } from '@/components/common/ui/Text'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { queryClient } from '@/lib/query-client'
 import { saveToken } from '@/lib/storage'
-import type { UserSignupReqProvider } from 'api'
-import { router } from 'expo-router'
-import * as WebBrowser from 'expo-web-browser'
-import { Image, View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useAuth } from '@/providers/user.provider'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
 
@@ -21,6 +22,7 @@ WebBrowser.maybeCompleteAuthSession()
 
 export default function Index() {
   const insets = useSafeAreaInsets()
+  const { sync } = useAuth()
 
   const onOpenWebPage = async (url: string) => {
     await WebBrowser.openBrowserAsync(url)
@@ -42,7 +44,9 @@ export default function Index() {
         const isInitialized = parsed.searchParams.get('isInitialized')
 
         if (token) {
+          console.log(token)
           await saveToken('accessToken', token)
+          sync()
 
           if (isInitialized === 'true') {
             router.replace('/')

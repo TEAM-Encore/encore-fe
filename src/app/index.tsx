@@ -30,14 +30,14 @@ export default function Index() {
   const translateX = useSharedValue(0)
   const insets = useSafeAreaInsets()
 
-  if (!user) {
-    return <Redirect href="/login" />
-  }
-
   useEffect(() => {
     const selectedIndex = tabs.findIndex((tab) => tab.value === selected)
     translateX.value = withTiming(selectedIndex * 85, { duration: 300 })
   }, [selected, translateX])
+
+  if (!user) {
+    return <Redirect href="/login" />
+  }
 
   return (
     <Screen className="px-0">
