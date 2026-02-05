@@ -44,9 +44,8 @@ export default function Index() {
         const isInitialized = parsed.searchParams.get('isInitialized')
 
         if (token) {
-          console.log(token)
           await saveToken('accessToken', token)
-          sync()
+          await sync()
 
           if (isInitialized === 'true') {
             router.replace('/')
