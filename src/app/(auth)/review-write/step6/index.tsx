@@ -1,3 +1,10 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { ReviewCreateReq } from 'api'
+import { useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useForm } from 'react-hook-form'
+import { ScrollView, View } from 'react-native'
+import type { z } from 'zod'
 import { reviewMutations } from '@/apis/review/mutations'
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/common/icons/Icon'
@@ -10,16 +17,9 @@ import { RatingSlider } from '@/components/RatingSlider'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
 import { toast } from '@/components/Toaster'
-import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
 import type { ReviewWriteData } from '@/contexts/ReviewWriteContext'
+import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
 import { useUser } from '@/providers/user.provider'
-import { zodResolver } from '@hookform/resolvers/zod'
-import type { ReviewCreateReq } from 'api'
-import { useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useForm } from 'react-hook-form'
-import { ScrollView, View } from 'react-native'
-import type { z } from 'zod'
 import { reviewWriteSchema } from '../schema'
 
 const step6Schema = reviewWriteSchema.pick({
@@ -122,15 +122,8 @@ export default function ReviewWriteStep6() {
     const formData = form.getValues()
     const payload = buildReviewPayload(contextData, formData)
 
-    console.log('[ReviewWrite] user:', user)
-    console.log('[ReviewWrite] user.id:', user?.id)
-    console.log('[ReviewWrite] payload:', payload)
-
     try {
-      await createReviewMutation.mutateAsync({
-        userId: user?.id as number,
-        ...payload,
-      })
+      await createReviewMutation.mutateAsync(payload)
       toast.show('10포인트를 획득했어요')
       router.push('/')
     } catch {
