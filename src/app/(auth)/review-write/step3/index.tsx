@@ -1,3 +1,11 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
+import { useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { ScrollView } from 'react-native'
+import type { z } from 'zod'
 import { reviewQueries } from '@/apis/review/queries'
 import { Button } from '@/components/Button'
 import { Col } from '@/components/common/ui/Flex'
@@ -8,14 +16,6 @@ import { SeatViewImageGrid } from '@/components/SeatViewImageGrid'
 import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
 import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { ScrollView } from 'react-native'
-import type { z } from 'zod'
 import { reviewWriteSchema } from '../schema'
 
 const step3Schema = reviewWriteSchema.pick({
@@ -32,7 +32,7 @@ export default function ReviewWriteStep3() {
 
   const images = useMemo(() => {
     return (
-      data?.data?.view_images?.map((img) => ({
+      data?.view_images?.map((img) => ({
         id: String(img.id ?? ''),
         url: img.url ?? '',
       })) ?? []

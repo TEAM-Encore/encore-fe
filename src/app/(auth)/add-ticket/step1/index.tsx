@@ -59,6 +59,7 @@ export default function Step1() {
       </Col>
       <Spacing size={29} />
       <Search
+        height="48"
         placeholder="공연명 검색하기"
         value={keyword}
         onChangeText={setKeyword}
