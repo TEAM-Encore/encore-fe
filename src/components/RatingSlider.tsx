@@ -27,7 +27,7 @@ export function RatingSlider({
         </Text>
         {showHelp && (
           <Pressable onPress={onHelpPress} hitSlop={8}>
-            <Icon name="HelpCircle" color="gray-06" size={14} />
+            <Icon name="HelpCircle" className="text-gray-06" size={14} />
           </Pressable>
         )}
       </Row>
