@@ -12,7 +12,7 @@ const Image = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     {...props}
   >
     <Path
-      stroke="#000"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}
@@ -20,14 +20,14 @@ const Image = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
       clipRule="evenodd"
     />
     <Path
-      stroke="#000"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}
       d="m5.281 16.43 1.528-1.612a1.4 1.4 0 0 1 1.98-.06l.937.952a1.434 1.434 0 0 0 2.027.02c.037-.036 2.334-2.822 2.334-2.822a1.687 1.687 0 0 1 2.375-.23c.048.04 2.218 2.268 2.218 2.268"
     />
     <Path
-      stroke="#000"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}

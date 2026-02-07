@@ -1,7 +1,6 @@
-import { forwardRef, Ref } from 'react'
+import Svg, { Mask, Path, G } from 'react-native-svg'
 import type { SvgProps } from 'react-native-svg'
-import Svg, { G, Mask, Path } from 'react-native-svg'
-
+import { Ref, forwardRef } from 'react'
 const Close = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
