@@ -1,15 +1,13 @@
+import { useMutation } from '@tanstack/react-query'
+import type { ReportReviewParamsReason, ReviewCreateReq } from 'api'
 import { api } from '@/api'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { LikeReviewParams, ReviewCreateReq } from 'api'
+import { queryClient } from '@/lib/query-client'
 import { reviewKeys } from './keys'
 
 export const reviewMutations = {
   createReview: () => {
-    const queryClient = useQueryClient()
-
     return useMutation({
-      mutationFn: ({ userId, ...data }: { userId: number } & ReviewCreateReq) =>
-        api().createReview({ userId }, data),
+      mutationFn: (data: ReviewCreateReq) => api().createReview(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: reviewKeys.list.all() })
       },
@@ -17,18 +15,50 @@ export const reviewMutations = {
   },
 
   likeReview: () => {
-    const queryClient = useQueryClient()
-
     return useMutation({
-      mutationFn: (params: LikeReviewParams) => api().likeReview(params),
+      mutationFn: ({ reviewId }: { reviewId: number }) =>
+        api().likeReview(reviewId),
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries({
-          queryKey: reviewKeys.detail({
-            reviewId: variables.reviewId,
-            userId: variables.userId,
-          }),
+          queryKey: reviewKeys.detail(variables.reviewId),
         })
       },
+    })
+  },
+
+  unlockReview: () => {
+    return useMutation({
+      mutationFn: ({ reviewId }: { reviewId: number }) =>
+        api().unlockReview(reviewId),
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({
+          queryKey: reviewKeys.detail(variables.reviewId),
+        })
+      },
+    })
+  },
+
+  deleteReview: () => {
+    return useMutation({
+      mutationFn: ({ reviewId }: { reviewId: number }) =>
+        api().deleteReview(reviewId),
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({
+          queryKey: reviewKeys.detail(variables.reviewId),
+        })
+      },
+    })
+  },
+
+  reportReview: () => {
+    return useMutation({
+      mutationFn: ({
+        reviewId,
+        reason,
+      }: {
+        reviewId: number
+        reason: ReportReviewParamsReason
+      }) => api().reportReview({ reviewId, reason }),
     })
   },
 }
