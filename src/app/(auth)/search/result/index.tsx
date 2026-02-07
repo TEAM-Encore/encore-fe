@@ -29,6 +29,7 @@ export default function SearchResult() {
     params: {
       search_keyword: searchValue,
     },
+    enabled: !!searchValue,
   })
 
   return (
