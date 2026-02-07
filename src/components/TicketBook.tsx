@@ -94,7 +94,7 @@ export function TicketBook({
           {/* 좌석 */}
           <Row className="items-center gap-x-[6px]">
             <Icon
-              name="TheaterSeat"
+              name="Theaterseat"
               size={11}
               className={cn({
                 'text-gray-10': active,

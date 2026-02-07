@@ -1,9 +1,23 @@
+import { useQuery } from '@tanstack/react-query'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useEffect, useState } from 'react'
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native'
+import { imageMutations } from '@/apis/image/mutations'
 import { reviewMutations } from '@/apis/review/mutations'
 import { reviewQueries } from '@/apis/review/queries'
+import { ticketQueries } from '@/apis/ticket/queries'
 import { Avatar } from '@/components/Avatar'
 import { Icon } from '@/components/common/icons/Icon'
-import { Col, Row } from '@/components/common/ui/Flex'
+import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
+import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
 import { Dropdown } from '@/components/Dropdown'
@@ -15,14 +29,9 @@ import { ReportBottomSheet } from '@/components/ReportBottomSheet'
 import { ReviewInfoSection } from '@/components/ReviewInfoSection'
 import { TicketCard } from '@/components/TicketCard'
 import { toast } from '@/components/Toaster'
-import { useUser } from '@/providers/user.provider'
-import { formatActorNames, formatDate, formatSeatInfo } from '@/utils/format'
+import { colors } from '@/styles/color'
+import { cn } from '@/utils/cn'
 import { showPointRewardToast } from '@/utils/pointReward'
-import { useQuery } from '@tanstack/react-query'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import React from 'react'
-import { ActivityIndicator, Image, Pressable, ScrollView, View } from 'react-native'
 
 // 음향 레벨 → 텍스트 변환
 const SOUND_LEVEL_LABELS: Record<number, string> = {
@@ -38,51 +47,46 @@ const FACILITY_LEVEL_LABELS: Record<number, string> = {
   3: '쾌적해요',
 }
 
+type ReviewDetailTicket = {
+  ticket_id?: number
+  ticket_title?: string
+  viewed_date?: string
+  image_url?: string
+}
+
 export default function ReviewDetail() {
   const router = useRouter()
   const params = useLocalSearchParams<{ id: string; from?: string }>()
-  const user = useUser()
   const reviewId = params.id ? Number(params.id) : 0
-  const userId = user?.id ?? 0
 
-  // 리뷰 상세 조회
-  const { data: reviewResponse, isLoading: isReviewLoading } = useQuery(
-    reviewQueries.getReview({ reviewId, userId }),
-  )
+  const {
+    data: reviewData,
+    isLoading: isReviewLoading,
+    error,
+    isError,
+    refetch,
+  } = useQuery(reviewQueries.getReview(reviewId))
 
-  // 좋아요 mutation
-  const { mutate: likeReview, isPending: isLiking } = reviewMutations.likeReview()
-
-  // 시야 이미지 목록 조회
+  const { mutate: likeReview, isPending: isLiking } =
+    reviewMutations.likeReview()
   const { data: viewImageResponse } = useQuery(reviewQueries.getViewImage())
 
-  const reviewData = reviewResponse?.data
-  const viewImages = viewImageResponse?.data?.view_images ?? []
+  const { mutate: unlockReview } = reviewMutations.unlockReview()
+  const { mutate: deleteReview } = reviewMutations.deleteReview()
+  const { mutate: reportReview } = reviewMutations.reportReview()
+  const { mutate: getProfileImage } = imageMutations.getViewImage()
+  const { mutate: getTicketImage } = imageMutations.getViewImage()
 
-  // 시야 이미지 URL 찾기 (view_level로 매칭)
-  const viewImageUrl = React.useMemo(() => {
-    const viewLevel = reviewData?.review_data_res?.view?.view_level
-    if (!viewLevel) return undefined
-    const matched = viewImages.find((img) => img.level === viewLevel)
-    return matched?.url
-  }, [reviewData?.review_data_res?.view?.view_level, viewImages])
+  const viewImages = viewImageResponse?.view_images ?? []
+  const isLiked = reviewData?.like_res?.like_type !== 'NONE'
+  const viewLevel = reviewData?.review_data_res?.view?.view_level
+  const viewImageUrl = viewLevel
+    ? viewImages.find((img) => img.level === viewLevel)?.url
+    : undefined
 
-  const [isLiked, setIsLiked] = React.useState(false)
-
-  // 좋아요 상태 초기화
-  React.useEffect(() => {
-    if (reviewData?.like_res?.like_type) {
-      setIsLiked(reviewData.like_res.like_type !== 'NONE')
-    }
-  }, [reviewData?.like_res?.like_type])
-
-  const handleBack = () => {
-    router.back()
-  }
-
-  const handleEdit = () => {
-    router.push(`/review-edit/${params.id}`)
-  }
+  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>()
+  const [ticketImageUrl, setTicketImageUrl] = useState<string | undefined>()
+  const [isViewImageLoading, setIsViewImageLoading] = useState(true)
 
   const handleDelete = () => {
     overlay.open((ov) => (
@@ -93,15 +97,24 @@ export default function ReviewDetail() {
         top="확인"
         bottom="취소"
         onTopPress={() => {
-          // TODO: API 연동 - DELETE /api/mvp/review/{reviewId}
-
-          if (params.from === 'home') {
-            router.push('/')
-          } else if (params.from === 'mypage-reviews') {
-            router.push('/mypage/reviews')
-          } else {
-            router.back()
-          }
+          deleteReview(
+            { reviewId },
+            {
+              onSuccess: () => {
+                toast.show('후기글을 삭제했어요.')
+                if (params.from === 'home') {
+                  router.push('/')
+                } else if (params.from === 'mypage-reviews') {
+                  router.push('/mypage/reviews')
+                } else {
+                  router.back()
+                }
+              },
+              onError: (e) => {
+                toast.show(e?.message ?? '후기글 삭제에 실패했어요.')
+              },
+            },
+          )
         }}
       />
     ))
@@ -116,7 +129,7 @@ export default function ReviewDetail() {
     if (isLiking) return
 
     likeReview(
-      { reviewId, userId },
+      { reviewId },
       {
         onSuccess: () => {
           if (!isLiked) {
@@ -132,9 +145,15 @@ export default function ReviewDetail() {
       <ReportBottomSheet
         {...ov}
         onReport={(reason) => {
-          // TODO: API 연동 - POST /api/mvp/review/{reviewId}/report
-          console.log('신고 사유:', reason)
-          toast.show('신고가 접수되었어요')
+          reportReview(
+            { reviewId, reason },
+            {
+              onSuccess: () => toast.show('신고가 접수되었어요'),
+              onError: (e) => {
+                toast.show(e?.message ?? '신고에 실패했어요.')
+              },
+            },
+          )
         }}
       />
     ))
@@ -150,8 +169,76 @@ export default function ReviewDetail() {
     ))
   }
 
-  // 로딩 상태
-  if (isReviewLoading) {
+  useEffect(() => {
+    if (isError && (error as any)?.error?.message === '리뷰가 잠겨있습니다.') {
+      overlay.open((ov) => (
+        <Dialog
+          {...ov}
+          title="5포인트를 사용할까요?"
+          description="사용한 포인트는 되돌릴 수 없어요."
+          top="확인"
+          bottom="취소"
+          onTopPress={() => {
+            unlockReview(
+              { reviewId },
+              {
+                onSuccess: () => {
+                  toast.show('리뷰를 해제했어요.')
+                  refetch()
+                },
+                onError: (e) => {
+                  toast.show(e?.message ?? '잠금 해제에 실패했어요.')
+                },
+              },
+            )
+          }}
+        />
+      ))
+    }
+  }, [isError, error, unlockReview, reviewId, refetch])
+
+  const rating = reviewData?.review_data_res?.rating
+  const sound = reviewData?.review_data_res?.sound
+  const facility = reviewData?.review_data_res?.facility
+  const view = reviewData?.review_data_res?.view
+
+  const { data: ticketData } = useQuery(
+    ticketQueries.getTicketDetail(
+      (reviewData?.ticket as ReviewDetailTicket)?.ticket_id ?? 0,
+    ),
+  )
+
+  useEffect(() => {
+    if (!reviewData?.profile_image_url) {
+      setProfileImageUrl(undefined)
+      return
+    }
+    getProfileImage(
+      { file_path: reviewData.profile_image_url },
+      {
+        onSuccess: (data) => setProfileImageUrl(data?.url ?? ''),
+      },
+    )
+  }, [reviewData?.profile_image_url, getProfileImage])
+
+  useEffect(() => {
+    if (!ticketData?.ticket_image_url) {
+      setTicketImageUrl(undefined)
+      return
+    }
+    const match =
+      ticketData?.ticket_image_url?.match(/dynamic\/[\w-]+\.\w+/)?.[0]
+
+    getTicketImage(
+      { file_path: match },
+      {
+        onSuccess: (data) => setTicketImageUrl(data?.url ?? ''),
+      },
+    )
+  }, [ticketData?.ticket_image_url, getTicketImage])
+
+  // 로딩 또는 데이터 없음
+  if (isReviewLoading || !reviewData) {
     return (
       <Screen
         header={
@@ -159,7 +246,7 @@ export default function ReviewDetail() {
             <Header.Left>
               <Icon
                 name="ArrowLeft"
-                onPress={handleBack}
+                onPress={router.back}
                 size={24}
                 className="text-white"
               />
@@ -169,44 +256,19 @@ export default function ReviewDetail() {
         }
       >
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#FFD700" />
+          {isReviewLoading ? (
+            <ActivityIndicator size="large" color={colors.primary['04']} />
+          ) : (
+            <Text variant="body-01" className="text-gray-06">
+              {(error as any)?.error?.message === '리뷰가 잠겨있습니다.'
+                ? '리뷰가 잠겨있습니다.'
+                : '후기를 찾을 수 없습니다.'}
+            </Text>
+          )}
         </View>
       </Screen>
     )
   }
-
-  // 데이터가 없는 경우
-  if (!reviewData) {
-    return (
-      <Screen
-        header={
-          <Header>
-            <Header.Left>
-              <Icon
-                name="ArrowLeft"
-                onPress={handleBack}
-                size={24}
-                className="text-white"
-              />
-            </Header.Left>
-            <Header.Center>후기글</Header.Center>
-          </Header>
-        }
-      >
-        <View className="flex-1 items-center justify-center">
-          <Text variant="body-01" className="text-gray-06">
-            후기를 찾을 수 없습니다.
-          </Text>
-        </View>
-      </Screen>
-    )
-  }
-
-  const ticket = reviewData.ticket
-  const rating = reviewData.review_data_res?.rating
-  const sound = reviewData.review_data_res?.sound
-  const facility = reviewData.review_data_res?.facility
-  const view = reviewData.review_data_res?.view
 
   return (
     <Screen
@@ -215,103 +277,121 @@ export default function ReviewDetail() {
           <Header.Left>
             <Icon
               name="ArrowLeft"
-              onPress={handleBack}
+              onPress={router.back}
               size={24}
               className="text-white"
             />
           </Header.Left>
           <Header.Center>후기글</Header.Center>
           <Header.Right>
-            {reviewData.is_my_review ? (
-              <Dropdown.Root>
-                <Dropdown.Trigger>
-                  <Icon name="More" size={24} className="text-white" />
-                </Dropdown.Trigger>
-                <Dropdown.Content position="left">
-                  <Dropdown.Item onPress={handleEdit}>수정</Dropdown.Item>
-                  <Dropdown.Item variant="destructive" onPress={handleDelete}>
-                    삭제
-                  </Dropdown.Item>
-                </Dropdown.Content>
-              </Dropdown.Root>
-            ) : (
-              <Dropdown.Root>
-                <Dropdown.Trigger>
-                  <Icon name="More" size={24} className="text-white" />
-                </Dropdown.Trigger>
-                <Dropdown.Content position="left">
+            <Dropdown.Root>
+              <Dropdown.Trigger>
+                <Icon name="More" size={24} className="text-white" />
+              </Dropdown.Trigger>
+              <Dropdown.Content position="left">
+                {reviewData.is_my_review ? (
+                  <>
+                    <Dropdown.Item
+                      onPress={() => router.push(`/review-edit/${params.id}`)}
+                    >
+                      수정
+                    </Dropdown.Item>
+                    <Dropdown.Item variant="destructive" onPress={handleDelete}>
+                      삭제
+                    </Dropdown.Item>
+                  </>
+                ) : (
                   <Dropdown.Item variant="destructive" onPress={handleReport}>
                     신고
                   </Dropdown.Item>
-                </Dropdown.Content>
-              </Dropdown.Root>
-            )}
+                )}
+              </Dropdown.Content>
+            </Dropdown.Root>
           </Header.Right>
         </Header>
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Col className="gap-3 pb-10">
+        <Col>
           {/* 제목 & 좋아요 */}
           <Row align="center" className="mt-6 justify-between">
             <Text variant="subhead-05" className="flex-1 text-gray-01">
               {reviewData.title}
             </Text>
             <Pressable onPress={handleLike}>
-              <Row align="center" gap={4}>
+              <Row align="center" gap={2}>
                 <Icon
                   name={isLiked ? 'Like' : 'StrokeHeart'}
-                  size={isLiked ? 16 : 18}
-                  className={
+                  size={22}
+                  className={cn(
                     reviewData.is_my_review
                       ? 'text-gray-11'
                       : isLiked
                         ? 'text-sub-point'
-                        : 'text-gray-01'
-                  }
+                        : 'text-gray-01',
+                    'mt-px',
+                  )}
                 />
                 <Text
                   variant="body-02"
-                  className={
-                    reviewData.is_my_review ? 'text-gray-11' : 'text-gray-01'
-                  }
+                  color={reviewData.is_my_review ? 'gray-11' : 'gray-01'}
                 >
                   {reviewData.like_res?.like_count_res?.total_like_count ?? 0}
                 </Text>
               </Row>
             </Pressable>
           </Row>
-
-          <Col className="mb-8 gap-5">
+          <Spacing size={12} />
+          <Col className="gap-5">
             {/* 프로필 */}
             <Row align="center" className="justify-between">
               <Row align="center" gap={8}>
-                <Avatar imageUrl={reviewData.profile_image_url} size="xsmall" />
+                <Avatar
+                  imageUrl={profileImageUrl}
+                  config={{
+                    container: 'size-[23px]',
+                    iconSize: 23,
+                    camera: 'size-[10px]',
+                    cameraIcon: 10,
+                  }}
+                />
                 <Text variant="body-02" className="text-gray-01">
-                  {/* TODO: 백엔드에 nickname 필드 추가 요청 필요 - 현재 API에 nickname 없음 */}
-                  익명
+                  {reviewData.nick_name || '익명'}
                 </Text>
               </Row>
             </Row>
 
             {/* 티켓 카드 */}
-            {ticket && (
+            {ticketData && (
               <TicketCard
-                posterUrl={ticket.musical_image_url ?? ''}
-                showName={ticket.musical_title ?? ''}
-                venueName={ticket.location ?? ''}
-                date={formatDate(ticket.viewed_date)}
-                seat={formatSeatInfo(ticket)}
-                actorName={formatActorNames(ticket.actors)}
+                posterUrl={ticketImageUrl}
+                showName={ticketData.musical_title}
+                venueName={ticketData.location}
+                date={ticketData.viewed_date}
+                seat={{
+                  col: ticketData.col,
+                  floor: ticketData.floor?.toString(),
+                  number: ticketData.number,
+                  zone: ticketData.zone,
+                }}
+                actorName={
+                  ticketData.actors?.map((actor) => actor.name).join(' ') ?? ''
+                }
               />
             )}
           </Col>
 
+          <Spacing size={32} />
+
           {/* 총평 섹션 */}
-          <Col className="gap-4">
+          <Col>
             {/* 총평 제목 & 평균 별점 */}
             <Row align="center" gap={10}>
-              <Text variant="subhead-04" className="text-gray-01">
+              <Text
+                variant="subhead-04"
+                color="gray-01"
+                className="text-[18px]"
+              >
                 총평
               </Text>
               <InfoBadge
@@ -319,14 +399,15 @@ export default function ReviewDetail() {
                 icon="Star"
               />
             </Row>
-
+            <Spacing size={16} />
             {/* 총평 텍스트 */}
-            <Text variant="body-01" className="text-gray-01">
-              {rating?.rating_review}
+            <Text variant="body-long-01" color="gray-01" className="leading-6">
+              전반적으로 시설에 만족하며 배우들의 합과 넘버의 퀄리티 가 매우
+              만족스러워 재관람 할 의사가 있음.
             </Text>
-
+            <Spacing size={20} />
             {/* 평점 슬라이더들 */}
-            <Col className="mb-8 gap-4 rounded-lg bg-gray-11 p-4">
+            <Col gap={7} className="rounded-lg bg-gray-11 p-3.5">
               <RatingSlider
                 label="넘버"
                 value={rating?.number_rating ?? 0}
@@ -352,8 +433,8 @@ export default function ReviewDetail() {
               />
             </Col>
           </Col>
-
-          <Col className="gap-10">
+          <Spacing size={32} />
+          <Col gap={32}>
             {/* 음향 섹션 */}
             <ReviewInfoSection
               title="음향"
@@ -374,33 +455,39 @@ export default function ReviewDetail() {
             />
 
             {/* 시야 섹션 */}
-            <Col className="gap-4">
-              <Text variant="subhead-04" className="text-gray-01">
-                시야
-              </Text>
+            <ReviewInfoSection
+              title="시야"
+              badgeLabel=""
+              description={view?.view_review ?? ''}
+            />
 
-              <Text variant="body-01" className="text-gray-01">
-                {view?.view_review}
-              </Text>
-
-              {/* 시야 이미지 - view_level로 매칭된 이미지가 있을 때만 표시 */}
-              {viewImageUrl && (
-                <View className="overflow-hidden rounded-lg">
-                  <Image
-                    source={{ uri: viewImageUrl }}
-                    style={{
-                      width: '100%',
-                      height: 137,
-                    }}
-                    resizeMode="cover"
-                  />
-                </View>
-              )}
-            </Col>
+            {/* 시야 이미지 - view_level로 매칭된 이미지가 있을 때만 표시 */}
+            {viewImageUrl && (
+              <View className="h-[137px] overflow-hidden rounded-lg">
+                {isViewImageLoading && (
+                  <Flex
+                    justify="center"
+                    align="center"
+                    className="absolute inset-0 z-10 rounded-[10px] bg-gray-11"
+                  >
+                    <ActivityIndicator color={colors.primary['04']} />
+                  </Flex>
+                )}
+                <Image
+                  source={{ uri: viewImageUrl }}
+                  className="h-full w-full rounded-[10px]"
+                  resizeMode="cover"
+                  onLoadStart={() => setIsViewImageLoading(true)}
+                  onLoadEnd={() => setIsViewImageLoading(false)}
+                />
+              </View>
+            )}
           </Col>
-          <Text variant="caption" className="mt-8 text-center text-gray-06">
-            리뷰에 대한 권리는 작성자에게 있으며 무단 사용을 금지합니다.
-            개인적인 후기는 하나의 감상평으로 참고해주세요.
+          <Text
+            variant="caption"
+            className="my-8 whitespace-pre-line text-center text-gray-06 leading-normal"
+          >
+            {`리뷰에 대한 권리는 작성자에게 있으며 무단 사용을 금지합니다.\n개인적인 후기는 하나의 감상평으로 참고해주세요.`}
           </Text>
         </Col>
       </ScrollView>
