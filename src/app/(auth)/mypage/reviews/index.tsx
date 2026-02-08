@@ -20,8 +20,7 @@ export default function Reviews() {
     queryKey: 'reviews',
     fn: api().getMyReviewList,
     params: {
-      size: 3,
-      sort: 'created_at',
+      sort: 'id',
     },
   })
 
