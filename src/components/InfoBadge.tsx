@@ -12,7 +12,12 @@ export function InfoBadge({ label, icon }: InfoBadgeProps) {
   return (
     <Row gap={2} align="center" className="h-[34px] rounded-lg bg-gray-11 px-3">
       {icon && (
-        <Icon name={icon} color="gray-01" size={14} className="py-0.5" />
+        <Icon
+          name={icon}
+          color="gray-01"
+          size={14}
+          className="py-0.5 text-sub-04"
+        />
       )}
       <Text variant="subhead-02" color="sub-04">
         {label}
