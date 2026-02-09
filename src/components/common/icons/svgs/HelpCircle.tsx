@@ -1,7 +1,7 @@
 import Svg, { G, Path, Defs, ClipPath } from 'react-native-svg'
 import type { SvgProps } from 'react-native-svg'
 import { Ref, forwardRef } from 'react'
-const Stopwatch = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
+const HelpCircle = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
     width={14}
@@ -14,14 +14,12 @@ const Stopwatch = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     <G
       stroke="currentColor"
       strokeLinecap="round"
-      strokeWidth={1.2}
+      strokeLinejoin="round"
+      strokeWidth={1.167}
       clipPath="url(#a)"
     >
-      <Path
-        strokeLinejoin="round"
-        d="M8.534 4.394c1.178-.193 1.808-.362 2.874-.77-.18-1.127-.349-1.757-.77-2.874"
-      />
-      <Path d="M12.488 9.359A5.625 5.625 0 1 1 10.44 3.07l.942.567" />
+      <Path d="M7 12.834A5.833 5.833 0 1 0 7 1.167a5.833 5.833 0 0 0 0 11.667" />
+      <Path d="M5.302 5.25a1.75 1.75 0 0 1 3.401.583c0 1.166-1.75 1.75-1.75 1.75M7 9.917h.006" />
     </G>
     <Defs>
       <ClipPath id="a">
@@ -30,5 +28,5 @@ const Stopwatch = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     </Defs>
   </Svg>
 )
-const ForwardRef = forwardRef(Stopwatch)
-export { ForwardRef as Stopwatch }
+const ForwardRef = forwardRef(HelpCircle)
+export { ForwardRef as HelpCircle }

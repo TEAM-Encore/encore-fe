@@ -44,7 +44,7 @@ export function RatingSlider({
           const bar = (
             <View
               key={idx}
-              className={cn('h-4', {
+              className={cn('h-3', {
                 'bg-primary-04': step <= value,
                 'bg-gray-12': step > value,
                 'rounded-l-full': step === 1,

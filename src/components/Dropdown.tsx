@@ -77,32 +77,36 @@ function Content({
         setTriggerLayout({ x, y, width, height })
       })
     }
-  }, [isOpen])
+  }, [isOpen, triggerRef.current])
 
   if (!isOpen) return null
 
   return (
     <Modal transparent visible={isOpen} onRequestClose={close}>
-      <Col
-        className={cn('self-start rounded-[8px] bg-gray-10', className)}
-        onPress={close}
-        onLayout={(event) => {
-          const { width, height } = event.nativeEvent.layout
-          setContentLayout({ width, height })
-        }}
-        style={{
-          ...(position === 'bottom' && {
-            top: triggerLayout.y + triggerLayout.height + 16,
-            left: triggerLayout.x,
-          }),
-          ...(position === 'left' && {
-            top: triggerLayout.y,
-            left: Math.max(8, triggerLayout.x - contentLayout.width - 8),
-          }),
-        }}
-      >
-        {children}
-      </Col>
+      <Pressable className="flex-1" onPress={close}>
+        <Col
+          className={cn(
+            'absolute self-start rounded-[8px] bg-gray-10',
+            className,
+          )}
+          onLayout={(event) => {
+            const { width, height } = event.nativeEvent.layout
+            setContentLayout({ width, height })
+          }}
+          style={{
+            ...(position === 'bottom' && {
+              top: triggerLayout.y + triggerLayout.height + 16,
+              left: triggerLayout.x,
+            }),
+            ...(position === 'left' && {
+              top: triggerLayout.y,
+              left: Math.max(8, triggerLayout.x - contentLayout.width - 8),
+            }),
+          }}
+        >
+          {children}
+        </Col>
+      </Pressable>
     </Modal>
   )
 }

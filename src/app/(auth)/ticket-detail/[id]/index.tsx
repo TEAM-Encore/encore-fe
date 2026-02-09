@@ -1,3 +1,12 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import { useLocalSearchParams } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Image, TextInput } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -14,31 +23,15 @@ import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
 import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
-import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
-import { useLocalSearchParams } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Image, TextInput } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
-  const user = useUser()
 
   const [actorKeyword, setActorKeyword] = useState('')
 
-  const { data } = useSuspenseQuery(
-    ticketQueries.getTicketDetail({
-      ticketId: Number(id),
-      userId: user?.id as number,
-    }),
-  )
+  const { data } = useSuspenseQuery(ticketQueries.getTicketDetail(Number(id)))
 
   const { data: actors } = useQuery(
     ticketQueries.searchActors({
@@ -58,8 +51,8 @@ export default function TicketDetailScreen() {
       seatNumber: data?.number ?? '',
       viewedDate: data?.viewed_date,
       showTime: {
-        hour: data?.show_time?.hour?.toString() || '00',
-        minute: data?.show_time?.minute?.toString() || '00',
+        hour: data?.show_time?.split(':')[0],
+        minute: data?.show_time?.split(':')[1],
       },
       hall: data?.location ?? '',
       actors:
@@ -97,7 +90,10 @@ export default function TicketDetailScreen() {
         col: data.col,
         number: data.seatNumber,
         viewed_date: data.viewedDate,
-        show_time: `${data.showTime.hour}:${data.showTime.minute}`,
+        show_time: {
+          hour: Number(data.showTime.hour),
+          minute: Number(data.showTime.minute),
+        },
         actor_ids: data.actors.map((actor) => actor.id),
         ticket_image_url: data.ticketImageUrl,
       })
@@ -400,7 +396,7 @@ export default function TicketDetailScreen() {
             />
           )}
 
-          {actorKeyword.length && (
+          {actorKeyword.length > 0 && (
             <FlatList
               data={actors?.data ?? []}
               renderItem={({ item }) => (
@@ -454,7 +450,7 @@ export default function TicketDetailScreen() {
             />
           )}
 
-          {!actorKeyword.length && (
+          {actorKeyword.length === 0 && (
             <Row align="center" gap={4} wrap="wrap" className="mt-3">
               {form.watch('actors')?.map((actor) => (
                 <Col

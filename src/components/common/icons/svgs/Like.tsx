@@ -1,23 +1,21 @@
-import { Ref, forwardRef } from 'react'
-import type { SvgProps } from 'react-native-svg'
 import Svg, { Path } from 'react-native-svg'
-
+import type { SvgProps } from 'react-native-svg'
+import { Ref, forwardRef } from 'react'
 const Like = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
-    <Svg
-        xmlns="http://www.w3.org/2000/svg"
-        width={12}
-        height={12}
-        viewBox="0 0 12 12"
-        fill="none"
-        ref={ref}
-        {...props}
-    >
-        <Path
-            d="M1.59775 6.0535C2.35108 8.29029 5.3273 10.0989 6.11824 10.5466C6.91186 10.0943 9.90958 8.26568 10.6387 6.05555C11.1175 4.62691 10.6731 2.81727 8.90748 2.27423C8.05206 2.01219 7.05425 2.17167 6.36541 2.68036C6.2214 2.78599 6.02152 2.78804 5.87644 2.68343C5.14676 2.15988 4.19355 2.00655 3.3247 2.27423C1.56175 2.81676 1.119 4.6264 1.59775 6.0535Z"
-            fill="currentColor"
-        />
-    </Svg>
+  <Svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={12}
+    height={12}
+    fill="none"
+    viewBox="0 0 12 12"
+    ref={ref}
+    {...props}
+  >
+    <Path
+      fill="currentColor"
+      d="M1.598 6.054c.753 2.236 3.73 4.045 4.52 4.493.794-.453 3.792-2.281 4.52-4.491.48-1.43.035-3.239-1.73-3.782-.856-.262-1.854-.102-2.543.406a.42.42 0 0 1-.489.003 2.92 2.92 0 0 0-2.551-.409c-1.763.543-2.206 2.352-1.727 3.78"
+    />
+  </Svg>
 )
-
 const ForwardRef = forwardRef(Like)
 export { ForwardRef as Like }

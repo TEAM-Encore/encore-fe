@@ -1,5 +1,6 @@
 import { Api } from 'api'
-import { getToken } from './lib/storage'
+import { router } from 'expo-router'
+import { deleteToken, getToken } from './lib/storage'
 
 function customFetch(
   input: RequestInfo | URL,
@@ -27,6 +28,10 @@ export function api(): Api<unknown>['api'] {
     },
     customFetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const response = await customFetch(input, init)
+      if (response.status === 401) {
+        await deleteToken('accessToken')
+        router.replace('/login')
+      }
       return response
     },
     securityWorker: async () => {
