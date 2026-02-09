@@ -4,6 +4,7 @@ import { Text, type TextProps } from '@/components/common/ui/Text'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { queryClient } from '@/lib/query-client'
 import { saveToken } from '@/lib/storage'
+import { useAuth } from '@/providers/user.provider'
 import type { UserSignupReqProvider } from 'api'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
@@ -21,6 +22,7 @@ WebBrowser.maybeCompleteAuthSession()
 
 export default function Index() {
   const insets = useSafeAreaInsets()
+  const { sync } = useAuth()
 
   const onOpenWebPage = async (url: string) => {
     await WebBrowser.openBrowserAsync(url)
@@ -43,6 +45,7 @@ export default function Index() {
 
         if (token) {
           await saveToken('accessToken', token)
+          await sync()
 
           if (isInitialized === 'true') {
             router.replace('/')

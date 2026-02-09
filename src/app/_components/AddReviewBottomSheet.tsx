@@ -22,11 +22,6 @@ export default function AddReviewBottomSheet({
   const router = useRouter()
   const user = useUser()
 
-  const onClose = () => {
-    close()
-    unmount?.()
-  }
-
   const { data } = useQuery(
     ticketQueries.getTicketList({
       userId: user?.id ?? 0,
@@ -37,8 +32,9 @@ export default function AddReviewBottomSheet({
   const tickets = data?.data ?? []
 
   return (
-    <BottomSheet.Root isOpen close={onClose}>
-      <BottomSheet.Content className="z-[9999]">
+    <BottomSheet.Root isOpen close={close} unmount={unmount}>
+      {({ onClose }) => (
+        <BottomSheet.Content className="z-[9999]">
         <Row center className="py-5">
           <Text variant="subhead-04" color="gray-01">
             추가하기
@@ -49,8 +45,8 @@ export default function AddReviewBottomSheet({
           align="center"
           className="border-b border-b-gray-09 px-6 py-[18px]"
           onPress={() => {
-            router.push('/add-ticket')
             onClose()
+            router.push('/add-ticket')
           }}
         >
           <Ticket width={36} height={36} className="text-gray-01" />
@@ -70,6 +66,7 @@ export default function AddReviewBottomSheet({
           className="border-b border-b-gray-09 px-6 py-[18px]"
           onPress={() => {
             if (tickets?.length && tickets.length > 0) {
+              onClose()
               router.push('/review-write')
               return
             }
@@ -103,7 +100,8 @@ export default function AddReviewBottomSheet({
         <Row center className="px-5 py-4">
           <Button onPress={onClose}>닫기</Button>
         </Row>
-      </BottomSheet.Content>
+        </BottomSheet.Content>
+      )}
     </BottomSheet.Root>
   )
 }
