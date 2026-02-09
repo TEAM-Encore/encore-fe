@@ -68,7 +68,7 @@ export function TicketBook({
               key === 'date'
                 ? 'Clock'
                 : key === 'theaterseat'
-                  ? 'TheaterSeat'
+                  ? 'Theaterseat'
                   : 'User'
             return (
               <Row key={key} align="center" gap={6}>
