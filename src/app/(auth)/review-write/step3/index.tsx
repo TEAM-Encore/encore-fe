@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ScrollView } from 'react-native'
@@ -9,13 +8,10 @@ import type { z } from 'zod'
 import { reviewQueries } from '@/apis/review/queries'
 import { Button } from '@/components/Button'
 import { Col } from '@/components/common/ui/Flex'
-import { Screen } from '@/components/common/ui/Screen'
-import { Text } from '@/components/common/ui/Text'
-import { Dialog } from '@/components/Dialog'
 import { SeatViewImageGrid } from '@/components/SeatViewImageGrid'
-import { StepHeader } from '@/components/StepHeader'
 import { FormTextField } from '@/components/TextField'
 import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
+import { ReviewWriteStepLayout } from '../_components/ReviewWriteStepLayout'
 import { reviewWriteSchema } from '../schema'
 
 const step3Schema = reviewWriteSchema.pick({
@@ -68,54 +64,20 @@ export default function ReviewWriteStep3() {
     router.push('/review-write/step4')
   }
 
-  const handleClose = () => {
-    overlay.open((ov) => (
-      <Dialog
-        {...ov}
-        title="리뷰 작성을 그만할까요?"
-        description="중간에 나갈 시 작성한 내용이 삭제돼요."
-        top="확인"
-        bottom="취소"
-        onTopPress={() => {
-          router.push('/')
-        }}
-      />
-    ))
-  }
-
   const isFormValid =
     form.formState.isValid && selectedImage !== null && selectedImage !== ''
 
   return (
-    <Screen
-      header={
-        <StepHeader
-          title="후기글 추가"
-          currentStep={3}
-          totalSteps={6}
-          showBack={true}
-          showClose={true}
-          onClose={handleClose}
-        />
-      }
+    <ReviewWriteStepLayout
+      instruction={`관람한 공연의 시야와\n가장 비슷한 것을 선택해주세요!`}
       fixedButton={
         <Button onPress={handleNext} disabled={!isFormValid}>
           다음
         </Button>
       }
     >
-      <Col className="mt-6 gap-5">
-        <Text variant="body-01" className="text-gray-07">
-          3/6
-        </Text>
-
-        <Text variant="subhead-05" className="font-semibold text-gray-01">
-          관람한 공연의 시야와{'\n'}가장 비슷한 것을 선택해주세요!
-        </Text>
-      </Col>
-
-      <ScrollView showsVerticalScrollIndicator={false} className="mt-5">
-        <Col className="gap-5">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Col gap={20}>
           <SeatViewImageGrid
             images={images}
             selectedImage={selectedImage}
@@ -126,11 +88,12 @@ export default function ReviewWriteStep3() {
           <FormTextField
             control={form.control}
             name="seatViewComment"
-            placeholder="시야와 관련된 추가 의견을 작성해주세요. (최소 20자)"
+            placeholder={`시야와 관련된 추가 의견을 작성해주세요.\n(최소 20자)`}
             as="textarea"
+            className="p-4 text-body-02 placeholder:text-gray-06"
           />
         </Col>
       </ScrollView>
-    </Screen>
+    </ReviewWriteStepLayout>
   )
 }

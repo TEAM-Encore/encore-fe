@@ -31,6 +31,16 @@ export const reviewWriteSchema = z.object({
     .max(500, '500자 이내로 작성해주세요.'),
 })
 
+export const step6Schema = reviewWriteSchema.pick({
+  ratingNumber: true,
+  ratingStory: true,
+  ratingRewatch: true,
+  ratingActing: true,
+  ratingPerformance: true,
+  overallComment: true,
+})
+export type Step6FormType = z.infer<typeof step6Schema>
+
 export type ReviewWriteFormType = z.infer<typeof reviewWriteSchema>
 
 export const reviewEditSchema = reviewWriteSchema

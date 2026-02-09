@@ -42,7 +42,7 @@ export function TextField({
               'border-gray-01': isFocused && !error,
               'border-gray-09': !isFocused && !error,
               'border-sub-alert': error,
-              'h-[117px]': as === 'textarea',
+              'h-[117px] py-4 pr-5': as === 'textarea',
               'h-9 px-3': variant === 'short',
             },
             className,
@@ -85,6 +85,7 @@ export function FormTextField<TFieldValues extends FieldValues>({
   control,
   name,
   error,
+  className,
   ...rest
 }: FormTextFieldProps<TFieldValues>) {
   return (
@@ -98,6 +99,7 @@ export function FormTextField<TFieldValues extends FieldValues>({
           onChangeText={onChange}
           onBlur={onBlur}
           value={value}
+          className={className}
         />
       )}
     />

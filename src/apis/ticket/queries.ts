@@ -14,10 +14,12 @@ export const ticketQueries = {
     queryOptions({
       queryKey: ticketKeys.ticketList.list(params),
       queryFn: () => api().getTicketList(params),
+      enabled: !!params.dateRange,
+      select: (data) => data.data,
     }),
   getTicketDetail: (ticketId: number) =>
     queryOptions({
-      queryKey: ticketKeys.getTicketDetail({ ticketId }),
+      queryKey: ticketKeys.getTicketDetail(ticketId),
       queryFn: () => api().getTicketDetail(ticketId),
       enabled: !!ticketId,
       select: (data) => data.data,

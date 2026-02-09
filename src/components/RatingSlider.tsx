@@ -1,6 +1,5 @@
 import { Pressable, View } from 'react-native'
 import { cn } from '@/utils/cn'
-import { Icon } from './common/icons/Icon'
 import { Row } from './common/ui/Flex'
 import { Text } from './common/ui/Text'
 
@@ -21,13 +20,17 @@ export function RatingSlider({
 }: RatingSliderProps) {
   return (
     <Row align="center" gap={12} className="w-full">
-      <Row align="center" gap={4} className="w-20">
-        <Text variant="caption" color="gray-01">
+      <Row align="center" gap={4} className="w-[79px]">
+        <Text variant="caption" className="text-gray-01">
           {label}
         </Text>
         {showHelp && (
           <Pressable onPress={onHelpPress} hitSlop={8}>
-            <Icon name="HelpCircle" className="text-gray-06" size={14} />
+            <View className="size-[14px] items-center justify-center rounded-full border border-gray-06">
+              <Text variant="caption" className="text-gray-06 text-xs">
+                ?
+              </Text>
+            </View>
           </Pressable>
         )}
       </Row>
@@ -43,7 +46,7 @@ export function RatingSlider({
               key={idx}
               className={cn('h-3', {
                 'bg-primary-04': step <= value,
-                'bg-gray-10': step > value,
+                'bg-gray-12': step > value,
                 'rounded-l-full': step === 1,
                 'rounded-r-full': step === 5,
               })}
@@ -71,7 +74,7 @@ export function RatingSlider({
         })}
       </Row>
 
-      <Text variant="caption" color="gray-07" className="shrink-0">
+      <Text variant="caption" color="gray-06" className="shrink-0">
         {value}점
       </Text>
     </Row>
