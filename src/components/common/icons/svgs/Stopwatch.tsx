@@ -12,7 +12,7 @@ const Stopwatch = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     {...props}
   >
     <G
-      stroke="#F2F2F2"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeWidth={1.2}
       clipPath="url(#a)"
@@ -25,7 +25,7 @@ const Stopwatch = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     </G>
     <Defs>
       <ClipPath id="a">
-        <Path fill="#fff" d="M0 0h14v14H0z" />
+        <Path fill="currentColor" d="M0 0h14v14H0z" />
       </ClipPath>
     </Defs>
   </Svg>

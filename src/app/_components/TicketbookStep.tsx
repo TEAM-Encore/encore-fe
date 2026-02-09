@@ -22,13 +22,11 @@ export default function TicketbookStep() {
     tabs[0].value,
   )
 
-  const { data } = useQuery(
+  const { data: tickets } = useQuery(
     ticketQueries.getTicketList({
       dateRange: sort === 'all' ? '30' : sort === 'week' ? '7' : '0',
     }),
   )
-
-  const tickets = data?.data ?? []
 
   return (
     <>
@@ -43,10 +41,11 @@ export default function TicketbookStep() {
           renderItem={({ item }) => (
             <TicketBook
               title={item.musical_title ?? ''}
-              date={item.viewed_date ?? ''}
+              date={item.viewed_date?.replace(/-/g, '.') ?? ''}
               theaterseat={`${item.floor}층 ${item.zone}구역 ${item.col}열 ${item.number}번`}
               attendees={
-                item.actors?.map((actor) => actor.name as string) ?? []
+                item.actors?.map((actor) => actor.name as string).join(' ') ??
+                ''
               }
               posterUrl={item.musical_image_url ?? ''}
               onPress={() => {

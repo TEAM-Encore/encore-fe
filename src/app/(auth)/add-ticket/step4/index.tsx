@@ -1,3 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as ImagePicker from 'expo-image-picker'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useForm } from 'react-hook-form'
+import { Image } from 'react-native'
 import { api } from '@/api'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -11,12 +17,6 @@ import { Text } from '@/components/common/ui/Text'
 import { toast } from '@/components/Toaster'
 import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as ImagePicker from 'expo-image-picker'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useForm } from 'react-hook-form'
-import { Image } from 'react-native'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
@@ -115,7 +115,6 @@ export default function Step4() {
     if (!user?.id) return
 
     mutate({
-      userId: user?.id,
       musical_id: data.musicalId,
       viewed_date: data.viewedDate,
       show_time: `${data.showTime.hour}:${data.showTime.minute}`,

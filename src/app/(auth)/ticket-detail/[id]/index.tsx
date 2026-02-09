@@ -23,22 +23,15 @@ import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
 import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
-import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
-  const user = useUser()
 
   const [actorKeyword, setActorKeyword] = useState('')
 
-  const { data } = useSuspenseQuery(
-    ticketQueries.getTicketDetail({
-      ticketId: Number(id),
-      userId: user?.id as number,
-    }),
-  )
+  const { data } = useSuspenseQuery(ticketQueries.getTicketDetail(Number(id)))
 
   const { data: actors } = useQuery(
     ticketQueries.searchActors({
@@ -57,10 +50,10 @@ export default function TicketDetailScreen() {
       col: data?.col ?? '',
       seatNumber: data?.number ?? '',
       viewedDate: data?.viewed_date,
-      showTime:
-        typeof data?.show_time === 'object' && data?.show_time !== null
-          ? data.show_time
-          : { hour: '', minute: '' },
+      showTime: {
+        hour: data?.show_time?.split(':')[0],
+        minute: data?.show_time?.split(':')[1],
+      },
       hall: data?.location ?? '',
       actors:
         data?.actors?.map((actor) => ({
@@ -403,7 +396,7 @@ export default function TicketDetailScreen() {
             />
           )}
 
-          {actorKeyword.length && (
+          {actorKeyword.length > 0 && (
             <FlatList
               data={actors?.data ?? []}
               renderItem={({ item }) => (
@@ -457,7 +450,7 @@ export default function TicketDetailScreen() {
             />
           )}
 
-          {!actorKeyword.length && (
+          {actorKeyword.length === 0 && (
             <Row align="center" gap={4} wrap="wrap" className="mt-3">
               {form.watch('actors')?.map((actor) => (
                 <Col

@@ -28,7 +28,7 @@ export default function ReviewStep() {
     queryKey: 'reviews',
     fn: api().getReviewList,
     params: {
-      sort: sort,
+      sort: 'id',
     },
   })
 

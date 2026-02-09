@@ -12,7 +12,7 @@ const Delete = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     {...props}
   >
     <Path
-      stroke="#FF692D"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.5}

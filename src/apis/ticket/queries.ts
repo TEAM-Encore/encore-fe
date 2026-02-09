@@ -1,10 +1,6 @@
-import { api } from '@/api'
 import { queryOptions } from '@tanstack/react-query'
-import type {
-  GetTicketDetailParams,
-  GetTicketListParams,
-  SearchActorsParams,
-} from 'api'
+import type { GetTicketListParams, SearchActorsParams } from 'api'
+import { api } from '@/api'
 import { ticketKeys } from './keys'
 
 export const ticketQueries = {
@@ -18,19 +14,19 @@ export const ticketQueries = {
     queryOptions({
       queryKey: ticketKeys.ticketList.list(params),
       queryFn: () => api().getTicketList(params),
+      enabled: !!params.dateRange,
+      select: (data) => data.data,
     }),
-  getTicketDetail: ({ ticketId }: { ticketId: number }) =>
+  getTicketDetail: (ticketId: number) =>
     queryOptions({
-      queryKey: ticketKeys.getTicketDetail({ ticketId }),
+      queryKey: ticketKeys.getTicketDetail(ticketId),
       queryFn: () => api().getTicketDetail(ticketId),
       enabled: !!ticketId,
       select: (data) => data.data,
     }),
-  getTicketDetail: ({ ticketId, userId }: GetTicketDetailParams) =>
+  getUnreviewedTicketList: () =>
     queryOptions({
-      queryKey: ticketKeys.getTicketDetail({ ticketId, userId }),
-      queryFn: () => api().getTicketDetail({ ticketId, userId }),
-      enabled: !!ticketId && !!userId,
-      select: (data) => data.data,
+      queryKey: ticketKeys.unreviewed(),
+      queryFn: () => api().getUnreviewedTicketList(),
     }),
 }

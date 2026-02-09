@@ -58,8 +58,8 @@ export function Dialog({
                 center
                 className="h-[46px] rounded-[4px] bg-primary-04"
                 onPress={() => {
-                  onTopPress?.()
                   close()
+                  onTopPress?.()
                 }}
               >
                 <Text variant="subhead-02">{top}</Text>
@@ -69,8 +69,8 @@ export function Dialog({
                 color="gray-07"
                 className="text-center"
                 onPress={() => {
-                  onBottomPress?.()
                   close()
+                  onBottomPress?.()
                 }}
               >
                 {bottom}

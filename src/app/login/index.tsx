@@ -34,8 +34,15 @@ export default function Index() {
       const response = await queryClient.fetchQuery(
         userQueries.getLoginUrl(provider),
       )
-      const url = response.url as string
+      let url = response.url as string
       const redirectUri = 'encore://oauth'
+
+      // Google 로그인 시 계정 선택 화면 강제 표시
+      if (provider === 'GOOGLE') {
+        const urlObj = new URL(url)
+        urlObj.searchParams.set('prompt', 'select_account')
+        url = urlObj.toString()
+      }
 
       const result = await WebBrowser.openAuthSessionAsync(url, redirectUri)
 

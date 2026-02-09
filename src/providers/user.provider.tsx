@@ -27,6 +27,10 @@ export const useUser = () => {
   return useAuth().user
 }
 
+export const useUserLoading = () => {
+  return useAuth().isLoading
+}
+
 export function UserProvider({ children }: PropsWithStrictChildren) {
   const [user, setUser] = useState<User>()
   const [isLoading, setIsLoading] = useState(true)
