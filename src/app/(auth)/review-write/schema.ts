@@ -10,12 +10,12 @@ export const reviewWriteSchema = z.object({
     .string()
     .min(20, '20자 이상 입력해주세요.')
     .max(500, '500자 이내로 작성해주세요.'),
-  soundQuality: z.enum(['GOOD', 'AVERAGE', 'POOR']),
+  soundQuality: z.number().min(1).max(3),
   soundQualityReason: z
     .string()
     .min(20, '20자 이상 입력해주세요.')
     .max(500, '500자 이내로 작성해주세요.'),
-  facilityQuality: z.enum(['GOOD', 'AVERAGE', 'POOR']),
+  facilityQuality: z.number().min(1).max(3),
   facilityQualityReason: z
     .string()
     .min(20, '20자 이상 입력해주세요.')
