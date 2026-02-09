@@ -19,7 +19,7 @@ const MOCK: Record<string, MypageSectionItem[]> = {
   externalLinks: [
     {
       label: '문의사항',
-      href: 'https://honored-collard-ece.notion.site/24c84f6854f18047900ff1f8340543b3?source=copy_link',
+      href: 'https://docs.google.com/forms/d/e/1FAIpQLScy6AUKt1MZKw-PrFDxjrTSufDhFvo5VNcO7UjSr4kbIPCrsA/viewform',
     },
     {
       label: '이용약관',
