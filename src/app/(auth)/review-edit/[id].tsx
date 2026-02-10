@@ -11,6 +11,7 @@ import { reviewMutations } from '@/apis/review/mutations'
 import { reviewQueries } from '@/apis/review/queries'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { reviewEditSchema } from '@/app/(auth)/review-write/schema'
+import { TicketBook } from '@/components'
 import { Avatar } from '@/components/Avatar'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -50,6 +51,7 @@ export default function ReviewEdit() {
 
   const { mutate: getProfileImage } = imageMutations.getViewImage()
   const { mutate: updateReview } = reviewMutations.updateReview()
+  const { mutate: getTicketImage } = imageMutations.getViewImage()
 
   useEffect(() => {
     if (!review?.profile_image_url) {
@@ -66,6 +68,7 @@ export default function ReviewEdit() {
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>()
+  const [ticketImageUrl, setTicketImageUrl] = useState<string | undefined>()
 
   const viewImages = viewImageResponse?.view_images ?? []
   const viewLevel = review?.review_data_res?.view?.view_level
@@ -183,6 +186,21 @@ export default function ReviewEdit() {
     ))
   }
 
+  useEffect(() => {
+    if (!tickets?.ticket_image_url) {
+      setTicketImageUrl(undefined)
+      return
+    }
+    const match = tickets?.ticket_image_url?.match(/dynamic\/[\w-]+\.\w+/)?.[0]
+
+    getTicketImage(
+      { file_path: match },
+      {
+        onSuccess: (data) => setTicketImageUrl(data?.url ?? ''),
+      },
+    )
+  }, [tickets?.ticket_image_url, getTicketImage])
+
   return (
     <Screen
       header={
@@ -231,18 +249,12 @@ export default function ReviewEdit() {
               </Row>
             </Row>
             <Spacing size={20} />
-            <TicketCard
-              posterUrl={tickets?.musical_image_url}
-              showName={tickets?.musical_title}
-              venueName={tickets?.location}
-              date={tickets?.viewed_date}
-              seat={{
-                col: tickets?.col,
-                floor: tickets?.floor?.toString(),
-                number: tickets?.number,
-                zone: tickets?.zone,
-              }}
-              actorName={
+            <TicketBook
+              posterUrl={ticketImageUrl ?? ''}
+              title={`${tickets?.musical_title} ${tickets?.location}`}
+              date={tickets?.viewed_date?.replace(/-/g, '.') ?? ''}
+              theaterseat={`${tickets?.floor}층 ${tickets?.zone}구역 ${tickets?.col}열 ${tickets?.number}번`}
+              attendees={
                 tickets?.actors?.map((actor) => actor.name).join(' ') ?? ''
               }
             />
