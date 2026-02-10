@@ -1,5 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
-import type { ReportReviewParamsReason, ReviewCreateReq } from 'api'
+import type {
+  ReportReviewParamsReason,
+  ReviewCreateReq,
+  ReviewUpdateReq,
+} from 'api'
 import { api } from '@/api'
 import { queryClient } from '@/lib/query-client'
 import { reviewKeys } from './keys'
@@ -10,6 +14,23 @@ export const reviewMutations = {
       mutationFn: (data: ReviewCreateReq) => api().createReview(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: reviewKeys.list.all() })
+      },
+    })
+  },
+
+  updateReview: () => {
+    return useMutation({
+      mutationFn: ({
+        reviewId,
+        data,
+      }: {
+        reviewId: number
+        data: ReviewUpdateReq
+      }) => api().updateReview(reviewId, data),
+      onSuccess: (_, variables) => {
+        queryClient.invalidateQueries({
+          queryKey: reviewKeys.detail(variables.reviewId),
+        })
       },
     })
   },

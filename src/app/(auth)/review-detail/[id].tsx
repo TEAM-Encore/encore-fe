@@ -29,23 +29,10 @@ import { ReportBottomSheet } from '@/components/ReportBottomSheet'
 import { ReviewInfoSection } from '@/components/ReviewInfoSection'
 import { TicketCard } from '@/components/TicketCard'
 import { toast } from '@/components/Toaster'
+import { FACILITY_LEVEL_LABELS, SOUND_LEVEL_LABELS } from '@/constants/review'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { showPointRewardToast } from '@/utils/pointReward'
-
-// 음향 레벨 → 텍스트 변환
-const SOUND_LEVEL_LABELS: Record<number, string> = {
-  1: '좋지 않아요',
-  2: '보통이에요',
-  3: '잘 들려요',
-}
-
-// 시설 레벨 → 텍스트 변환
-const FACILITY_LEVEL_LABELS: Record<number, string> = {
-  1: '좋지 않아요',
-  2: '보통이에요',
-  3: '쾌적해요',
-}
 
 type ReviewDetailTicket = {
   ticket_id?: number
@@ -402,8 +389,7 @@ export default function ReviewDetail() {
             <Spacing size={16} />
             {/* 총평 텍스트 */}
             <Text variant="body-long-01" color="gray-01" className="leading-6">
-              전반적으로 시설에 만족하며 배우들의 합과 넘버의 퀄리티 가 매우
-              만족스러워 재관람 할 의사가 있음.
+              {reviewData.review_data_res?.rating?.rating_review ?? ''}
             </Text>
             <Spacing size={20} />
             {/* 평점 슬라이더들 */}

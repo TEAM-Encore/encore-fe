@@ -428,8 +428,6 @@ export default function TicketDetailScreen() {
                       )
 
                       setActorKeyword('')
-
-                      console.log(actorKeyword, 'actorKeyword')
                     }
                   }}
                   className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
