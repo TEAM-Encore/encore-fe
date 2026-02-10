@@ -1,4 +1,4 @@
-import { TextInput } from 'react-native'
+import { TextInput, View } from 'react-native'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { Icon } from '../common/icons/Icon'
@@ -19,25 +19,27 @@ export function Search({
 }: SearchProps) {
   return (
     <Row className="relative w-full">
+      <View className="flex-1">
+        <TextInput
+          value={value}
+          placeholderTextColor={colors.gray['07']}
+          placeholderClassName="text-input-02"
+          className={cn(
+            'w-full rounded-[8px] bg-gray-10 px-[43px] text-gray-01',
+            {
+              'h-[48px]': height === '48',
+              'h-[40px]': height === '40',
+            },
+            className,
+          )}
+          {...rest}
+        />
+      </View>
       <Icon
         name="Search"
         size={18}
         className="-translate-y-1/2 absolute top-1/2 left-4 z-10 text-gray-01"
-      />
-      <TextInput
-        value={value}
-        placeholderTextColor={colors.gray['07']}
-        placeholderClassName="text-input-02"
-        textAlignVertical="center"
-        className={cn(
-          'w-full rounded-[8px] bg-gray-10 px-[43px] text-gray-01',
-          {
-            'h-[48px]': height === '48',
-            'h-[40px]': height === '40',
-          },
-          className,
-        )}
-        {...rest}
+        pointerEvents="none"
       />
       {!!value?.length && (
         <Icon
