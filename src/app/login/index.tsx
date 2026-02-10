@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { userQueries } from '@/apis/user/queries'
 import { Col } from '@/components/common/ui/Flex'
 import { Text, type TextProps } from '@/components/common/ui/Text'
+import { toast } from '@/components/Toaster'
 import { TERMS_AND_PRIVACY } from '@/constants/login'
 import { queryClient } from '@/lib/query-client'
 import { saveToken } from '@/lib/storage'
@@ -33,8 +34,15 @@ export default function Index() {
       const response = await queryClient.fetchQuery(
         userQueries.getLoginUrl(provider),
       )
-      const url = response.url as string
+      let url = response.url as string
       const redirectUri = 'encore://oauth'
+
+      // Google 로그인 시 계정 선택 화면 강제 표시
+      if (provider === 'GOOGLE') {
+        const urlObj = new URL(url)
+        urlObj.searchParams.set('prompt', 'select_account')
+        url = urlObj.toString()
+      }
 
       const result = await WebBrowser.openAuthSessionAsync(url, redirectUri)
 
@@ -45,8 +53,7 @@ export default function Index() {
 
         if (token) {
           await saveToken('accessToken', token)
-          await sync()
-
+          sync()
           if (isInitialized === 'true') {
             router.replace('/')
           } else {
@@ -55,14 +62,14 @@ export default function Index() {
         }
       }
     } catch (error) {
-      console.error('로그인 실패:', error)
+      toast.show((error as Error)?.message ?? '로그인에 실패했습니다.')
     }
   }
 
   return (
     <View className="flex-1">
       <Image
-        source={require('@/assets/images/login-bg.png')}
+        source={require('../../../assets/images/login-bg.png')}
         className="absolute h-full w-full"
         resizeMode="cover"
       />

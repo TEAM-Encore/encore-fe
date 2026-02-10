@@ -14,12 +14,12 @@ export function ReviewInfoSection({
   description,
 }: ReviewInfoSectionProps) {
   return (
-    <Col className="gap-4">
+    <Col gap={16}>
       <Row align="center" gap={10}>
-        <Text variant="subhead-04" className="text-gray-01">
+        <Text variant="subhead-04" color="gray-01" className="text-[18px]">
           {title}
         </Text>
-        <InfoBadge label={badgeLabel} />
+        {badgeLabel && <InfoBadge label={badgeLabel} />}
       </Row>
 
       <Text variant="body-01" className="text-gray-01">

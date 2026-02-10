@@ -1,5 +1,4 @@
 import { router } from 'expo-router'
-import { ScrollView } from 'react-native'
 import { Button } from '@/components/Button'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -46,18 +45,16 @@ export default function PointGuide() {
             글을 작성할때마다 10포인트를 얻을 수 있어요.
           </Text>
           <Spacing size={16} />
-          <Button className="!h-12" textClassName="!text-[14px] !text-gray-12">
+          <Button
+            className="!h-12"
+            textClassName="!text-[14px] !text-gray-12"
+            onPress={() => router.push('/review-write')}
+          >
             바로가기
           </Button>
         </Col>
         <Col className="rounded-[10px] bg-gray-11 p-4">
-          <Text
-            variant="subhead-03"
-            color="gray-01"
-            onPress={() => {
-              // TODO: 리뷰 작성 페이지로 이동
-            }}
-          >
+          <Text variant="subhead-03" color="gray-01">
             좋아요 누르기
           </Text>
           <Spacing size={8} />

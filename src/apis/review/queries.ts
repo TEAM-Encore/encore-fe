@@ -10,4 +10,19 @@ export const reviewQueries = {
       queryFn: () => api().getReviewList(params),
       select: (data) => data.data,
     }),
+
+  getViewImage: () =>
+    queryOptions({
+      queryKey: reviewKeys.viewImage(),
+      queryFn: () => api().viewImage1(),
+      select: (data) => data.data,
+    }),
+
+  getReview: (reviewId: number) =>
+    queryOptions({
+      queryKey: reviewKeys.detail(reviewId),
+      queryFn: () => api().getReview(reviewId),
+      enabled: !!reviewId,
+      select: (data) => data.data,
+    }),
 }

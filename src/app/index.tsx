@@ -2,14 +2,14 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { Redirect, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, View } from 'react-native'
+import { View } from 'react-native'
 import Animated, { useSharedValue, withTiming } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Feather, Search, UserLinear } from '@/components/common/icons/svgs'
 import { Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Text } from '@/components/common/ui/Text'
-import { useAuth, useUser } from '@/providers/user.provider'
+import { useUser, useUserLoading } from '@/providers/user.provider'
 import AddReviewBottomSheet from './_components/AddReviewBottomSheet'
 import ReviewStep from './_components/ReviewStep'
 import TicketbookStep from './_components/TicketbookStep'
@@ -22,8 +22,10 @@ const tabs = [
 
 export default function Index() {
   const router = useRouter()
-  const { isLoading } = useAuth()
+
   const user = useUser()
+  const isLoading = useUserLoading()
+
   const [selected, setSelected] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -36,12 +38,12 @@ export default function Index() {
     translateX.value = withTiming(selectedIndex * 85, { duration: 300 })
   }, [selected, translateX])
 
-  if (!user && !isLoading) {
-    return <Redirect href="/login" />
+  if (isLoading) {
+    return null
   }
 
-  if (isLoading) {
-    return <ActivityIndicator />
+  if (!user) {
+    return <Redirect href="/login" />
   }
 
   return (

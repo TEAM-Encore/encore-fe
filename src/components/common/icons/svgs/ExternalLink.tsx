@@ -12,7 +12,7 @@ const ExternalLink = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     {...props}
   >
     <Path
-      stroke="#FBFBFB"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={1.542}

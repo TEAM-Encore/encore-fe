@@ -9,6 +9,13 @@ type AvatarProps = {
   imageUrl?: string
   onUpload?: () => void
   size?: AvatarSize
+  className?: string
+  config?: {
+    container: string
+    iconSize: number
+    camera: string
+    cameraIcon: number
+  }
 }
 
 const sizeConfig = {
@@ -38,19 +45,26 @@ const sizeConfig = {
   },
 }
 
-export function Avatar({ imageUrl, onUpload, size = 'large' }: AvatarProps) {
-  const config = sizeConfig[size]
+export function Avatar({
+  imageUrl,
+  onUpload,
+  size = 'large',
+  className,
+  config,
+}: AvatarProps) {
+  const avatarConfig = config ?? sizeConfig[size]
 
   const content = imageUrl ? (
     <Image
       source={{ uri: imageUrl }}
       resizeMode="cover"
-      className={cn(config.container, 'rounded-full')}
+      className={cn(avatarConfig.container, 'rounded-full')}
     />
   ) : (
     <Icon
       name={size === 'xsmall' ? 'Variant2' : 'AvatarPlaceholder'}
-      size={config.iconSize}
+      size={avatarConfig.iconSize}
+      className={className}
     />
   )
 
@@ -62,10 +76,14 @@ export function Avatar({ imageUrl, onUpload, size = 'large' }: AvatarProps) {
           center
           className={cn(
             '-bottom-1 -right-1 absolute rounded-full bg-gray-09',
-            config.camera,
+            avatarConfig.camera,
           )}
         >
-          <Icon name="Camera" size={config.cameraIcon} className="text-white" />
+          <Icon
+            name="Camera"
+            size={avatarConfig.cameraIcon}
+            className="text-white"
+          />
         </Flex>
       </Pressable>
     )

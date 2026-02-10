@@ -1,15 +1,15 @@
-import React from 'react'
 import { Image, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
 import { cn } from '@/utils/cn'
+import Marquee from './Marquee'
 
 type TicketBookProps = {
   title: string
   date: string
   theaterseat: string
-  attendees: string[]
+  attendees: string
   posterUrl: string
   onPress?: () => void
   className?: string
@@ -18,25 +18,21 @@ type TicketBookProps = {
 
 export function TicketBook({
   title,
-  date,
-  theaterseat,
-  attendees,
   posterUrl,
   onPress,
   className,
   active = false,
+  ...rest
 }: TicketBookProps) {
   return (
     <Flex
       onPress={onPress}
       direction="row"
       align="center"
+      gap={16}
       className={cn(
-        'h-[120px] w-full flex-row items-center rounded-lg px-4 py-[16px]',
-        {
-          'bg-gray-03': active,
-          'bg-gray-11': !active,
-        },
+        'h-30 w-full rounded-lg p-4',
+        active ? 'bg-gray-03' : 'bg-gray-11',
         className,
       )}
     >
@@ -54,88 +50,44 @@ export function TicketBook({
       </View>
 
       {/* 티켓북 정보 */}
-      <Col className="ml-[16px] flex-1 gap-[8px]">
-        {/* 제목 */}
-        <Text
-          variant="subhead-03"
-          className={cn({
-            'text-gray-12': active,
-            'text-gray-01': !active,
+      <Col gap={8} className="relative flex-1">
+        <Marquee duration={15000}>
+          <Text
+            variant="subhead-03"
+            color={active ? 'gray-12' : 'gray-01'}
+            numberOfLines={1}
+            className="marquee-text whitespace-nowrap"
+          >
+            {title}
+          </Text>
+        </Marquee>
+
+        <Col>
+          {['date', 'theaterseat', 'attendees'].map((key) => {
+            const iconName =
+              key === 'date'
+                ? 'Clock'
+                : key === 'theaterseat'
+                  ? 'Theaterseat'
+                  : 'User'
+            return (
+              <Row key={key} align="center" gap={6}>
+                <Icon
+                  name={iconName}
+                  size={11}
+                  className={cn(active ? 'text-gray-10' : 'text-gray-01')}
+                />
+                <Text
+                  variant={'caption'}
+                  color={active ? 'gray-08' : 'gray-06'}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {rest[key as keyof typeof rest]}
+                </Text>
+              </Row>
+            )
           })}
-          numberOfLines={1}
-        >
-          {title}
-        </Text>
-
-        <Col className="gap-1">
-          {/* 날짜 */}
-          <Row className="items-center gap-x-[6px]">
-            <Icon
-              name="Clock"
-              size={11}
-              className={cn({
-                'text-gray-10': active,
-                'text-gray-01': !active,
-              })}
-            />
-            <Text
-              variant={'caption'}
-              className={cn('font-regular text-[10px]', {
-                'text-gray-08': active,
-                'text-gray-06': !active,
-              })}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {attendees.join(' ')}
-            </Text>
-          </Row>
-
-          {/* 좌석 */}
-          <Row className="items-center gap-x-[6px]">
-            <Icon
-              name="TheaterSeat"
-              size={11}
-              className={cn({
-                'text-gray-10': active,
-                'text-gray-01': !active,
-              })}
-            />
-            <Text
-              variant={'caption'}
-              className={cn('font-regular text-[10px]', {
-                'text-gray-08': active,
-                'text-gray-06': !active,
-              })}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {theaterseat}
-            </Text>
-          </Row>
-
-          {/* 유저 */}
-          <Row className="items-center gap-x-[6px]">
-            <Icon
-              name="User"
-              size={11}
-              className={cn({
-                'text-gray-10': active,
-                'text-gray-01': !active,
-              })}
-            />
-            <Text
-              variant={'caption'}
-              className={cn('font-regular text-[10px]', {
-                'text-gray-08': active,
-                'text-gray-06': !active,
-              })}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {attendees.join(' ')}
-            </Text>
-          </Row>
         </Col>
       </Col>
     </Flex>

@@ -1,60 +1,47 @@
+import { useQuery } from '@tanstack/react-query'
 import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 import { FlatList, Image, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { api } from '@/api'
+import { pointQueries } from '@/apis/point/queries'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
+import { useInfiniteList } from '@/hooks/useInfiniteList'
 import PointItem from '../_components/PointItem'
 
-const MOCK = [
-  {
-    title: '[5년차 뮤덕의 알라딘 후기] 열람',
-    date: '2024-10-19T14:30:00',
-    point: '-10',
-  },
-  {
-    title: '[게시글 좋아요 3회] 이벤트 참여',
-    date: '2024-10-18T19:45:00',
-    point: '+10',
-  },
-  {
-    title: '[위키드 관람 후기] 열람',
-    date: '2024-10-17T22:15:00',
-    point: '-10',
-  },
-  {
-    title: '리뷰 작성',
-    date: '2024-10-16T16:20:00',
-    point: '+30',
-  },
-  {
-    title: '[알라딘 3회차 후기] 열람',
-    date: '2024-10-15T12:00:00',
-    point: '-10',
-  },
-  {
-    title: '[알라딘 4회차 후기] 열람',
-    date: '2024-10-14T09:15:00',
-    point: '-10',
-  },
-  {
-    title: '[알라딘 5회차 후기] 열람',
-    date: '2024-10-13T18:30:00',
-    point: '-10',
-  },
-  {
-    title: '[알라딘 6회차 후기] 열람',
-    date: '2024-10-12T15:45:00',
-    point: '-10',
-  },
-]
+type PointHistoryItem = {
+  id: number
+  change_amount: number
+  balance_after: number
+  description: string
+  type: 'REVIEW_WRITE' | 'REVIEW_VIEW' | 'DAILY_LIKE'
+  createdAt: string
+}
 
 export default function Point() {
   const insets = useSafeAreaInsets()
+
+  const { data: point } = useQuery(pointQueries.getMyBalance())
+
+  const { rows: pointHistory } = useInfiniteList<
+    PointHistoryItem,
+    { cursor?: number }
+  >({
+    queryKey: 'pointHistory',
+    fn: async ({ cursor }) => {
+      const res = await api().getMyPointHistory({
+        page: cursor ?? 0,
+        size: 3,
+      })
+      return res.data
+    },
+    params: {},
+  })
 
   return (
     <Screen
@@ -78,7 +65,7 @@ export default function Point() {
         <Row gap={7} align="center">
           <Icon name="Point" size={24} className="text-gray-01" />
           <Text variant="display-02" color="gray-01">
-            15
+            {point?.data.current_balance ?? 0}
           </Text>
         </Row>
         <Flex
@@ -94,8 +81,14 @@ export default function Point() {
       <FlatList
         contentContainerStyle={{ paddingBottom: 108, paddingRight: 4 }}
         showsVerticalScrollIndicator={false}
-        data={MOCK}
-        renderItem={({ item }) => <PointItem {...item} />}
+        data={pointHistory}
+        renderItem={({ item }) => (
+          <PointItem
+            title={item.description}
+            date={item.createdAt}
+            point={item.change_amount.toString()}
+          />
+        )}
       />
       <LinearGradient
         colors={['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.1)', '#000000']}

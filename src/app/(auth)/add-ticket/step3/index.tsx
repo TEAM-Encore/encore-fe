@@ -111,6 +111,7 @@ export default function Step3() {
         </Text>
       </Col>
       <Search
+        height="48"
         placeholder="배우 이름 검색하기"
         value={keyword}
         onChangeText={(text) => {

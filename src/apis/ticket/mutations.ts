@@ -1,15 +1,13 @@
-import { api } from '@/api'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import type { TicketCreateReq, TicketUpdateReq } from 'api'
+import { api } from '@/api'
+import { queryClient } from '@/lib/query-client'
 import { ticketKeys } from './keys'
 
 export const ticketMutations = {
   createTicket: () => {
-    const queryClient = useQueryClient()
-
     return useMutation({
-      mutationFn: ({ userId, ...data }: { userId: number } & TicketCreateReq) =>
-        api().createTicket({ userId }, data),
+      mutationFn: (data: TicketCreateReq) => api().createTicket(data),
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ticketKeys.ticketList.all() })
       },
@@ -17,8 +15,6 @@ export const ticketMutations = {
   },
 
   updateTicket: () => {
-    const queryClient = useQueryClient()
-
     return useMutation({
       mutationFn: ({
         ticketId,

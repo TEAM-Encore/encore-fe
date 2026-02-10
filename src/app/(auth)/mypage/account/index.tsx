@@ -7,12 +7,12 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
-import { deleteToken } from '@/lib/storage'
-import { useAuth } from '@/providers/user.provider'
+import { useAuth, useUser } from '@/providers/user.provider'
 import MypageSection from '../_components/MypageSection'
 
 export default function Account() {
   const { logout } = useAuth()
+  const user = useUser()
   const { mutate: deleteMyAccount } = useMutation(
     userMutations.deleteMyAccount(),
   )
@@ -29,7 +29,7 @@ export default function Account() {
       <Spacing size={32} />
       <Col gap={20}>
         <MypageSection
-          items={[{ label: '계정 정보', value: 'sa8266su@gmail.com' }]}
+          items={[{ label: '계정 정보', value: user?.email ?? '' }]}
         />
         <MypageSection
           items={[

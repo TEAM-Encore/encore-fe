@@ -11,10 +11,10 @@ const Variant2 = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     ref={ref}
     {...props}
   >
-    <Rect width={20} height={20} fill="#FBFBFB" rx={10} />
+    <Rect width={20} height={20} fill="currentColor" rx={10} />
     <Path
-      fill="#C1C1C1"
-      stroke="#C1C1C1"
+      fill="currentColor"
+      stroke="currentColor"
       strokeWidth={0.4}
       d="M8.95 5.8v1.104A2.95 2.95 0 0 1 14.2 8.75v.2h-1.105a2.95 2.95 0 0 1-1.845 5.25h-.2v-1.105A2.95 2.95 0 0 1 5.8 11.25v-.2h1.105A2.95 2.95 0 0 1 8.75 5.8z"
     />

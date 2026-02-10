@@ -1,22 +1,21 @@
-import { Ref, forwardRef } from 'react'
-import type { SvgProps } from 'react-native-svg'
 import Svg, { Path } from 'react-native-svg'
-
+import type { SvgProps } from 'react-native-svg'
+import { Ref, forwardRef } from 'react'
 const User = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
-    <Svg
-        width={11}
-        height={11}
-        viewBox="0 0 9 11"
-        fill="none"
-        ref={ref}
-        {...props}
-    >
-        <Path
-            d="M8.16671 10.5834H0.833374V9.66671C0.833374 8.40107 1.85939 7.37504 3.12504 7.37504H5.87504C7.14068 7.37504 8.16671 8.40107 8.16671 9.66671V10.5834ZM4.50004 6.45837C2.98126 6.45837 1.75004 5.22715 1.75004 3.70837C1.75004 2.18959 2.98126 0.958374 4.50004 0.958374C6.01882 0.958374 7.25004 2.18959 7.25004 3.70837C7.25004 5.22715 6.01882 6.45837 4.50004 6.45837Z"
-            fill="currentColor"
-        />
-    </Svg>
+  <Svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={9}
+    height={11}
+    fill="none"
+    viewBox="0 0 9 11"
+    ref={ref}
+    {...props}
+  >
+    <Path
+      fill="currentColor"
+      d="M8.167 10.583H.833v-.916a2.29 2.29 0 0 1 2.292-2.292h2.75a2.29 2.29 0 0 1 2.292 2.292zM4.5 6.458a2.75 2.75 0 1 1 0-5.5 2.75 2.75 0 0 1 0 5.5"
+    />
+  </Svg>
 )
-
 const ForwardRef = forwardRef(User)
 export { ForwardRef as User }
