@@ -7,10 +7,10 @@ export default function Layout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="step1" />
-      <Stack.Screen name="step2" />
-      <Stack.Screen name="step3" />
-      <Stack.Screen name="step4" />
+      <Stack.Screen name="step1/index" />
+      <Stack.Screen name="step2/index" />
+      <Stack.Screen name="step3/index" />
+      <Stack.Screen name="step4/index" />
     </Stack>
   )
 }

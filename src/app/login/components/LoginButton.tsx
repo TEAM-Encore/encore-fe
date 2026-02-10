@@ -24,7 +24,7 @@ export default function LoginButton({ type, onPress }: LoginButtonProps) {
       )}
       onPress={onPress}
     >
-      <Icon name={type} size={18} className="absolute left-4" />
+      <Icon name={type} size={18} className="absolute left-4 text-gray-12" />
       <Text variant="body-02" className="text-gray-12">
         {type} 로그인
       </Text>

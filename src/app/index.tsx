@@ -22,8 +22,10 @@ const tabs = [
 
 export default function Index() {
   const router = useRouter()
+
   const user = useUser()
   const isLoading = useUserLoading()
+
   const [selected, setSelected] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -37,7 +39,7 @@ export default function Index() {
   }, [selected, translateX])
 
   if (isLoading) {
-    return null // 로딩 중에는 리다이렉트하지 않음
+    return null
   }
 
   if (!user) {

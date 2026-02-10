@@ -2,6 +2,7 @@ import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList } from 'react-native'
 import { api } from '@/api'
+import { Col, Flex } from '@/components/common/ui/Flex'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
@@ -39,34 +40,45 @@ export default function ReviewStep() {
   return (
     <>
       <SortSelector tabs={tabs} value={sort} onChange={setSort} />
-      <Spacing size={1} />
-      <FlatList
-        data={reviews}
-        ref={flatListRef}
-        contentContainerClassName="px-5 gap-5"
-        renderItem={({ item }) => (
-          <ReviewCard
-            title={item?.title ?? ''}
-            summary={item.content as string}
-            author={item.nickname as string}
-            likes={item.like_count as number}
-            onPress={() => router.push(`/review-detail/${item.review_id}`)}
+      {queryProps.isLoading && (
+        <Col gap={20} className="px-5">
+          <FlatList
+            data={Array.from({ length: 4 })}
+            renderItem={() => (
+              <Flex className="h-[126px] w-full animate-pulse-strong rounded-lg bg-gray-11 p-4" />
+            )}
+            scrollEnabled={false}
+            contentContainerClassName="gap-5"
           />
-        )}
-        onEndReached={fetchNextPage}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          queryProps.isFetchingNextPage ? (
-            <ActivityIndicator style={{ padding: 20 }} />
-          ) : null
-        }
-        ListEmptyComponent={
-          queryProps.isLoading ? (
-            <ActivityIndicator style={{ padding: 20 }} />
-          ) : null
-        }
-      />
-      <Spacing size={24} />
+        </Col>
+      )}
+      {!queryProps.isLoading && !!reviews.length && (
+        <>
+          <Spacing size={1} />
+          <FlatList
+            data={reviews}
+            ref={flatListRef}
+            contentContainerClassName="px-5 gap-5"
+            renderItem={({ item }) => (
+              <ReviewCard
+                title={item?.title ?? ''}
+                summary={item.content as string}
+                author={item.nickname as string}
+                likes={item.like_count as number}
+                onPress={() => router.push(`/review-detail/${item.review_id}`)}
+              />
+            )}
+            onEndReached={fetchNextPage}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              queryProps.isFetchingNextPage ? (
+                <ActivityIndicator style={{ padding: 20 }} />
+              ) : null
+            }
+          />
+          <Spacing size={24} />
+        </>
+      )}
     </>
   )
 }
