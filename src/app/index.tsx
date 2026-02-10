@@ -3,7 +3,11 @@ import { Redirect, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
 import { View } from 'react-native'
-import Animated, { useSharedValue, withTiming } from 'react-native-reanimated'
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Feather, Search, UserLinear } from '@/components/common/icons/svgs'
 import { Flex, Row } from '@/components/common/ui/Flex'
@@ -32,6 +36,10 @@ export default function Index() {
 
   const translateX = useSharedValue(0)
   const insets = useSafeAreaInsets()
+
+  const animatedTabStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }))
 
   useEffect(() => {
     const selectedIndex = tabs.findIndex((tab) => tab.value === selected)
@@ -85,7 +93,7 @@ export default function Index() {
           ))}
           <Animated.View
             className="absolute bottom-[-1.5px] left-[15px] h-[3px] w-[85px] bg-primary-04"
-            style={{ transform: [{ translateX }] }}
+            style={animatedTabStyle}
           />
         </Row>
         {selected === 'review' ? <ReviewStep /> : <TicketbookStep />}

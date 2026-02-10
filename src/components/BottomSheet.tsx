@@ -9,7 +9,7 @@ import {
   useRef,
 } from 'react'
 import { View } from 'react-native'
-import { interpolate } from 'react-native-reanimated'
+import { interpolate, useAnimatedStyle } from 'react-native-reanimated'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { cn } from '@/utils/cn'
 import { createSafeContext } from '../utils/create-safe-context'
@@ -31,6 +31,27 @@ type RootProps = OverlayProps & {
 
 const [Provider, useSheet] = createSafeContext<ContextValue>('BottomSheet')
 
+function AnimatedBackdrop({
+  onPress,
+  ...props
+}: BottomSheetDefaultBackdropProps & { onPress: () => void }) {
+  const { animatedIndex } = props
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(animatedIndex.value, [-1, 0], [0, 0.7]),
+    backgroundColor: '#000000',
+  }))
+
+  return (
+    <BottomSheetBackdrop
+      {...props}
+      disappearsOnIndex={-1}
+      appearsOnIndex={0}
+      style={animatedStyle}
+      onPress={onPress}
+    />
+  )
+}
+
 function Root({
   isOpen,
   close,
@@ -46,15 +67,6 @@ function Root({
 >) {
   const ref = useRef<GorhomSheet>(null)
   const insets = useSafeAreaInsets()
-
-  const animatedBackdrop = useCallback(
-    ({ animatedIndex }: BottomSheetDefaultBackdropProps) => {
-      return {
-        opacity: interpolate(animatedIndex.value, [-1, 0], [0, 0.7]),
-      }
-    },
-    [],
-  )
 
   const value = useMemo(
     () => ({
@@ -72,14 +84,11 @@ function Root({
 
   const renderBackdrop = useCallback(
     (props: BottomSheetDefaultBackdropProps) => (
-      <BottomSheetBackdrop
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        style={[{ backgroundColor: '#000000' }, animatedBackdrop(props)]}
+      <AnimatedBackdrop
+        {...props}
         onPress={() => {
           value.close()
         }}
-        {...props}
       />
     ),
     [value],
