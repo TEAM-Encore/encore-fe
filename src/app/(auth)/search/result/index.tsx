@@ -2,8 +2,9 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { ActivityIndicator, FlatList } from 'react-native'
 import { api } from '@/api'
-import { Col } from '@/components/common/ui/Flex'
+import { Col, Flex } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
+import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { ReviewCard } from '@/components/ReviewCard'
 import { Search } from '@/components/search/Search'
@@ -52,28 +53,42 @@ export default function SearchResult() {
         </Header>
       }
     >
-      <Col className="h-full w-full">
-        <FlatList
-          data={reviews}
-          renderItem={({ item }) => (
-            <ReviewCard
-              title={item.title ?? ''}
-              summary={item.content ?? ''}
-              author={item.nickname ?? ''}
-              likes={item.like_count ?? 0}
-              onPress={() => router.push(`/review-detail/${item.review_id}`)}
-            />
-          )}
-          contentContainerClassName="mt-3 gap-5 px-5"
-          onEndReached={fetchNextPage}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={
-            queryProps.isFetchingNextPage ? (
-              <ActivityIndicator style={{ padding: 20 }} />
-            ) : null
-          }
-        />
-      </Col>
+      {!queryProps.isLoading && reviews.length === 0 && (
+        <Flex align="center" justify="center" className="h-full w-full">
+          <Text variant="body-01" className="text-gray-06">
+            검색 결과가 없습니다.
+          </Text>
+        </Flex>
+      )}
+      {!queryProps.isLoading && !!reviews.length && (
+        <Col className="h-full w-full">
+          <FlatList
+            data={reviews}
+            renderItem={({ item }) => (
+              <ReviewCard
+                title={item.title ?? ''}
+                summary={item.content ?? ''}
+                author={item.nickname ?? ''}
+                likes={item.like_count ?? 0}
+                onPress={() => router.push(`/review-detail/${item.review_id}`)}
+              />
+            )}
+            contentContainerClassName="mt-3 gap-5 px-5"
+            onEndReached={fetchNextPage}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              queryProps.isFetchingNextPage ? (
+                <ActivityIndicator style={{ padding: 20 }} />
+              ) : null
+            }
+            ListEmptyComponent={
+              queryProps.isLoading ? (
+                <ActivityIndicator style={{ padding: 20 }} />
+              ) : null
+            }
+          />
+        </Col>
+      )}
     </Screen>
   )
 }
