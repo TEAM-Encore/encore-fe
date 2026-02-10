@@ -3,10 +3,11 @@ import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import { useLocalSearchParams } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Image, TextInput } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
+import { imageMutations } from '@/apis/image/mutations'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -40,6 +41,7 @@ export default function TicketDetailScreen() {
   )
 
   const { mutate: updateTicket } = ticketMutations.updateTicket()
+  const { mutate: getTicketImage } = imageMutations.getViewImage()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -67,6 +69,19 @@ export default function TicketDetailScreen() {
   })
 
   const [isEdit, setIsEdit] = useState(false)
+
+  useEffect(() => {
+    if (!data?.ticket_image_url) {
+      form.setValue('ticketImageUrl', undefined)
+      return
+    }
+    const match = data?.ticket_image_url?.match(/dynamic\/[\w-]+\.\w+/)?.[0]
+
+    getTicketImage(
+      { file_path: match },
+      { onSuccess: (data) => form.setValue('ticketImageUrl', data?.url ?? '') },
+    )
+  }, [data?.ticket_image_url, getTicketImage])
 
   const onDelete = async () => {
     overlay.open(({ isOpen, close }) => (
