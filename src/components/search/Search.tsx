@@ -1,6 +1,6 @@
+import { TextInput } from 'react-native'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
-import { TextInput } from 'react-native'
 import { Icon } from '../common/icons/Icon'
 import { Row } from '../common/ui/Flex'
 
@@ -43,7 +43,7 @@ export function Search({
         <Icon
           name="XCircle"
           size={20}
-          className="-translate-y-1/2 absolute top-1/2 right-4 z-10"
+          className="-translate-y-1/2 absolute top-1/2 right-4 z-10 text-gray-08"
           onPress={onDelete}
         />
       )}
