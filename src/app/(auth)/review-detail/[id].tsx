@@ -13,6 +13,7 @@ import { imageMutations } from '@/apis/image/mutations'
 import { reviewMutations } from '@/apis/review/mutations'
 import { reviewQueries } from '@/apis/review/queries'
 import { ticketQueries } from '@/apis/ticket/queries'
+import { TicketBook } from '@/components'
 import { Avatar } from '@/components/Avatar'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
@@ -356,18 +357,12 @@ export default function ReviewDetail() {
 
             {/* 티켓 카드 */}
             {ticketData && (
-              <TicketCard
-                posterUrl={ticketImageUrl}
-                showName={ticketData.musical_title}
-                venueName={ticketData.location}
-                date={ticketData.viewed_date}
-                seat={{
-                  col: ticketData.col,
-                  floor: ticketData.floor?.toString(),
-                  number: ticketData.number,
-                  zone: ticketData.zone,
-                }}
-                actorName={
+              <TicketBook
+                posterUrl={ticketImageUrl!}
+                title={`${ticketData.musical_title} ${ticketData.location}`}
+                date={ticketData.viewed_date?.replace(/-/g, '.') ?? ''}
+                theaterseat={`${ticketData.floor}층 ${ticketData.zone}구역 ${ticketData.col}열 ${ticketData.number}번`}
+                attendees={
                   ticketData.actors?.map((actor) => actor.name).join(' ') ?? ''
                 }
               />

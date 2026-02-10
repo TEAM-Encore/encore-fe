@@ -1,9 +1,4 @@
-import {
-  type PropsWithChildren,
-  type ReactNode,
-  useEffect,
-  useState,
-} from 'react'
+import { type PropsWithChildren, type ReactNode, useState } from 'react'
 import { View } from 'react-native'
 import Animated, {
   type SharedValue,
@@ -73,21 +68,12 @@ const ChildrenScroller = ({
 }>) => {
   const offset = useSharedValue(0)
   const coeff = useSharedValue(-1)
-  const durationSv = useSharedValue(duration)
-  const childrenWidthSv = useSharedValue(childrenWidth)
-
-  useEffect(() => {
-    durationSv.value = duration
-    childrenWidthSv.value = childrenWidth
-  }, [duration, childrenWidth, durationSv, childrenWidthSv])
 
   useFrameCallback((i) => {
-    'worklet'
-    const dt = i.timeSincePreviousFrame ?? 1
-    const w = childrenWidthSv.value
-    const d = durationSv.value
-    offset.value += (coeff.value * (dt * w)) / d
-    offset.value = offset.value % w
+    offset.value +=
+      (coeff.value * ((i.timeSincePreviousFrame ?? 1) * childrenWidth)) /
+      duration
+    offset.value = offset.value % childrenWidth
   }, true)
 
   const count = Math.round(parentWidth / childrenWidth) + 2
@@ -119,7 +105,7 @@ function Marquee({
   const shouldMarquee =
     childrenWidth > 0 && parentWidth > 0 && childrenWidth > parentWidth
 
-  return shouldMarquee ? (
+  return (
     <View
       className={className}
       onLayout={(ev) => {
@@ -130,17 +116,19 @@ function Marquee({
       <Row className="overflow-hidden" pointerEvents="box-none">
         <MeasureElement onLayout={setChildrenWidth}>{children}</MeasureElement>
 
-        <ChildrenScroller
-          duration={duration}
-          parentWidth={parentWidth}
-          childrenWidth={childrenWidth + 50}
-        >
-          {children}
-        </ChildrenScroller>
+        {shouldMarquee ? (
+          <ChildrenScroller
+            duration={duration}
+            parentWidth={parentWidth}
+            childrenWidth={childrenWidth + 50}
+          >
+            {children}
+          </ChildrenScroller>
+        ) : (
+          children
+        )}
       </Row>
     </View>
-  ) : (
-    children
   )
 }
 
