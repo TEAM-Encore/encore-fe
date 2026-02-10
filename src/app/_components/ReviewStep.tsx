@@ -46,10 +46,10 @@ export default function ReviewStep() {
         contentContainerClassName="px-5 gap-5"
         renderItem={({ item }) => (
           <ReviewCard
-            title={item.title}
-            summary={item.content ?? ''}
-            author={item.nickname ?? ''}
-            likes={item.like_count ?? 0}
+            title={item?.title ?? ''}
+            summary={item.content as string}
+            author={item.nickname as string}
+            likes={item.like_count as number}
             onPress={() => router.push(`/review-detail/${item.review_id}`)}
           />
         )}

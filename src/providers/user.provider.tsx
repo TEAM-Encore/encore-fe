@@ -16,7 +16,7 @@ type UserContext = {
   user: User | undefined
   isLoading: boolean
   logout: VoidFunction
-  sync: () => Promise<void>
+  sync: VoidFunction
 }
 
 const [Provider, useAuth] = createSafeContext<UserContext>('UserContext')
@@ -36,11 +36,14 @@ export function UserProvider({ children }: PropsWithStrictChildren) {
   const [isLoading, setIsLoading] = useState(true)
 
   const sync = useCallback(async () => {
+    setIsLoading(true)
     try {
       const token = await getToken('accessToken')
       if (token) {
         const decoded = decodeJwt(token) as User
         setUser(decoded)
+      } else {
+        setUser(undefined)
       }
     } finally {
       setIsLoading(false)

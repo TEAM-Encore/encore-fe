@@ -2,17 +2,25 @@ import { Api } from 'api'
 import { router } from 'expo-router'
 import { deleteToken, getToken } from './lib/storage'
 
-function customFetch(
+async function customFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
-  return fetch(input, init)
+  const response = await fetch(input, init)
+
+  if (response.status === 401) {
+    await deleteToken('accessToken')
+    const { router } = await import('expo-router')
+    router.replace('/login')
+  }
+
+  return response
 }
 
 let instance: Api<unknown>['api'] | null = null
 
 /**
- * 토큰 로직 추가 필요
+ * API 인스턴스 반환
  */
 export function api(): Api<unknown>['api'] {
   if (instance) {

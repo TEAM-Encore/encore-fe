@@ -27,7 +27,13 @@ const NICKNAME_ERROR = {
   INVALID: '유효하지 않은 닉네임입니다.',
 } as const
 
-export default function ProfileSetup() {
+interface ProfileSetupProps {
+  isFromAccount?: boolean
+}
+
+export default function ProfileSetup({
+  isFromAccount = false,
+}: ProfileSetupProps) {
   const { data: myInfo } = useQuery(userQueries.getMyInfo())
 
   const form = useForm<LoginFormType>({
@@ -71,7 +77,6 @@ export default function ProfileSetup() {
       {
         onSuccess: (data) => {
           if (!data?.data?.is_valid) return
-          form.clearErrors('nick_name')
         },
         onError: (error: {
           timestamp?: string
@@ -110,19 +115,36 @@ export default function ProfileSetup() {
 
     patchUserInfo(payload, {
       onSuccess: () => {
-        setupComplete(undefined)
-        router.replace('/')
+        if (isFromAccount) {
+          router.push('/mypage')
+        } else {
+          setupComplete(undefined, {
+            onSuccess: () => {
+              router.replace('/')
+            },
+            onError: (error: { message?: string }) =>
+              toast.show(error.message ?? ''),
+          })
+        }
       },
       onError: (error) => toast.show(error.message),
     })
   })
+
+  const buttonText = () => {
+    if (isPending) return <ActivityIndicator />
+    if (isFromAccount) return '저장하기'
+    return '시작하기'
+  }
 
   return (
     <Screen
       header={
         <Header>
           <Header.Back />
-          <Header.Center>회원가입</Header.Center>
+          <Header.Center>
+            {isFromAccount ? '프로필 수정' : '회원가입'}
+          </Header.Center>
         </Header>
       }
       fixedButton={
@@ -130,20 +152,24 @@ export default function ProfileSetup() {
           disabled={!form.formState.isValid || isPending}
           onPress={onSubmit}
         >
-          {isPending ? <ActivityIndicator /> : '시작하기'}
+          {buttonText()}
         </Button>
       }
     >
       <StatusBar barStyle="light-content" />
-      <Spacing size={24} />
-      <Col>
-        <Text variant="subhead-05" color="gray-01">
-          프로필만 설정하면
-        </Text>
-        <Text variant="subhead-05" color="gray-01">
-          바로 시작할 수 있어요!
-        </Text>
-      </Col>
+      {!isFromAccount && (
+        <>
+          <Spacing size={24} />
+          <Col>
+            <Text variant="subhead-05" color="gray-01">
+              프로필만 설정하면
+            </Text>
+            <Text variant="subhead-05" color="gray-01">
+              바로 시작할 수 있어요!
+            </Text>
+          </Col>
+        </>
+      )}
 
       <Spacing size={24} />
       <Flex center>
