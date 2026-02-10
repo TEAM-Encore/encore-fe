@@ -1,5 +1,10 @@
-import { type PropsWithChildren, type ReactNode, useState } from 'react'
-import { type StyleProp, Text, View, type ViewStyle } from 'react-native'
+import {
+  type PropsWithChildren,
+  type ReactNode,
+  useEffect,
+  useState,
+} from 'react'
+import { View } from 'react-native'
 import Animated, {
   type SharedValue,
   useAnimatedStyle,
@@ -68,12 +73,21 @@ const ChildrenScroller = ({
 }>) => {
   const offset = useSharedValue(0)
   const coeff = useSharedValue(-1)
+  const durationSv = useSharedValue(duration)
+  const childrenWidthSv = useSharedValue(childrenWidth)
+
+  useEffect(() => {
+    durationSv.value = duration
+    childrenWidthSv.value = childrenWidth
+  }, [duration, childrenWidth, durationSv, childrenWidthSv])
 
   useFrameCallback((i) => {
-    offset.value +=
-      (coeff.value * ((i.timeSincePreviousFrame ?? 1) * childrenWidth)) /
-      duration
-    offset.value = offset.value % childrenWidth
+    'worklet'
+    const dt = i.timeSincePreviousFrame ?? 1
+    const w = childrenWidthSv.value
+    const d = durationSv.value
+    offset.value += (coeff.value * (dt * w)) / d
+    offset.value = offset.value % w
   }, true)
 
   const count = Math.round(parentWidth / childrenWidth) + 2
