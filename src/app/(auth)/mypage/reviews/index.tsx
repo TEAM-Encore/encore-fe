@@ -44,7 +44,7 @@ export default function Reviews() {
       {reviews.length === 0 && !isLoading ? (
         <Flex align="center" justify="center" className="h-full w-full">
           <Text variant="body-01" className="text-gray-06">
-            좋아요 목록이 없습니다.
+            작성한 글이 없습니다.
           </Text>
         </Flex>
       ) : (
