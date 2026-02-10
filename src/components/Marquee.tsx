@@ -10,9 +10,14 @@ import { Row } from './common/ui/Flex'
 
 const MeasureElement = ({
   onLayout,
+  shouldMarquee,
   children,
-}: PropsWithChildren<{ onLayout: (event: number) => void }>) => (
+}: PropsWithChildren<{
+  onLayout: (event: number) => void
+  shouldMarquee: boolean
+}>) => (
   <Animated.ScrollView
+    style={{ position: shouldMarquee ? 'relative' : 'absolute' }}
     horizontal
     className="z-[-1] opacity-0"
     pointerEvents="box-none"
@@ -114,7 +119,12 @@ function Marquee({
       pointerEvents="box-none"
     >
       <Row className="overflow-hidden" pointerEvents="box-none">
-        <MeasureElement onLayout={setChildrenWidth}>{children}</MeasureElement>
+        <MeasureElement
+          shouldMarquee={shouldMarquee}
+          onLayout={setChildrenWidth}
+        >
+          {children}
+        </MeasureElement>
 
         {shouldMarquee ? (
           <ChildrenScroller

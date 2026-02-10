@@ -1,4 +1,5 @@
-import { Image, View } from 'react-native'
+import { useState } from 'react'
+import { ActivityIndicator, Image, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
@@ -24,6 +25,8 @@ export function TicketBook({
   active = false,
   ...rest
 }: TicketBookProps) {
+  const [isImageLoaded, setIsImageLoaded] = useState(false)
+
   return (
     <Flex
       onPress={onPress}
@@ -37,17 +40,25 @@ export function TicketBook({
       )}
     >
       {/* 포스터 */}
-      <View className="h-[92px] w-[66px] overflow-hidden rounded-[4.79px] bg-white/5">
-        {posterUrl ? (
+      <Flex
+        align="center"
+        justify="center"
+        className="h-[92px] w-[66px] overflow-hidden rounded-[4.79px] bg-white/5"
+      >
+        {posterUrl && (
           <Image
             source={
               typeof posterUrl === 'string' ? { uri: posterUrl } : posterUrl
             }
+            onLoad={() => setIsImageLoaded(true)}
             className="h-full w-full"
             resizeMode="cover"
           />
-        ) : null}
-      </View>
+        )}
+        {(!posterUrl || !isImageLoaded) && (
+          <ActivityIndicator color="white" className="absolute" />
+        )}
+      </Flex>
 
       {/* 티켓북 정보 */}
       <Col gap={8} className="relative flex-1">
