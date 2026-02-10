@@ -319,7 +319,9 @@ export default function TicketDetailScreen() {
             <Text variant="body-01" className="text-white">
               {dayjs(form.watch('viewedDate')).format('YYYY년 MM월 DD일')}
             </Text>
-            <Icon name="ArrowDown" size={18} className="text-white" />
+            {isEdit && (
+              <Icon name="ArrowDown" size={18} className="text-white" />
+            )}
           </Row>
         </Col>
         <Col gap={12}>
@@ -348,7 +350,9 @@ export default function TicketDetailScreen() {
             <Text variant="body-01" className="text-white">
               {form.watch('showTime').hour}:{form.watch('showTime').minute}
             </Text>
-            <Icon name="ArrowDown" size={18} className="text-white" />
+            {isEdit && (
+              <Icon name="ArrowDown" size={18} className="text-white" />
+            )}
           </Row>
         </Col>
         <Col gap={12}>
