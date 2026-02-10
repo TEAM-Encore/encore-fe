@@ -54,6 +54,12 @@ export default function ReviewDetail() {
     refetch,
   } = useQuery(reviewQueries.getReview(reviewId))
 
+  useEffect(() => {
+    if (isError && !isReviewLoading) {
+      toast.show((error as any)?.error?.message)
+    }
+  }, [isError, isReviewLoading, error])
+
   const { mutate: likeReview, isPending: isLiking } =
     reviewMutations.likeReview()
   const { data: viewImageResponse } = useQuery(reviewQueries.getViewImage())
