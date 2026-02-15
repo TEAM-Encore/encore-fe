@@ -26,12 +26,13 @@ export default function TicketbookStep() {
 
   const { data } = useQuery(
     ticketQueries.getTicketList({
-      userId: user?.id as number,
       dateRange: sort === 'all' ? '30' : sort === 'week' ? '7' : '0',
     }),
   )
 
   const tickets = data?.data ?? []
+
+  console.log(tickets, 'tickets')
 
   return (
     <>

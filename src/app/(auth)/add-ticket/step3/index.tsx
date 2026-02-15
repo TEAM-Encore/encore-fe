@@ -1,10 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery } from '@tanstack/react-query'
-import { router, useLocalSearchParams } from 'expo-router'
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Image } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/common/icons/Icon'
@@ -14,6 +7,13 @@ import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Search } from '@/components/search/Search'
 import { useDebounce } from '@/hooks/useDebounce'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
+import { router, useLocalSearchParams } from 'expo-router'
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Image } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
@@ -111,6 +111,7 @@ export default function Step3() {
         </Text>
       </Col>
       <Search
+        height="48"
         placeholder="배우 이름 검색하기"
         value={keyword}
         onChangeText={(text) => {
@@ -120,7 +121,7 @@ export default function Step3() {
         onDelete={() => setKeyword('')}
       />
       <Spacing size={16} />
-      {!selectState && (
+      {!selectState && keyword.length > 0 && (
         <FlatList
           data={data?.data}
           renderItem={({ item }) => (
