@@ -9,26 +9,23 @@ export const uploadImage = async (
   file_path: string | undefined
   dynamicUrl: string | undefined
 }> => {
+  const blob = await fetch(asset.uri).then((res) => res.blob())
+
   const { file_path, upload_url } = await api().saveImage({
     image_name: asset.fileName as string,
   })
 
   if (!upload_url) return { url: undefined, file_path, dynamicUrl: undefined }
 
-  const uploaded = await new Promise<boolean>((resolve) => {
-    const xhr = new XMLHttpRequest()
-    xhr.open('PUT', upload_url)
-    xhr.setRequestHeader('Content-Type', asset.mimeType || 'image/jpeg')
-    xhr.onload = () => resolve(xhr.status === 200)
-    xhr.onerror = () => resolve(false)
-    xhr.send({
-      uri: asset.uri,
-      type: asset.mimeType || 'image/jpeg',
-      name: asset.fileName || 'image.jpg',
-    })
+  const uploadResponse = await fetch(upload_url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': asset.mimeType || 'image/jpeg',
+    },
+    body: blob,
   })
 
-  if (uploaded) {
+  if (uploadResponse.ok) {
     const { url } = await api().viewImage({ file_path })
     if (url) {
       return {
