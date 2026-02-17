@@ -6,7 +6,6 @@ import { Col, Flex } from '@/components/common/ui/Flex'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { ReviewCard } from '@/components/ReviewCard'
 import { useInfiniteList } from '@/hooks/useInfiniteList'
-
 import SortSelector from './SortSelector'
 
 const tabs = [
