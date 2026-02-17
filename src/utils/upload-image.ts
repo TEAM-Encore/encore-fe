@@ -3,12 +3,12 @@ import { api } from '@/api'
 
 export const uploadImage = async (
   asset: ImagePickerAsset,
-): Promise<string | undefined> => {
+): Promise<{ url: string | undefined; file_path: string | undefined }> => {
   const { file_path, upload_url } = await api().saveImage({
     image_name: asset.fileName as string,
   })
 
-  if (!upload_url) return undefined
+  if (!upload_url) return { url: undefined, file_path }
 
   const uploaded = await new Promise<boolean>((resolve) => {
     const xhr = new XMLHttpRequest()
@@ -25,8 +25,16 @@ export const uploadImage = async (
 
   if (uploaded) {
     const { url } = await api().viewImage({ file_path })
-    if (url) return url
+    if (url) {
+      return {
+        url,
+        file_path,
+      }
+    }
   }
 
-  return undefined
+  return {
+    url: undefined,
+    file_path,
+  }
 }
