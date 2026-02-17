@@ -6,7 +6,7 @@ import { Text } from '@/components/common/ui/Text'
 import { uploadImage } from '@/utils/upload-image'
 
 interface GalleryBottomSheetProps extends OverlayProps {
-  onOpenGallery: (url: string) => void
+  onOpenGallery: (url: string, file_path: string) => void
   onDeletePhoto: () => void
   onUploadStart?: () => void
   onUploadEnd?: () => void
@@ -39,9 +39,12 @@ function GalleryBottomSheet({
 
             const asset = result?.assets?.[0] as ImagePicker.ImagePickerAsset
             onUploadStart?.()
-            const url = (await uploadImage(asset)) as string
+            const res = await uploadImage(asset)
+            const { url, file_path } = res
             onUploadEnd?.()
-            onOpenGallery(url)
+            if (url && file_path) {
+              onOpenGallery(url, file_path)
+            }
           }}
         >
           <Icon name="Image" size={24} className="text-gray-09" />
