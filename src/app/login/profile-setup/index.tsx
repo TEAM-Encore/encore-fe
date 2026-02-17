@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { ActivityIndicator, StatusBar } from 'react-native'
 import { userMutations } from '@/apis/user/mutations'
@@ -45,7 +45,6 @@ export default function ProfileSetup({
     },
   })
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: form.reset is stable
   useEffect(() => {
     if (myInfo?.data) {
       form.reset({
@@ -137,6 +136,8 @@ export default function ProfileSetup({
     return '시작하기'
   }
 
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+
   return (
     <Screen
       header={
@@ -183,9 +184,12 @@ export default function ProfileSetup({
                 onDeletePhoto={() =>
                   form.setValue('profile_image_url', undefined)
                 }
+                onUploadStart={() => setIsUploadingImage(true)}
+                onUploadEnd={() => setIsUploadingImage(false)}
               />
             ))
           }
+          loading={isUploadingImage}
         />
       </Flex>
 

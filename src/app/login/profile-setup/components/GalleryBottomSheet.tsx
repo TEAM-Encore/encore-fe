@@ -8,11 +8,15 @@ import { uploadImage } from '@/utils/upload-image'
 interface GalleryBottomSheetProps extends OverlayProps {
   onOpenGallery: (url: string) => void
   onDeletePhoto: () => void
+  onUploadStart?: () => void
+  onUploadEnd?: () => void
 }
 
 function GalleryBottomSheet({
   onOpenGallery,
   onDeletePhoto,
+  onUploadStart,
+  onUploadEnd,
   ...props
 }: GalleryBottomSheetProps) {
   return (
@@ -34,7 +38,9 @@ function GalleryBottomSheet({
             })
 
             const asset = result?.assets?.[0] as ImagePicker.ImagePickerAsset
+            onUploadStart?.()
             const url = (await uploadImage(asset)) as string
+            onUploadEnd?.()
             onOpenGallery(url)
           }}
         >
