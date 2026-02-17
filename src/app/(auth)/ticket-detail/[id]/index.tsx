@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
+import * as ImagePicker from 'expo-image-picker'
 import { useLocalSearchParams } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
@@ -25,10 +26,13 @@ import { TimePicker } from '@/components/TimePicker'
 import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
 import { cn } from '@/utils/cn'
+import { uploadImage } from '@/utils/upload-image'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
+
+  const { mutate: updateTicket } = ticketMutations.updateTicket()
 
   const [actorKeyword, setActorKeyword] = useState('')
 
@@ -40,7 +44,6 @@ export default function TicketDetailScreen() {
     }),
   )
 
-  const { mutate: updateTicket } = ticketMutations.updateTicket()
   const { mutate: getTicketImage } = imageMutations.getViewImage()
 
   const form = useForm<FormType>({
@@ -53,8 +56,8 @@ export default function TicketDetailScreen() {
       seatNumber: data?.number ?? '',
       viewedDate: data?.viewed_date,
       showTime: {
-        hour: data?.show_time?.split(':')[0],
-        minute: data?.show_time?.split(':')[1],
+        hour: data?.show_time?.toString().split(':')[0] || '00',
+        minute: data?.show_time?.toString().split(':')[1] || '00',
       },
       hall: data?.location ?? '',
       actors:
@@ -96,6 +99,65 @@ export default function TicketDetailScreen() {
     ))
   }
 
+  const handleTicketSheet = (type: 'ADD' | 'EDIT') => {
+    overlay.open(({ isOpen, close }) => (
+      <BottomSheet.Root
+        isOpen={isOpen}
+        close={close}
+        backgroundColor="#FFFFFF"
+        borderTopRadius={20}
+      >
+        {({ onClose }) => (
+          <BottomSheet.Content>
+            <Row
+              center
+              className="py-5"
+              gap={6}
+              onPress={() => {
+                onClose()
+                onTicketImageUpload()
+              }}
+            >
+              <Icon name="Image" size={24} />
+              <Text variant="subhead-03" color="gray-09">
+                갤러리에서 사진 변경하기
+              </Text>
+            </Row>
+            {type === 'EDIT' && (
+              <Row
+                center
+                className="py-5"
+                gap={6}
+                onPress={() => {
+                  onClose()
+                }}
+              >
+                <Icon name="Delete" size={24} color="sub-alert" />
+                <Text variant="subhead-03" color="sub-alert">
+                  사진 삭제하기
+                </Text>
+              </Row>
+            )}
+          </BottomSheet.Content>
+        )}
+      </BottomSheet.Root>
+    ))
+  }
+
+  const onTicketImageUpload = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      selectionLimit: 1,
+    })
+
+    if (result.assets?.[0]) {
+      const url = await uploadImage(result.assets[0])
+      if (url) {
+        form.setValue('ticketImageUrl', url.url)
+      }
+    }
+  }
+
   const onSubmit = form.handleSubmit(
     (data) => {
       updateTicket({
@@ -105,10 +167,7 @@ export default function TicketDetailScreen() {
         col: data.col,
         number: data.seatNumber,
         viewed_date: data.viewedDate,
-        show_time: {
-          hour: Number(data.showTime.hour),
-          minute: Number(data.showTime.minute),
-        },
+        show_time: `${data.showTime.hour}:${data.showTime.minute}`,
         actor_ids: data.actors.map((actor) => actor.id),
         ticket_image_url: data.ticketImageUrl,
       })
@@ -333,62 +392,28 @@ export default function TicketDetailScreen() {
           <Text variant="subhead-02" color="gray-01">
             티켓 사진
           </Text>
-          <Flex center className="h-[176px] rounded-lg bg-gray-10">
+          <Flex center className="relative h-[176px] rounded-lg bg-gray-10">
             {isEdit ? (
               <Col
                 gap={4}
                 align="center"
                 onPress={() => {
-                  overlay.open(({ isOpen, close, unmount }) => (
-                    <BottomSheet.Root
-                      isOpen={isOpen}
-                      close={close}
-                      backgroundColor="#FFFFFF"
-                      borderTopRadius={20}
-                    >
-                      {({ onClose }) => (
-                        <BottomSheet.Content>
-                          <Row
-                            center
-                            className="py-5"
-                            gap={6}
-                            onPress={() => {
-                              onClose()
-                            }}
-                          >
-                            <Icon name="Image" size={24} />
-                            <Text variant="subhead-03" color="gray-09">
-                              갤러리에서 사진 변경하기
-                            </Text>
-                          </Row>
-                          <Row
-                            center
-                            className="py-5"
-                            gap={6}
-                            onPress={() => {
-                              onClose()
-                            }}
-                          >
-                            <Icon name="Delete" size={24} color="sub-alert" />
-                            <Text variant="subhead-03" color="sub-alert">
-                              사진 삭제하기
-                            </Text>
-                          </Row>
-                        </BottomSheet.Content>
-                      )}
-                    </BottomSheet.Root>
-                  ))
+                  if (form.watch('ticketImageUrl')) {
+                    handleTicketSheet('EDIT')
+                  } else {
+                    handleTicketSheet('ADD')
+                  }
                 }}
               >
                 <Icon name="Camera" size={24} className="text-gray-01" />
                 <Text variant="subhead-02" color="gray-01">
-                  사진 추가
+                  {form.watch('ticketImageUrl') ? '사진 변경' : '사진 추가'}
                 </Text>
               </Col>
             ) : form.watch('ticketImageUrl') ? (
               <Image
                 source={{ uri: form.watch('ticketImageUrl') }}
-                className="absolute inset-0 h-[176px] rounded-lg"
+                className="absolute inset-0 z-10 h-full w-full rounded-lg"
                 resizeMode="cover"
               />
             ) : (
@@ -412,58 +437,6 @@ export default function TicketDetailScreen() {
                 setActorKeyword('')
               }}
               placeholder="추가할 배우 검색하기"
-            />
-          )}
-
-          {actorKeyword.length > 0 && (
-            <FlatList
-              data={actors?.data ?? []}
-              renderItem={({ item }) => (
-                <Row
-                  key={item.id}
-                  align="center"
-                  gap={16}
-                  onPress={() => {
-                    const actors = form.watch('actors') ?? []
-
-                    if (item.id) {
-                      if (actors.some((actor) => actor.id === item.id)) {
-                        return
-                      }
-
-                      form.setValue(
-                        'actors',
-                        [
-                          ...actors,
-                          {
-                            id: item.id,
-                            name: item.name ?? '',
-                            imageUrl: item.actor_image_url ?? '',
-                          },
-                        ],
-                        {
-                          shouldValidate: true,
-                        },
-                      )
-
-                      setActorKeyword('')
-                    }
-                  }}
-                  className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
-                >
-                  <Image
-                    source={{ uri: item.actor_image_url }}
-                    width={53}
-                    height={53}
-                    className="rounded-md"
-                    resizeMode="cover"
-                  />
-                  <Text variant="body-02" className="text-gray-01">
-                    {item.name}
-                  </Text>
-                </Row>
-              )}
-              contentContainerClassName="gap-3"
             />
           )}
 
@@ -505,6 +478,57 @@ export default function TicketDetailScreen() {
                   </Text>
                 </Col>
               ))}
+              {actorKeyword.length > 0 && (
+                <FlatList
+                  data={actors?.data ?? []}
+                  renderItem={({ item }) => (
+                    <Row
+                      key={item.id}
+                      align="center"
+                      gap={16}
+                      onPress={() => {
+                        const actors = form.watch('actors') ?? []
+
+                        if (item.id) {
+                          if (actors.some((actor) => actor.id === item.id)) {
+                            return
+                          }
+
+                          form.setValue(
+                            'actors',
+                            [
+                              ...actors,
+                              {
+                                id: item.id,
+                                name: item.name ?? '',
+                                imageUrl: item.actor_image_url ?? '',
+                              },
+                            ],
+                            {
+                              shouldValidate: true,
+                            },
+                          )
+
+                          setActorKeyword('')
+                        }
+                      }}
+                      className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
+                    >
+                      <Image
+                        source={{ uri: item.actor_image_url }}
+                        width={53}
+                        height={53}
+                        className="rounded-md"
+                        resizeMode="cover"
+                      />
+                      <Text variant="body-02" className="text-gray-01">
+                        {item.name}
+                      </Text>
+                    </Row>
+                  )}
+                  contentContainerClassName="gap-3"
+                />
+              )}
             </Row>
           )}
         </Col>

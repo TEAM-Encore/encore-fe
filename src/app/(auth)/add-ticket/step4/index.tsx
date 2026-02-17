@@ -4,7 +4,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useForm } from 'react-hook-form'
 import { Image } from 'react-native'
-import { api } from '@/api'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
@@ -17,6 +16,7 @@ import { Text } from '@/components/common/ui/Text'
 import { toast } from '@/components/Toaster'
 import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
+import { uploadImage } from '@/utils/upload-image'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
@@ -85,28 +85,10 @@ export default function Step4() {
     })
 
     if (result.assets?.[0]) {
-      const response = await api().saveImage({
-        image_name: result.assets[0].fileName || Date.now().toString(),
-      })
-      if (response.upload_url) {
-        const fileRes = await fetch(result.assets[0].uri)
-        const uploadResponse = await fetch(response.upload_url, {
-          body: await fileRes.blob(),
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'image/jpeg',
-          },
-        })
-
-        if (uploadResponse.ok) {
-          const res = await api().viewImage({
-            file_path: response.file_path,
-          })
-
-          if (res.url) {
-            form.setValue('ticketImageUrl', res.url)
-          }
-        }
+      const url = await uploadImage(result.assets[0])
+      if (url) {
+        form.setValue('ticketImageUrl', url.url)
+        form.setValue('dynamicTicketImageUrl', url.dynamicUrl)
       }
     }
   }
@@ -123,7 +105,7 @@ export default function Step4() {
       col: data.col,
       number: data.seatNumber,
       actor_ids: data.actors.map((actor) => actor.id),
-      ticket_image_url: data.ticketImageUrl,
+      ticket_image_url: `/${data.dynamicTicketImageUrl}`,
     })
 
     toast.show('티켓을 등록했어요.')

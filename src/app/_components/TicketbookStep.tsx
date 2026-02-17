@@ -35,7 +35,7 @@ export default function TicketbookStep() {
 
       {tickets?.length && tickets?.length > 0 ? (
         <FlatList
-          data={tickets ?? []}
+          data={tickets}
           contentContainerClassName="px-5 gap-5 pb-6"
           keyExtractor={(item) => item.id?.toString() ?? ''}
           renderItem={({ item }) => (

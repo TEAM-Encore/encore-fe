@@ -38,6 +38,7 @@ export const schema = z.object({
     }),
   ),
   ticketImageUrl: z.string().optional(),
+  dynamicTicketImageUrl: z.string().optional(),
   noTicketUpload: z.boolean(),
 })
 
