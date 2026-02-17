@@ -10,7 +10,6 @@ async function customFetch(
 
   if (response.status === 401) {
     await deleteToken('accessToken')
-    const { router } = await import('expo-router')
     router.replace('/login')
   }
 
