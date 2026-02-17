@@ -25,6 +25,15 @@ module.exports = {
         extrabold: ['Pretendard-ExtraBold', 'sans-serif'],
         black: ['Pretendard-Black', 'sans-serif'],
       },
+      keyframes: {
+        'pulse-strong': {
+          '0%, 100%': { opacity: 0.75 },
+          '50%': { opacity: 1 },
+        },
+      },
+      animation: {
+        'pulse-strong': 'pulse-strong 1.6s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

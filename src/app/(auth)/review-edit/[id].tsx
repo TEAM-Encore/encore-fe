@@ -1,8 +1,21 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery } from '@tanstack/react-query'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { Pressable, ScrollView } from 'react-native'
+import type { z } from 'zod'
+import { imageMutations } from '@/apis/image/mutations'
+import { reviewMutations } from '@/apis/review/mutations'
+import { reviewQueries } from '@/apis/review/queries'
+import { ticketQueries } from '@/apis/ticket/queries'
 import { reviewEditSchema } from '@/app/(auth)/review-write/schema'
+import { TicketBook } from '@/components'
 import { Avatar } from '@/components/Avatar'
-import { Icon } from '@/components/common/icons/Icon'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
+import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { InfoBadge } from '@/components/InfoBadge'
@@ -13,90 +26,85 @@ import { SeatViewImageGrid } from '@/components/SeatViewImageGrid'
 import { FormTextField } from '@/components/TextField'
 import { TicketCard } from '@/components/TicketCard'
 import { toast } from '@/components/Toaster'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { Pressable, ScrollView } from 'react-native'
-import type { z } from 'zod'
-
-// TODO: API 연동 시 제거
-const MOCK_REVIEW_DATA = {
-  id: '1',
-  title: '비더슈탄트 5회차 관람 후기',
-  author: {
-    nickname: '뮤사랑',
-    avatarUrl: undefined,
-  },
-  likes: 9,
-  isOwnPost: true,
-  ticket: {
-    posterUrl: 'https://via.placeholder.com/66x92',
-    showName: '비더슈탄트',
-    venueName: '샤롯데시어터',
-    date: '2025.06.21',
-    seat: '3층 1구역 D열 4번',
-    actorName: '송락갈라타 김대현 이태예',
-  },
-  ratings: {
-    number: 1,
-    story: 2,
-    rewatch: 4,
-    acting: 4,
-    performance: 3,
-  },
-  soundQuality: 'GOOD' as const,
-  facilityQuality: 'GOOD' as const,
-  seatViewImage: 'https://via.placeholder.com/320x137',
-  soundQualityReason:
-    '전반적으로 시설이 만족스러웠습니다. 배우들의 발란과 넘버의 퀄리티가 매우 만족스러웠 재관람 할 의사가 있음.',
-  facilityQualityReason:
-    '전반적으로 시설이 만족스러웠습니다. 배우들의 발란과 넘버의 퀄리티가 매우 만족스러웠 재관람 할 의사가 있음.',
-  overallComment:
-    '전반적으로 시설이 만족스러웠습니다. 배우들의 발란과 넘버의 퀄리티가 매우 만족스러웠 재관람 할 의사가 있음.',
-  seatViewComment:
-    '전반적으로 시설이 만족스러웠습니다. 배우들의 발란과 넘버의 퀄리티가 매우 만족스러웠 재관람 할 의사가 있음.',
-}
 
 type ReviewEditFormType = z.infer<typeof reviewEditSchema>
+type ReviewDetailTicket = {
+  ticket_id?: number
+  ticket_title?: string
+  viewed_date?: string
+  image_url?: string
+}
 
 export default function ReviewEdit() {
   const router = useRouter()
   const params = useLocalSearchParams<{ id: string }>()
+  const reviewId = params.id ? Number(params.id) : 0
 
-  const review = MOCK_REVIEW_DATA
+  const { data: review } = useQuery(reviewQueries.getReview(reviewId))
+  const { data: viewImageResponse } = useQuery(reviewQueries.getViewImage())
+  const { data: tickets } = useQuery(
+    ticketQueries.getTicketDetail(
+      (review?.ticket as ReviewDetailTicket)?.ticket_id ?? 0,
+    ),
+  )
+  const { data, refetch } = useQuery(reviewQueries.getViewImage())
 
-  // TODO: API 연동 - 시야 이미지 목록 불러오기
-  const generateMockImages = () => {
-    return Array.from({ length: 4 }, (_, i) => ({
-      id: `image-${i + 1}-${Date.now()}`,
-      url: `https://picsum.photos/seed/seat${i + 1}/320/274`,
-    }))
-  }
+  const { mutate: getProfileImage } = imageMutations.getViewImage()
+  const { mutate: updateReview } = reviewMutations.updateReview()
+  const { mutate: getTicketImage } = imageMutations.getViewImage()
 
-  const [images, setImages] = useState(generateMockImages())
-  const [selectedSeatViewImage, setSelectedSeatViewImage] = useState<
-    string | null
-  >(review.seatViewImage ? images[0]?.id || null : null)
+  useEffect(() => {
+    if (!review?.profile_image_url) {
+      setProfileImageUrl(undefined)
+      return
+    }
+    getProfileImage(
+      { file_path: review?.profile_image_url },
+      {
+        onSuccess: (data) => setProfileImageUrl(data?.url ?? ''),
+      },
+    )
+  }, [review?.profile_image_url, getProfileImage])
+
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>()
+  const [ticketImageUrl, setTicketImageUrl] = useState<string | undefined>()
+
+  const viewImages = viewImageResponse?.view_images ?? []
+  const viewLevel = review?.review_data_res?.view?.view_level
+  const viewImageUrl = viewLevel
+    ? viewImages.find((img) => img.level === viewLevel)?.url
+    : undefined
+
+  const images = useMemo(() => {
+    return (
+      data?.view_images?.map((img) => ({
+        id: String(img.id ?? ''),
+        url: img.url ?? '',
+      })) ?? []
+    )
+  }, [data])
 
   const form = useForm<ReviewEditFormType>({
     resolver: zodResolver(reviewEditSchema),
     mode: 'onChange',
     defaultValues: {
-      title: review.title,
-      seatViewImage: review.seatViewImage || '',
-      seatViewComment: review.seatViewComment,
-      soundQuality: review.soundQuality,
-      soundQualityReason: review.soundQualityReason,
-      facilityQuality: review.facilityQuality,
-      facilityQualityReason: review.facilityQualityReason,
-      ratingNumber: review.ratings.number,
-      ratingStory: review.ratings.story,
-      ratingRewatch: review.ratings.rewatch,
-      ratingActing: review.ratings.acting,
-      ratingPerformance: review.ratings.performance,
-      overallComment: review.overallComment,
+      title: review?.title,
+      seatViewImage: viewImageUrl || '',
+      seatViewComment: review?.review_data_res?.view?.view_review || '',
+      soundQuality: Number(review?.review_data_res?.sound?.sound_level) || 0,
+      soundQualityReason: review?.review_data_res?.sound?.sound_review || '',
+      facilityQuality:
+        Number(review?.review_data_res?.facility?.facility_level) || 0,
+      facilityQualityReason:
+        review?.review_data_res?.facility?.facility_review || '',
+      ratingNumber: review?.review_data_res?.rating?.number_rating || 0,
+      ratingStory: review?.review_data_res?.rating?.story_rating || 0,
+      ratingRewatch: review?.review_data_res?.rating?.revisit_rating || 0,
+      ratingActing: review?.review_data_res?.rating?.actor_rating || 0,
+      ratingPerformance:
+        review?.review_data_res?.rating?.performance_rating || 0,
+      overallComment: review?.review_data_res?.rating?.rating_review || '',
     },
   })
 
@@ -112,36 +120,60 @@ export default function ReviewEdit() {
     return (sum / 5).toFixed(1)
   }, [ratings])
 
-  const handleCancel = () => {
-    router.back()
+  const handleCancel = () => router.back()
+
+  const handleSave = () => {
+    const values = form.getValues()
+    console.log(values)
+    updateReview(
+      {
+        reviewId,
+        data: {
+          title: values.title,
+          review_data_req: {
+            view: {
+              view_level: Number(values.seatViewImage.replace(/\D/g, '')),
+              view_review: values.seatViewComment,
+            },
+            sound: {
+              sound_level: values.soundQuality,
+              sound_review: values.soundQualityReason,
+            },
+            facility: {
+              facility_level: values.facilityQuality,
+              facility_review: values.facilityQualityReason,
+            },
+            rating: {
+              number_rating: values.ratingNumber,
+              story_rating: values.ratingStory,
+              revisit_rating: values.ratingRewatch,
+              actor_rating: values.ratingActing,
+              performance_rating: values.ratingPerformance,
+              total_rating: Number(averageRating),
+              rating_review: values.overallComment,
+            },
+          },
+        },
+      },
+      {
+        onSuccess: () => {
+          router.back()
+          toast.show('후기를 수정했어요.')
+        },
+        onError: () => toast.show('모든 항목을 올바르게 입력해주세요.'),
+      },
+    )
   }
 
-  const handleSave = form.handleSubmit(
-    (values) => {
-      // TODO: API 연동 - 수정 내용 저장
-      console.log('Save review', values)
-
-      router.back()
-    },
-    () => {
-      toast.show('모든 항목을 올바르게 입력해주세요.')
-    },
-  )
-
   const handleImageSelect = (imageId: string) => {
-    setSelectedSeatViewImage(imageId)
+    setSelectedImage(imageId)
     form.setValue('seatViewImage', imageId, { shouldValidate: true })
   }
 
   const handleImageRefresh = () => {
-    const newImages = generateMockImages()
-    setImages(newImages)
-    setSelectedSeatViewImage(null)
+    refetch()
+    setSelectedImage(null)
     form.setValue('seatViewImage', '', { shouldValidate: true })
-  }
-
-  const handleLike = () => {
-    toast.show('자신의 글에 좋아요를 누를 수 없어요.')
   }
 
   const handleNumberHelp = () => {
@@ -153,6 +185,21 @@ export default function ReviewEdit() {
       />
     ))
   }
+
+  useEffect(() => {
+    if (!tickets?.ticket_image_url) {
+      setTicketImageUrl(undefined)
+      return
+    }
+    const match = tickets?.ticket_image_url?.match(/dynamic\/[\w-]+\.\w+/)?.[0]
+
+    getTicketImage(
+      { file_path: match },
+      {
+        onSuccess: (data) => setTicketImageUrl(data?.url ?? ''),
+      },
+    )
+  }, [tickets?.ticket_image_url, getTicketImage])
 
   return (
     <Screen
@@ -167,7 +214,7 @@ export default function ReviewEdit() {
           </Header.Left>
           <Header.Center>후기글</Header.Center>
           <Header.Right>
-            <Pressable onPress={handleSave}>
+            <Pressable onPress={() => handleSave()}>
               <Text variant="subhead-02" className="text-white">
                 확인
               </Text>
@@ -177,53 +224,62 @@ export default function ReviewEdit() {
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Col className="gap-3 pb-10">
-          {/* 제목 수정 */}
-          <Col className="mt-6 gap-3">
+        <Col gap={32}>
+          <Col>
             <FormTextField
               control={form.control}
               name="title"
               placeholder="30자 이내로 입력해주세요."
             />
-            <Pressable onPress={handleLike} className="self-end">
-              <Row align="center" gap={4}>
-                <Icon name="Like" size={16} className="text-gray-11" />
-                <Text variant="body-02" className="text-gray-11">
-                  {review.likes}
-                </Text>
-              </Row>
-            </Pressable>
-          </Col>
-
-          <Col className="mb-8 gap-5">
+            <Spacing size={12} />
             <Row align="center" className="justify-between">
               <Row align="center" gap={8}>
-                <Avatar imageUrl={review.author.avatarUrl} size="xsmall" />
-                <Text variant="body-02" className="text-gray-01">
-                  {review.author.nickname}
+                <Avatar
+                  imageUrl={profileImageUrl}
+                  config={{
+                    container: 'size-[23px]',
+                    iconSize: 23,
+                    camera: 'size-[10px]',
+                    cameraIcon: 10,
+                  }}
+                />
+                <Text variant="body-02" color="gray-01">
+                  {review?.nick_name}
                 </Text>
               </Row>
             </Row>
-
-            <TicketCard
-              posterUrl={review.ticket.posterUrl}
-              showName={review.ticket.showName}
-              venueName={review.ticket.venueName}
-              date={review.ticket.date}
-              seat={review.ticket.seat}
-              actorName={review.ticket.actorName}
+            <Spacing size={20} />
+            <TicketBook
+              posterUrl={ticketImageUrl ?? ''}
+              title={`${tickets?.musical_title} ${tickets?.location}`}
+              date={tickets?.viewed_date?.replace(/-/g, '.') ?? ''}
+              theaterseat={`${tickets?.floor}층 ${tickets?.zone}구역 ${tickets?.col}열 ${tickets?.number}번`}
+              attendees={
+                tickets?.actors?.map((actor) => actor.name).join(' ') ?? ''
+              }
             />
           </Col>
 
-          <Col className="gap-4">
+          <Col>
             <Row align="center" gap={10}>
-              <Text variant="subhead-04" className="text-gray-01">
+              <Text
+                variant="subhead-04"
+                color="gray-01"
+                className="text-[18px]"
+              >
                 총평
               </Text>
               <InfoBadge label={averageRating} icon="Star" />
             </Row>
-
-            <Col className="mb-8 gap-4 rounded-lg bg-gray-11 p-4">
+            <Spacing size={16} />
+            <FormTextField
+              control={form.control}
+              name="overallComment"
+              placeholder="자유롭게 총평을 작성해주세요. (최소 20자)"
+              as="textarea"
+            />
+            <Spacing size={20} />
+            <Col gap={7} className="rounded-lg bg-gray-11 px-4 py-[14px]">
               <RatingSlider
                 label="넘버"
                 value={form.watch('ratingNumber')}
@@ -270,28 +326,25 @@ export default function ReviewEdit() {
                 }
               />
             </Col>
-
-            <FormTextField
-              control={form.control}
-              name="overallComment"
-              placeholder="자유롭게 총평을 작성해주세요. (최소 20자)"
-              as="textarea"
-            />
           </Col>
 
           <Col className="gap-10">
-            <Col className="gap-4">
+            <Col gap={10}>
               <Row align="center" gap={10}>
-                <Text variant="subhead-04" className="text-gray-01">
+                <Text
+                  variant="subhead-04"
+                  color="gray-01"
+                  className="text-[18px]"
+                >
                   음향
                 </Text>
                 <QualityDropdown
                   value={form.watch('soundQuality')}
-                  onChange={(value) =>
+                  onChange={(value: number) => {
                     form.setValue('soundQuality', value, {
                       shouldValidate: true,
                     })
-                  }
+                  }}
                   type="sound"
                 />
               </Row>
@@ -306,7 +359,11 @@ export default function ReviewEdit() {
 
             <Col className="gap-4">
               <Row align="center" gap={10}>
-                <Text variant="subhead-04" className="text-gray-01">
+                <Text
+                  variant="subhead-04"
+                  color="gray-01"
+                  className="text-[18px]"
+                >
                   시설
                 </Text>
                 <QualityDropdown
@@ -329,7 +386,11 @@ export default function ReviewEdit() {
             </Col>
 
             <Col className="gap-4">
-              <Text variant="subhead-04" className="text-gray-01">
+              <Text
+                variant="subhead-04"
+                color="gray-01"
+                className="text-[18px]"
+              >
                 시야
               </Text>
 
@@ -342,7 +403,7 @@ export default function ReviewEdit() {
 
               <SeatViewImageGrid
                 images={images}
-                selectedImage={selectedSeatViewImage}
+                selectedImage={selectedImage}
                 onImageSelect={handleImageSelect}
                 onRefresh={handleImageRefresh}
                 className="mt-8"

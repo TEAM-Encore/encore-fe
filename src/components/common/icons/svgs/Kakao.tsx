@@ -12,7 +12,7 @@ const Kakao = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     {...props}
   >
     <Path
-      fill="#000"
+      fill="currentColor"
       fillRule="evenodd"
       d="M9 0C4.29 0 0 3.786 0 6.989c0 2.4 1.558 4.517 3.931 5.775l-.998 3.666c-.089.325.28.583.563.396l4.377-2.905A12 12 0 0 0 9 13.978c4.97 0 9-3.129 9-6.989C18 3.786 13.97 0 9 0"
       clipRule="evenodd"

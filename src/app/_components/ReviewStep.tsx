@@ -1,11 +1,12 @@
-import { api } from '@/api'
-import { Spacing } from '@/components/common/ui/Spacing'
-import { ReviewCard } from '@/components/ReviewCard'
-import { useInfiniteList } from '@/hooks/useInfiniteList'
-import { useUser } from '@/providers/user.provider'
 import { useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ActivityIndicator, FlatList } from 'react-native'
+import { api } from '@/api'
+import { Col, Flex } from '@/components/common/ui/Flex'
+import { Spacing } from '@/components/common/ui/Spacing'
+import { ReviewCard } from '@/components/ReviewCard'
+import { useInfiniteList } from '@/hooks/useInfiniteList'
+
 import SortSelector from './SortSelector'
 
 const tabs = [
@@ -17,7 +18,6 @@ export default function ReviewStep() {
   const router = useRouter()
   const flatListRef = useRef<FlatList>(null)
 
-  const user = useUser()
   const [sort, setSort] = useState<(typeof tabs)[number]['value']>(
     tabs[0].value,
   )
@@ -30,8 +30,7 @@ export default function ReviewStep() {
     queryKey: 'reviews',
     fn: api().getReviewList,
     params: {
-      sort: 'id', // TODO: 채윤님, defualt값이 id?
-      userId: user?.id ?? 0,
+      sort: 'id',
     },
   })
 
@@ -42,34 +41,45 @@ export default function ReviewStep() {
   return (
     <>
       <SortSelector tabs={tabs} value={sort} onChange={setSort} />
-      <Spacing size={1} />
-      <FlatList
-        data={reviews}
-        ref={flatListRef}
-        contentContainerClassName="px-5 gap-5"
-        renderItem={({ item }) => (
-          <ReviewCard
-            title={item.title}
-            summary={item.content ?? ''}
-            author={item.nickname ?? ''}
-            likes={item.like_count ?? 0}
-            onPress={() => router.push(`/review-detail/${item.review_id}`)}
+      {queryProps.isLoading && (
+        <Col gap={20} className="px-5">
+          <FlatList
+            data={Array.from({ length: 4 })}
+            renderItem={() => (
+              <Flex className="h-[126px] w-full animate-pulse-strong rounded-lg bg-gray-11 p-4" />
+            )}
+            scrollEnabled={false}
+            contentContainerClassName="gap-5"
           />
-        )}
-        onEndReached={fetchNextPage}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          queryProps.isFetchingNextPage ? (
-            <ActivityIndicator style={{ padding: 20 }} />
-          ) : null
-        }
-        ListEmptyComponent={
-          queryProps.isLoading ? (
-            <ActivityIndicator style={{ padding: 20 }} />
-          ) : null
-        }
-      />
-      <Spacing size={24} />
+        </Col>
+      )}
+      {!queryProps.isLoading && !!reviews.length && (
+        <>
+          <Spacing size={1} />
+          <FlatList
+            data={reviews}
+            ref={flatListRef}
+            contentContainerClassName="px-5 gap-5"
+            renderItem={({ item }) => (
+              <ReviewCard
+                title={item?.title ?? ''}
+                summary={item.content as string}
+                author={item.nickname as string}
+                likes={item.like_count as number}
+                onPress={() => router.push(`/review-detail/${item.review_id}`)}
+              />
+            )}
+            onEndReached={fetchNextPage}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              queryProps.isFetchingNextPage ? (
+                <ActivityIndicator style={{ padding: 20 }} />
+              ) : null
+            }
+          />
+          <Spacing size={24} />
+        </>
+      )}
     </>
   )
 }

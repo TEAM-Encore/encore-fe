@@ -1,22 +1,21 @@
-import { Ref, forwardRef } from 'react'
-import type { SvgProps } from 'react-native-svg'
 import Svg, { Path } from 'react-native-svg'
-
-const TheaterSeat = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
+import type { SvgProps } from 'react-native-svg'
+import { Ref, forwardRef } from 'react'
+const Theaterseat = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
   <Svg
+    xmlns="http://www.w3.org/2000/svg"
     width={11}
-    height={11}
-    viewBox="0 0 11 12"   
+    height={12}
     fill="none"
+    viewBox="0 0 11 12"
     ref={ref}
     {...props}
   >
     <Path
-      d="M7.33337 1.875H3.66671C2.65418 1.875 1.83337 2.69581 1.83337 3.70833V4.16667C3.09902 4.16667 4.12504 5.19269 4.12504 6.45833H6.87504C6.87504 5.19269 7.90107 4.16667 9.16671 4.16667V3.70833C9.16671 2.69581 8.34588 1.875 7.33337 1.875ZM9.16671 5.08333C8.40729 5.08333 7.79171 5.69892 7.79171 6.45833V7.83333H6.87504V7.375H4.12504V7.83333H3.20837V6.45833C3.20837 5.69892 2.59276 5.08333 1.83337 5.08333C1.07398 5.08333 0.458374 5.69892 0.458374 6.45833C0.458374 7.05701 0.840995 7.56635 1.37504 7.7551V10.125H2.29171V9.66667H8.70837V10.125H9.62504V7.7551C10.1591 7.56635 10.5417 7.05701 10.5417 6.45833C10.5417 5.69892 9.92612 5.08333 9.16671 5.08333Z"
       fill="currentColor"
+      d="M7.333 1.875H3.667c-1.013 0-1.834.82-1.834 1.833v.459a2.29 2.29 0 0 1 2.292 2.291h2.75a2.29 2.29 0 0 1 2.292-2.291v-.459a1.834 1.834 0 0 0-1.834-1.833m1.834 3.208c-.76 0-1.375.616-1.375 1.375v1.375h-.917v-.458h-2.75v.458h-.917V6.458a1.375 1.375 0 1 0-1.833 1.297v2.37h.917v-.458h6.416v.458h.917v-2.37a1.376 1.376 0 0 0-.458-2.672"
     />
   </Svg>
 )
-
-const ForwardRef = forwardRef(TheaterSeat)
-export { ForwardRef as TheaterSeat }
+const ForwardRef = forwardRef(Theaterseat)
+export { ForwardRef as Theaterseat }

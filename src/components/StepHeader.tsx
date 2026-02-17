@@ -1,7 +1,7 @@
-import { Header } from '@/components/Header'
 import { useRouter } from 'expo-router'
+import { Header } from '@/components/Header'
 
-interface StepHeaderProps {
+export interface StepHeaderProps {
   title: string
   currentStep: number
   totalSteps: number
@@ -24,12 +24,10 @@ export function StepHeader({
   const progress = (currentStep / totalSteps) * 100
 
   return (
-    <>
-      <Header progress={progress}>
-        {showBack && <Header.Back onPress={onBack || (() => router.back())} />}
-        <Header.Center>{title}</Header.Center>
-        {showClose && onClose && <Header.Close onPress={onClose} />}
-      </Header>
-    </>
+    <Header progress={progress}>
+      {showBack && <Header.Back onPress={onBack || (() => router.back())} />}
+      <Header.Center>{title}</Header.Center>
+      {showClose && onClose && <Header.Close onPress={onClose} />}
+    </Header>
   )
 }

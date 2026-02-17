@@ -1,4 +1,4 @@
-import { forwardRef, Ref } from 'react'
+import { forwardRef, type Ref } from 'react'
 import type { SvgProps } from 'react-native-svg'
 import Svg, { Path } from 'react-native-svg'
 
@@ -13,11 +13,11 @@ const XCircle = (props: SvgProps, ref: Ref<SVGSVGElement>) => (
     {...props}
   >
     <Path
-      fill="#6F6F6F"
+      fill="currentColor"
       d="M10 18.333a8.333 8.333 0 1 0 0-16.666 8.333 8.333 0 0 0 0 16.666"
     />
     <Path
-      stroke="#FBFBFB"
+      stroke="white"
       strokeLinecap="round"
       strokeLinejoin="round"
       d="m12.5 7.5-5 5m0-5 5 5"

@@ -1,14 +1,16 @@
-import { userQueries } from '@/apis/user/queries'
-import { Col } from '@/components/common/ui/Flex'
-import { Text, type TextProps } from '@/components/common/ui/Text'
-import { TERMS_AND_PRIVACY } from '@/constants/login'
-import { queryClient } from '@/lib/query-client'
-import { saveToken } from '@/lib/storage'
 import type { UserSignupReqProvider } from 'api'
 import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { Image, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { userQueries } from '@/apis/user/queries'
+import { Col } from '@/components/common/ui/Flex'
+import { Text, type TextProps } from '@/components/common/ui/Text'
+import { toast } from '@/components/Toaster'
+import { TERMS_AND_PRIVACY } from '@/constants/login'
+import { queryClient } from '@/lib/query-client'
+import { saveToken } from '@/lib/storage'
+import { useAuth } from '@/providers/user.provider'
 import LoginButton from './components/LoginButton'
 import LogoText from './components/LogoText'
 
@@ -21,6 +23,7 @@ WebBrowser.maybeCompleteAuthSession()
 
 export default function Index() {
   const insets = useSafeAreaInsets()
+  const { sync } = useAuth()
 
   const onOpenWebPage = async (url: string) => {
     await WebBrowser.openBrowserAsync(url)
@@ -50,7 +53,7 @@ export default function Index() {
 
         if (token) {
           await saveToken('accessToken', token)
-
+          sync()
           if (isInitialized === 'true') {
             router.replace('/')
           } else {
@@ -59,14 +62,14 @@ export default function Index() {
         }
       }
     } catch (error) {
-      console.error('로그인 실패:', error)
+      toast.show((error as Error)?.message ?? '로그인에 실패했습니다.')
     }
   }
 
   return (
     <View className="flex-1">
       <Image
-        source={require('@/assets/images/login-bg.png')}
+        source={require('../../../assets/images/login-bg.png')}
         className="absolute h-full w-full"
         resizeMode="cover"
       />

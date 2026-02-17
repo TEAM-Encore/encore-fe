@@ -15,14 +15,15 @@ export function StepIndicator({
   className,
 }: StepIndicatorProps) {
   return (
-    <Col className={className}>
-      {/* Step Number */}
-      <Text variant="body-01" className="mb-3 text-gray-07">
+    <Col gap={12} className={className}>
+      <Text variant="body-01" color="gray-07">
         {currentStep}/{totalSteps}
       </Text>
-
-      {/* Instruction */}
-      <Text variant="subhead-05" className="font-semibold text-gray-01">
+      <Text
+        variant="subhead-05"
+        color="gray-01"
+        className="whitespace-pre-line font-semibold"
+      >
         {instruction}
       </Text>
     </Col>

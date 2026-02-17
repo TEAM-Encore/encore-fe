@@ -1,6 +1,6 @@
+import type { ImagePickerAsset } from 'expo-image-picker'
 import { api } from '@/api'
 import { CONFIG } from '@/constants/config'
-import type { ImagePickerAsset } from 'expo-image-picker'
 
 export const uploadImage = async (
   asset: ImagePickerAsset,
@@ -26,7 +26,7 @@ export const uploadImage = async (
       if (url)
         return {
           url,
-          dynamicUrl: url.split(CONFIG.S3_BASE_URL + '/')[1].split('?')[0],
+          dynamicUrl: url.split(`${CONFIG.S3_BASE_URL}/`)[1].split('?')[0],
         }
     }
   }

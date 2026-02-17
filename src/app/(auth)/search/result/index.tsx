@@ -1,56 +1,57 @@
-import { router, useLocalSearchParams } from 'expo-router'
-import { useState } from 'react'
-import { FlatList } from 'react-native'
-import { Col } from '@/components/common/ui/Flex'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router'
+import { useCallback, useState } from 'react'
+import { ActivityIndicator, FlatList } from 'react-native'
+import { api } from '@/api'
+import { searchKeys } from '@/apis/search/keys'
+import { searchMutations } from '@/apis/search/mutations'
+import { searchQueries } from '@/apis/search/queries'
+import { Icon } from '@/components/common/icons/Icon'
+import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
+import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { ReviewCard } from '@/components/ReviewCard'
 import { Search } from '@/components/search/Search'
-
-const RESULT_MOCK = [
-  {
-    id: 1,
-    title: '5년차 찐 뮤덕의 알라딘 후기',
-    summary:
-      '넘버 퀄리티부터 배우합까지, 전반적으로 모두 만족스러웠던 공연입니다. 다시 본다면 개인적으로는 1열..',
-    author: '뮤사랑',
-    likes: 10,
-  },
-  {
-    id: 2,
-    title: '레미제라블 넘버 하나하나가 명곡',
-    summary:
-      '음악이 정말 좋아요. 특히 민턴 배우님 음색이 너무 좋아서 감동받았습니다. 꼭 다시 보고 싶어요!',
-    author: '뮤지컬러버',
-    likes: 25,
-  },
-  {
-    id: 3,
-    title: '오페라의 유령 보고 왔어요',
-    summary:
-      '무대 세트가 정말 화려하고 웅장해서 놀랐어요. 샹들리에 떨어지는 장면은 정말 압권이었습니다..',
-    author: '극장매니아',
-    likes: 15,
-  },
-  {
-    id: 4,
-    title: '캣츠 다시 봐도 재밌네요',
-    summary:
-      '배우들의 유연함과 춤 실력이 정말 대단합니다. 메모리 넘버에서는 눈물이 날 뻔 했어요 ㅠㅠ',
-    author: '공연덕후',
-    likes: 30,
-  },
-]
+import { useInfiniteList } from '@/hooks/useInfiniteList'
+import { queryClient } from '@/lib/query-client'
 
 export default function SearchResult() {
   const { q } = useLocalSearchParams<{ q: string }>()
   const [searchValue, setSearchValue] = useState(q || '')
+  const [isFocusing, setIsFocusing] = useState(false)
 
   const handleSearch = () => {
     if (searchValue.trim()) {
       router.setParams({ q: searchValue })
     }
   }
+
+  const {
+    rows: reviews,
+    fetchNextPage,
+    ...queryProps
+  } = useInfiniteList({
+    queryKey: 'reviews',
+    fn: api().getReviewList,
+    params: {
+      search_keyword: searchValue,
+    },
+    enabled: !!searchValue,
+  })
+
+  const { data: recentKeywords, refetch } = useQuery(
+    searchQueries.getRecentSearchLogs(),
+  )
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch()
+    }, [refetch]),
+  )
+  const { mutate: deleteRecentSearchLog } = useMutation(
+    searchMutations.deleteRecentSearchLog(),
+  )
 
   return (
     <Screen
@@ -60,26 +61,97 @@ export default function SearchResult() {
           <Header.Back />
           <Header.Right className="ml-2 h-[36px] flex-1">
             <Search
+              height="48"
               placeholder="공연 제목"
               value={searchValue}
               onChangeText={setSearchValue}
               onDelete={() => setSearchValue('')}
               className="placeholder:!text-gray-07 !py-[9px] h-[36px] w-full text-[14px]"
               onSubmitEditing={handleSearch}
+              onFocus={() => setIsFocusing(true)}
             />
           </Header.Right>
         </Header>
       }
     >
-      <Col className="h-full w-full">
-        <FlatList
-          data={RESULT_MOCK}
-          renderItem={({ item }) => (
-            <ReviewCard {...item} className="!w-full !p-4" />
-          )}
-          contentContainerClassName="mt-3 gap-5 px-5"
-        />
-      </Col>
+      {isFocusing && (
+        <Col className="h-full w-full">
+          <FlatList
+            data={recentKeywords}
+            renderItem={({ item }) => (
+              <Row
+                key={item.name}
+                align="center"
+                justify="space-between"
+                className="border-b border-b-gray-09 px-5 py-[17px]"
+                onPress={() => {
+                  setSearchValue(item.name ?? '')
+                  router.replace(
+                    `/search/result?q=${encodeURIComponent(item.name ?? '')}`,
+                  )
+                }}
+              >
+                <Text color="gray-01" className="font-normal text-[16px]">
+                  {item.name}
+                </Text>
+                <Icon
+                  name="Close"
+                  size={24}
+                  color="#FBFBFB"
+                  onPress={() =>
+                    deleteRecentSearchLog(
+                      { name: item.name ?? '' },
+                      {
+                        onSuccess: () => {
+                          queryClient.invalidateQueries({
+                            queryKey: searchKeys.all,
+                          })
+                        },
+                      },
+                    )
+                  }
+                />
+              </Row>
+            )}
+          />
+        </Col>
+      )}
+      {!queryProps.isLoading && reviews.length === 0 && (
+        <Flex align="center" justify="center" className="h-full w-full">
+          <Text variant="body-01" className="text-gray-06">
+            검색 결과가 없습니다.
+          </Text>
+        </Flex>
+      )}
+      {!queryProps.isLoading && !!reviews.length && (
+        <Col className="h-full w-full">
+          <FlatList
+            data={reviews}
+            renderItem={({ item }) => (
+              <ReviewCard
+                title={item.title ?? ''}
+                summary={item.content ?? ''}
+                author={item.nickname ?? ''}
+                likes={item.like_count ?? 0}
+                onPress={() => router.push(`/review-detail/${item.review_id}`)}
+              />
+            )}
+            contentContainerClassName="mt-3 gap-5 px-5"
+            onEndReached={fetchNextPage}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              queryProps.isFetchingNextPage ? (
+                <ActivityIndicator style={{ padding: 20 }} />
+              ) : null
+            }
+            ListEmptyComponent={
+              queryProps.isLoading ? (
+                <ActivityIndicator style={{ padding: 20 }} />
+              ) : null
+            }
+          />
+        </Col>
+      )}
     </Screen>
   )
 }

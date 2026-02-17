@@ -1,3 +1,14 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import * as ImagePicker from 'expo-image-picker'
+import { useLocalSearchParams } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useEffect, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Image, TextInput } from 'react-native'
+import { FlatList } from 'react-native-gesture-handler'
+import { imageMutations } from '@/apis/image/mutations'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -14,24 +25,14 @@ import { FormTextField } from '@/components/TextField'
 import { TimePicker } from '@/components/TimePicker'
 import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
-import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
 import { uploadImage } from '@/utils/upload-image'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
-import * as ImagePicker from 'expo-image-picker'
-import { useLocalSearchParams } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Image, TextInput } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
-  const user = useUser()
+
+  const { mutate: updateTicket } = ticketMutations.updateTicket()
 
   const [actorKeyword, setActorKeyword] = useState('')
 
@@ -43,7 +44,7 @@ export default function TicketDetailScreen() {
     }),
   )
 
-  const { mutate: updateTicket } = ticketMutations.updateTicket()
+  const { mutate: getTicketImage } = imageMutations.getViewImage()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -72,6 +73,19 @@ export default function TicketDetailScreen() {
 
   const [isEdit, setIsEdit] = useState(false)
 
+  useEffect(() => {
+    if (!data?.ticket_image_url) {
+      form.setValue('ticketImageUrl', undefined)
+      return
+    }
+    const match = data?.ticket_image_url?.match(/dynamic\/[\w-]+\.\w+/)?.[0]
+
+    getTicketImage(
+      { file_path: match },
+      { onSuccess: (data) => form.setValue('ticketImageUrl', data?.url ?? '') },
+    )
+  }, [data?.ticket_image_url, getTicketImage])
+
   const onDelete = async () => {
     overlay.open(({ isOpen, close }) => (
       <Dialog
@@ -86,7 +100,7 @@ export default function TicketDetailScreen() {
   }
 
   const handleTicketSheet = (type: 'ADD' | 'EDIT') => {
-    overlay.open(({ isOpen, close, unmount }) => (
+    overlay.open(({ isOpen, close }) => (
       <BottomSheet.Root
         isOpen={isOpen}
         close={close}
@@ -153,10 +167,7 @@ export default function TicketDetailScreen() {
         col: data.col,
         number: data.seatNumber,
         viewed_date: data.viewedDate,
-        show_time: {
-          hour: Number(data.showTime.hour),
-          minute: Number(data.showTime.minute),
-        },
+        show_time: `${data.showTime.hour}:${data.showTime.minute}`,
         actor_ids: data.actors.map((actor) => actor.id),
         ticket_image_url: data.ticketImageUrl,
       })
@@ -169,8 +180,6 @@ export default function TicketDetailScreen() {
       console.error(error)
     },
   )
-
-  console.log(form.watch('ticketImageUrl'))
 
   return (
     <Screen
@@ -431,59 +440,7 @@ export default function TicketDetailScreen() {
             />
           )}
 
-          {actorKeyword.length && (
-            <FlatList
-              data={actors?.data ?? []}
-              renderItem={({ item }) => (
-                <Row
-                  key={item.id}
-                  align="center"
-                  gap={16}
-                  onPress={() => {
-                    const actors = form.watch('actors') ?? []
-
-                    if (item.id) {
-                      if (actors.some((actor) => actor.id === item.id)) {
-                        return
-                      }
-
-                      form.setValue(
-                        'actors',
-                        [
-                          ...actors,
-                          {
-                            id: item.id,
-                            name: item.name ?? '',
-                            imageUrl: item.actor_image_url ?? '',
-                          },
-                        ],
-                        {
-                          shouldValidate: true,
-                        },
-                      )
-
-                      setActorKeyword('')
-                    }
-                  }}
-                  className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
-                >
-                  <Image
-                    source={{ uri: item.actor_image_url }}
-                    width={53}
-                    height={53}
-                    className="rounded-md"
-                    resizeMode="cover"
-                  />
-                  <Text variant="body-02" className="text-gray-01">
-                    {item.name}
-                  </Text>
-                </Row>
-              )}
-              contentContainerClassName="gap-3"
-            />
-          )}
-
-          {!actorKeyword.length && (
+          {actorKeyword.length === 0 && (
             <Row align="center" gap={4} wrap="wrap" className="mt-3">
               {form.watch('actors')?.map((actor) => (
                 <Col
@@ -521,6 +478,57 @@ export default function TicketDetailScreen() {
                   </Text>
                 </Col>
               ))}
+              {actorKeyword.length > 0 && (
+                <FlatList
+                  data={actors?.data ?? []}
+                  renderItem={({ item }) => (
+                    <Row
+                      key={item.id}
+                      align="center"
+                      gap={16}
+                      onPress={() => {
+                        const actors = form.watch('actors') ?? []
+
+                        if (item.id) {
+                          if (actors.some((actor) => actor.id === item.id)) {
+                            return
+                          }
+
+                          form.setValue(
+                            'actors',
+                            [
+                              ...actors,
+                              {
+                                id: item.id,
+                                name: item.name ?? '',
+                                imageUrl: item.actor_image_url ?? '',
+                              },
+                            ],
+                            {
+                              shouldValidate: true,
+                            },
+                          )
+
+                          setActorKeyword('')
+                        }
+                      }}
+                      className="rounded-[10px] bg-gray-11 px-[10px] py-[13px]"
+                    >
+                      <Image
+                        source={{ uri: item.actor_image_url }}
+                        width={53}
+                        height={53}
+                        className="rounded-md"
+                        resizeMode="cover"
+                      />
+                      <Text variant="body-02" className="text-gray-01">
+                        {item.name}
+                      </Text>
+                    </Row>
+                  )}
+                  contentContainerClassName="gap-3"
+                />
+              )}
             </Row>
           )}
         </Col>

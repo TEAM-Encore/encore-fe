@@ -1,3 +1,5 @@
+import { useQuery } from '@tanstack/react-query'
+import { userQueries } from '@/apis/user/queries'
 import { Avatar } from '@/components/Avatar'
 import { Col } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
@@ -17,7 +19,7 @@ const MOCK: Record<string, MypageSectionItem[]> = {
   externalLinks: [
     {
       label: '문의사항',
-      href: 'https://honored-collard-ece.notion.site/24c84f6854f18047900ff1f8340543b3?source=copy_link',
+      href: 'https://docs.google.com/forms/d/e/1FAIpQLScy6AUKt1MZKw-PrFDxjrTSufDhFvo5VNcO7UjSr4kbIPCrsA/viewform',
     },
     {
       label: '이용약관',
@@ -32,13 +34,15 @@ const MOCK: Record<string, MypageSectionItem[]> = {
 }
 
 export default function Index() {
+  const { data } = useQuery(userQueries.getMyInfo())
+
   return (
     <Screen header={<MypageHeader />} scrollable>
       <Spacing size={21} />
       <Col gap={20} center>
-        <Avatar />
+        <Avatar imageUrl={data?.data?.profile_image_url ?? undefined} />
         <Text variant="subhead-04" color="gray-01">
-          뮤사랑
+          {data?.data?.nickname ?? ''}
         </Text>
       </Col>
       <Spacing size={10} />
