@@ -411,9 +411,11 @@ export default function ReviewEdit() {
             </Col>
           </Col>
 
-          <Text variant="caption" className="mt-8 text-center text-gray-06">
-            리뷰에 대한 권리는 작성자에게 있으며 무단 사용을 금지합니다.
-            개인적인 후기는 하나의 감상평으로 참고해주세요.
+          <Text
+            variant="caption"
+            className="my-8 whitespace-pre-line text-center text-gray-06 leading-normal"
+          >
+            {`리뷰에 대한 권리는 작성자에게 있으며 무단 사용을 금지합니다.\n개인적인 후기는 하나의 감상평으로 참고해주세요.`}
           </Text>
         </Col>
       </ScrollView>
