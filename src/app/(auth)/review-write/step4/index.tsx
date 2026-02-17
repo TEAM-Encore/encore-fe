@@ -31,7 +31,7 @@ export default function ReviewWriteStep4() {
     resolver: zodResolver(step4Schema),
     mode: 'onChange',
     defaultValues: {
-      soundQuality: 'GOOD',
+      soundQuality: 1,
       soundQualityReason: '',
     },
   })
@@ -39,13 +39,18 @@ export default function ReviewWriteStep4() {
   const selectedQuality = form.watch('soundQuality')
 
   const handleQualitySelect = (value: 'GOOD' | 'AVERAGE' | 'POOR') => {
-    form.setValue('soundQuality', value, { shouldValidate: true })
+    const index = soundQualityOptions.findIndex((opt) => opt.value === value)
+    if (index !== -1) {
+      form.setValue('soundQuality', index + 1, { shouldValidate: true })
+    }
   }
 
   const handleNext = () => {
     const values = form.getValues()
     setData({
-      soundQuality: values.soundQuality,
+      soundQuality: soundQualityOptions.map((el) => el.value)[
+        values.soundQuality - 1
+      ],
       soundQualityReason: values.soundQualityReason,
     })
     router.push('/review-write/step5')
@@ -66,7 +71,9 @@ export default function ReviewWriteStep4() {
         <Col gap={20}>
           <ReviewOptions
             options={soundQualityOptions}
-            value={selectedQuality}
+            value={
+              soundQualityOptions.map((el) => el.value)[selectedQuality - 1]
+            }
             onSelect={handleQualitySelect}
           />
 

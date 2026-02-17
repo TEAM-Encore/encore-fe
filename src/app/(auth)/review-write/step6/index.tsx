@@ -114,8 +114,9 @@ export default function ReviewWriteStep6() {
       await createReviewMutation.mutateAsync(payload)
       toast.show('10포인트를 획득했어요')
       router.push('/')
-    } catch {
-      toast.show('후기 등록에 실패했습니다.')
+    } catch (e) {
+      console.log(e)
+      toast.show((e as any)?.error?.message ?? '후기 등록에 실패했습니다.')
     }
   }
 
