@@ -11,7 +11,7 @@ export const reviewQueries = {
       select: (data) => data.data,
     }),
 
-  getViewImage: () =>
+  getViewImages: () =>
     queryOptions({
       queryKey: reviewKeys.viewImage(),
       queryFn: () => api().viewImage1(),

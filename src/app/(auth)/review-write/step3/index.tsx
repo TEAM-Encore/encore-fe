@@ -23,7 +23,7 @@ type Step3FormType = z.infer<typeof step3Schema>
 export default function ReviewWriteStep3() {
   const router = useRouter()
   const { setData } = useReviewWriteContext()
-  const { data, refetch } = useQuery(reviewQueries.getViewImage())
+  const { data, refetch } = useQuery(reviewQueries.getViewImages())
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const images = useMemo(() => {
