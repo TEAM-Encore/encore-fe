@@ -1,8 +1,4 @@
-import type {
-  GetTicketDetailParams,
-  GetTicketListParams,
-  SearchActorsParams,
-} from 'api'
+import type { GetTicketListParams, SearchActorsParams } from 'api'
 
 export const ticketKeys = {
   all: ['ticket'] as const,
@@ -16,10 +12,10 @@ export const ticketKeys = {
     list: (params: GetTicketListParams) =>
       [...ticketKeys.ticketList.all(), 'list', params] as const,
   },
-  getTicketDetail: (params: GetTicketDetailParams) => [
+  getTicketDetail: (ticketId: number) => [
     ...ticketKeys.all,
     'getTicketDetail',
-    params,
+    ticketId,
   ],
   unreviewed: () => [...ticketKeys.all, 'unreviewed'] as const,
 } as const

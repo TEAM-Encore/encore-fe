@@ -11,8 +11,9 @@ module.exports = (api) => {
         {
           root: ['./'],
           alias: {
-            //         '@': './src',
-            //         '@/assets': './assets',
+            '@': './src',
+            '@/assets': './assets',
+            '@/public': './public',
             api: './codegen/__generated__/api_sdk',
           },
         },

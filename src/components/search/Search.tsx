@@ -1,8 +1,8 @@
-import { TextInput, View } from 'react-native'
+import { TextInput } from 'react-native'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { Icon } from '../common/icons/Icon'
-import { Row } from '../common/ui/Flex'
+import { Flex, Row } from '../common/ui/Flex'
 
 type SearchProps = React.ComponentProps<typeof TextInput> & {
   onDelete: VoidFunction
@@ -19,7 +19,7 @@ export function Search({
 }: SearchProps) {
   return (
     <Row className="relative w-full">
-      <View className="flex-1">
+      <Flex className="flex-1">
         <TextInput
           value={value}
           placeholderTextColor={colors.gray['07']}
@@ -34,7 +34,7 @@ export function Search({
           )}
           {...rest}
         />
-      </View>
+      </Flex>
       <Icon
         name="Search"
         size={18}

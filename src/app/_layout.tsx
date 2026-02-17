@@ -4,10 +4,6 @@ import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 
-if (__DEV__) {
-  require('@/config/reactotron')
-}
-
 export default function RootLayout() {
   const [fontsLoaded, error] = useFonts({
     'Pretendard-Thin': require('../../assets/fonts/Pretendard-Thin.otf'),
