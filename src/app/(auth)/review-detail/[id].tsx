@@ -73,10 +73,10 @@ export default function ReviewDetail() {
 
   const viewImages = viewImageResponse?.view_images ?? []
   const isLiked = reviewData?.like_res?.like_type !== 'NONE'
-  const viewLevel = reviewData?.review_data_res?.view?.view_level
-  const viewImageUrl = viewLevel
-    ? viewImages.find((img) => img.level === viewLevel)?.url
-    : undefined
+  const viewLevel = Number(reviewData?.review_data_res?.view?.view_level)
+  const viewImageUrl = viewImages.find(
+    (img) => img.level === viewLevel + 1,
+  )?.url
 
   const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>()
   const [ticketImageUrl, setTicketImageUrl] = useState<string | undefined>()
