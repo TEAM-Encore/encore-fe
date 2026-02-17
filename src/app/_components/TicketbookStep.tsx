@@ -11,9 +11,9 @@ import { TicketBook } from '@/components/TicketBook'
 import SortSelector from './SortSelector'
 
 const tabs = [
-  { label: '전체', value: 'all' },
-  { label: '최근 1주', value: 'week' },
-  { label: '최근 1달', value: 'month' },
+  { label: '전체', value: 'all', num: '0' },
+  { label: '최근 1주', value: 'week', num: '7' },
+  { label: '최근 1달', value: 'month', num: '30' },
 ]
 
 export default function TicketbookStep() {
@@ -24,7 +24,7 @@ export default function TicketbookStep() {
 
   const { data: tickets } = useQuery(
     ticketQueries.getTicketList({
-      dateRange: sort === 'all' ? '30' : sort === 'week' ? '7' : '0',
+      dateRange: tabs.find((tab) => tab.value === sort)?.num ?? '30',
     }),
   )
 

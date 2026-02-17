@@ -1,6 +1,16 @@
 import { Providers } from '@/providers/Providers'
 import '@/styles/globals.css'
 import { useFonts } from 'expo-font'
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from 'react-native-reanimated'
+
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.warn,
+  strict: false,
+})
+
 import { SplashScreen, Stack } from 'expo-router'
 import { useEffect } from 'react'
 

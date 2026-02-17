@@ -106,10 +106,10 @@ export default function ReviewDetail() {
   const ticketImageUrl = useSignedImageUrl(ticketQuery?.data?.ticket_image_url)
 
   useEffect(() => {
-    if ((myInfo?.point ?? 0) < 5) {
+    if ((myInfo?.point ?? 0) < 5 && myInfo !== undefined) {
       overlay.open((ov) => <InsufficientPointDialog {...ov} />)
     }
-  }, [])
+  }, [myInfo])
 
   useEffect(() => {
     if (isError && (error as any)?.error?.message === '리뷰가 잠겨있습니다.') {

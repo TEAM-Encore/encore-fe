@@ -122,8 +122,8 @@ export default function ReviewEdit() {
   const handleCancel = () => router.back()
 
   const handleSave = () => {
+    form.trigger()
     const values = form.getValues()
-    console.log(values)
     updateReview(
       {
         reviewId,

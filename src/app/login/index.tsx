@@ -53,7 +53,7 @@ export default function Index() {
 
         if (token) {
           await saveToken('accessToken', token)
-          sync()
+          await sync()
           if (isInitialized === 'true') {
             router.replace('/')
           } else {

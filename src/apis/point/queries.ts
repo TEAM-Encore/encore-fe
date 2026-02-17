@@ -39,7 +39,7 @@ export const pointQueries = {
     }),
   getMyPointHistory: () =>
     infiniteQueryOptions<MyPointHistoryResponse>({
-      queryKey: pointKeys.all,
+      queryKey: pointKeys.history(),
       queryFn: ({ pageParam = undefined }) =>
         api().getMyPointHistory(pageParam as GetMyPointHistoryParams),
       getNextPageParam: (lastPage) => lastPage?.data?.nextCursor,

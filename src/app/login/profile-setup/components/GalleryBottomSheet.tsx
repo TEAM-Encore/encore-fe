@@ -37,6 +37,8 @@ function GalleryBottomSheet({
               base64: true,
             })
 
+            if (result.canceled || !result.assets?.length) return
+
             const asset = result?.assets?.[0] as ImagePicker.ImagePickerAsset
             onUploadStart?.()
             const res = await uploadImage(asset)

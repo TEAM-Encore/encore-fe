@@ -67,8 +67,12 @@ export default function SearchResult() {
               onChangeText={setSearchValue}
               onDelete={() => setSearchValue('')}
               className="placeholder:!text-gray-07 !py-[9px] h-[36px] w-full text-[14px]"
-              onSubmitEditing={handleSearch}
+              onSubmitEditing={() => {
+                handleSearch()
+                setIsFocusing(false)
+              }}
               onFocus={() => setIsFocusing(true)}
+              onEndEditing={() => setIsFocusing(false)}
             />
           </Header.Right>
         </Header>

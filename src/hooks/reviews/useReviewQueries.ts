@@ -21,14 +21,16 @@ function useReviewQueries(reviewId: number) {
   const ticketQuery = useQuery(
     ticketQueries.getTicketDetail(ticket?.ticket_id ?? 0),
   )
+  const { data: viewImageResponse } = useQuery(reviewQueries.getViewImages())
 
   useEffect(() => {
     if (reviewQuery.isError && !reviewQuery.isLoading) {
-      toast.show((reviewQuery.error as any)?.error?.message)
+      toast.show(
+        (reviewQuery.error as any)?.error?.message ||
+          '리뷰를 불러오는데 실패했습니다.',
+      )
     }
   }, [reviewQuery.isError, reviewQuery.isLoading, reviewQuery.error])
-
-  const { data: viewImageResponse } = useQuery(reviewQueries.getViewImages())
 
   return {
     reviewQuery,
