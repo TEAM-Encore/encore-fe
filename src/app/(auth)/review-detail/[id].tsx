@@ -10,6 +10,10 @@ import {
   View,
 } from 'react-native'
 import { reviewKeys } from '@/apis/review/keys'
+import { reviewMutations } from '@/apis/review/mutations'
+import { reviewQueries } from '@/apis/review/queries'
+import { ticketQueries } from '@/apis/ticket/queries'
+import { userQueries } from '@/apis/user/queries'
 import { TicketBook } from '@/components'
 import { Avatar } from '@/components/Avatar'
 import { Icon } from '@/components/common/icons/Icon'
@@ -26,8 +30,6 @@ import { RatingSlider } from '@/components/RatingSlider'
 import { ReviewInfoSection } from '@/components/ReviewInfoSection'
 import { toast } from '@/components/Toaster'
 import { FACILITY_LEVEL_LABELS, SOUND_LEVEL_LABELS } from '@/constants/review'
-import useReviewMutations from '@/hooks/reviews/useReviewMutations'
-import useReviewApi from '@/hooks/reviews/useReviewQueries'
 import { useSignedImageUrl } from '@/hooks/useSignedImageUrl'
 import { queryClient } from '@/lib/query-client'
 import { useUser } from '@/providers/user.provider'
@@ -36,6 +38,13 @@ import { cn } from '@/utils/cn'
 import { showPointRewardToast } from '@/utils/pointReward'
 import ReviewDetailHeader from './_components/ReviewDetailHeader'
 
+type ReviewDetailTicket = {
+  ticket_id?: number
+  ticket_title?: string
+  viewed_date?: string
+  image_url?: string
+}
+
 export default function ReviewDetail() {
   const user = useUser()
   const router = useRouter()
@@ -43,18 +52,31 @@ export default function ReviewDetail() {
   const reviewId = params.id ? Number(params.id) : 0
 
   const {
-    reviewQuery: {
-      data: reviewData,
-      isLoading: isReviewLoading,
-      isError,
-      error,
-      refetch,
-    },
-    ticketQuery,
-    viewImageResponse,
-    myInfo,
-  } = useReviewApi(reviewId)
-  const { unlockReview, likeReview, isPendingLike } = useReviewMutations()
+    data: reviewData,
+    isLoading: isReviewLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery(reviewQueries.getReview(reviewId))
+  const { data: myInfo } = useQuery(userQueries.getMyInfo())
+  const { data: ticketData } = useQuery(
+    ticketQueries.getTicketDetail(
+      (reviewData?.ticket as ReviewDetailTicket)?.ticket_id ?? 0,
+    ),
+  )
+  const { data: viewImageResponse } = useQuery(reviewQueries.getViewImages())
+
+  useEffect(() => {
+    if (isError && !isReviewLoading) {
+      toast.show(
+        (error as any)?.error?.message || '리뷰를 불러오는데 실패했습니다.',
+      )
+    }
+  }, [isError, isReviewLoading, error])
+
+  const { mutate: unlockReview } = reviewMutations.unlockReview()
+  const { mutate: likeReview, isPending: isPendingLike } =
+    reviewMutations.likeReview()
 
   const isLiked = reviewData?.like_res?.like_type !== 'NONE'
   const viewImageUrl = viewImageResponse?.view_images?.find(
@@ -103,7 +125,7 @@ export default function ReviewDetail() {
   const view = reviewData?.review_data_res?.view
 
   const profileImageUrl = useSignedImageUrl(reviewData?.profile_image_url)
-  const ticketImageUrl = useSignedImageUrl(ticketQuery?.data?.ticket_image_url)
+  const ticketImageUrl = useSignedImageUrl(ticketData?.ticket_image_url)
 
   useEffect(() => {
     if ((myInfo?.point ?? 0) < 5 && myInfo !== undefined) {
@@ -138,7 +160,7 @@ export default function ReviewDetail() {
         />
       ))
     }
-  }, [isError, error, unlockReview, reviewId, refetch])
+  }, [isError, error, unlockReview, reviewId, refetch, router.back])
 
   // 로딩 또는 데이터 없음
   if (isReviewLoading || !reviewData || user?.id !== reviewData?.user_id) {
@@ -233,16 +255,14 @@ export default function ReviewDetail() {
             </Row>
 
             {/* 티켓 카드 */}
-            {ticketQuery?.data && (
+            {ticketData && (
               <TicketBook
                 posterUrl={ticketImageUrl as string}
-                title={`${ticketQuery?.data?.musical_title} ${ticketQuery?.data?.location}`}
-                date={ticketQuery?.data?.viewed_date?.replace(/-/g, '.') ?? ''}
-                theaterseat={`${ticketQuery?.data?.floor}층 ${ticketQuery?.data?.zone}구역 ${ticketQuery?.data?.col}열 ${ticketQuery?.data?.number}번`}
+                title={`${ticketData?.musical_title} ${ticketData?.location}`}
+                date={ticketData?.viewed_date?.replace(/-/g, '.') ?? ''}
+                theaterseat={`${ticketData?.floor}층 ${ticketData?.zone}구역 ${ticketData?.col}열 ${ticketData?.number}번`}
                 attendees={
-                  ticketQuery?.data?.actors
-                    ?.map((actor) => actor.name)
-                    .join(' ') ?? ''
+                  ticketData?.actors?.map((actor) => actor.name).join(' ') ?? ''
                 }
               />
             )}
