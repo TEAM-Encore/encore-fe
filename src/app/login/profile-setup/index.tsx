@@ -2,9 +2,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { ActivityIndicator, StatusBar } from 'react-native'
+import { userKeys } from '@/apis/user/keys'
 import { userMutations } from '@/apis/user/mutations'
 import { userQueries } from '@/apis/user/queries'
 import { Avatar } from '@/components/Avatar'
@@ -16,6 +17,7 @@ import { Text } from '@/components/common/ui/Text'
 import { Header } from '@/components/Header'
 import { FormTextField } from '@/components/TextField'
 import { toast } from '@/components/Toaster'
+import { queryClient } from '@/lib/query-client'
 import GalleryBottomSheet from './components/GalleryBottomSheet'
 import { type LoginFormType, loginSchema } from './schema'
 
@@ -40,17 +42,16 @@ export default function ProfileSetup({
     mode: 'onSubmit',
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      profile_image_url: myInfo?.data?.profile_image_url ?? undefined,
-      nick_name: myInfo?.data?.nickname ?? '',
+      profile_image_url: myInfo?.profile_image_url ?? undefined,
+      nick_name: myInfo?.nickname ?? '',
     },
   })
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: form.reset is stable
   useEffect(() => {
-    if (myInfo?.data) {
+    if (myInfo?.email) {
       form.reset({
-        profile_image_url: myInfo.data.profile_image_url ?? undefined,
-        nick_name: myInfo.data.nickname ?? '',
+        profile_image_url: myInfo.profile_image_url ?? undefined,
+        nick_name: myInfo.nickname ?? '',
       })
     }
   }, [myInfo])
@@ -67,6 +68,11 @@ export default function ProfileSetup({
   const { mutate: validateUserNickname, isPending: isCheckingNickname } =
     useMutation(userMutations.validateUserNickname())
   const { mutate: setupComplete } = useMutation(userMutations.setupComplete())
+
+  const [isUploadingImage, setIsUploadingImage] = useState(false)
+  const [imageFilePath, setImageFilePath] = useState<string | undefined>(
+    undefined,
+  )
 
   const onCheckNickname = async () => {
     const isValid = await form.trigger('nick_name')
@@ -105,18 +111,20 @@ export default function ProfileSetup({
   const onSubmit = form.handleSubmit(async (data: LoginFormType) => {
     const payload: Partial<LoginFormType> = {}
 
-    if (data.nick_name !== myInfo?.data?.nickname) {
+    if (data.nick_name !== myInfo?.nickname) {
       payload.nick_name = data.nick_name
     }
 
-    if (data.profile_image_url !== myInfo?.data?.profile_image_url) {
-      payload.profile_image_url = data.profile_image_url
+    if (data.profile_image_url !== myInfo?.profile_image_url) {
+      payload.profile_image_url = imageFilePath
     }
 
     patchUserInfo(payload, {
       onSuccess: () => {
         if (isFromAccount) {
-          router.push('/mypage')
+          queryClient.invalidateQueries({ queryKey: userKeys.myInfo() })
+          toast.show('프로필 수정이 완료되었습니다.')
+          router.back()
         } else {
           setupComplete(undefined, {
             onSuccess: () => {
@@ -179,13 +187,19 @@ export default function ProfileSetup({
             overlay.open((o) => (
               <GalleryBottomSheet
                 {...o}
-                onOpenGallery={(url) => form.setValue('profile_image_url', url)}
+                onOpenGallery={(url, file_path) => {
+                  setImageFilePath(file_path)
+                  form.setValue('profile_image_url', url)
+                }}
                 onDeletePhoto={() =>
                   form.setValue('profile_image_url', undefined)
                 }
+                onUploadStart={() => setIsUploadingImage(true)}
+                onUploadEnd={() => setIsUploadingImage(false)}
               />
             ))
           }
+          loading={isUploadingImage}
         />
       </Flex>
 

@@ -9,10 +9,11 @@ import {
   ScrollView,
   View,
 } from 'react-native'
-import { imageMutations } from '@/apis/image/mutations'
+import { reviewKeys } from '@/apis/review/keys'
 import { reviewMutations } from '@/apis/review/mutations'
 import { reviewQueries } from '@/apis/review/queries'
 import { ticketQueries } from '@/apis/ticket/queries'
+import { userQueries } from '@/apis/user/queries'
 import { TicketBook } from '@/components'
 import { Avatar } from '@/components/Avatar'
 import { Icon } from '@/components/common/icons/Icon'
@@ -21,19 +22,21 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
-import { Dropdown } from '@/components/Dropdown'
 import { Header } from '@/components/Header'
 import { InfoBadge } from '@/components/InfoBadge'
 import { InfoDialog } from '@/components/InfoDialog'
+import { InsufficientPointDialog } from '@/components/InsufficientPointDialog'
 import { RatingSlider } from '@/components/RatingSlider'
-import { ReportBottomSheet } from '@/components/ReportBottomSheet'
 import { ReviewInfoSection } from '@/components/ReviewInfoSection'
-import { TicketCard } from '@/components/TicketCard'
 import { toast } from '@/components/Toaster'
 import { FACILITY_LEVEL_LABELS, SOUND_LEVEL_LABELS } from '@/constants/review'
+import { useSignedImageUrl } from '@/hooks/useSignedImageUrl'
+import { queryClient } from '@/lib/query-client'
+import { useUser } from '@/providers/user.provider'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { showPointRewardToast } from '@/utils/pointReward'
+import ReviewDetailHeader from './_components/ReviewDetailHeader'
 
 type ReviewDetailTicket = {
   ticket_id?: number
@@ -43,6 +46,7 @@ type ReviewDetailTicket = {
 }
 
 export default function ReviewDetail() {
+  const user = useUser()
   const router = useRouter()
   const params = useLocalSearchParams<{ id: string; from?: string }>()
   const reviewId = params.id ? Number(params.id) : 0
@@ -50,69 +54,37 @@ export default function ReviewDetail() {
   const {
     data: reviewData,
     isLoading: isReviewLoading,
-    error,
     isError,
+    error,
     refetch,
   } = useQuery(reviewQueries.getReview(reviewId))
+  const { data: myInfo } = useQuery(userQueries.getMyInfo())
+  const { data: ticketData } = useQuery(
+    ticketQueries.getTicketDetail(
+      (reviewData?.ticket as ReviewDetailTicket)?.ticket_id ?? 0,
+    ),
+  )
+  const { data: viewImageResponse } = useQuery(reviewQueries.getViewImages())
 
   useEffect(() => {
     if (isError && !isReviewLoading) {
-      toast.show((error as any)?.error?.message)
+      toast.show(
+        (error as any)?.error?.message || '리뷰를 불러오는데 실패했습니다.',
+      )
     }
   }, [isError, isReviewLoading, error])
 
-  const { mutate: likeReview, isPending: isLiking } =
-    reviewMutations.likeReview()
-  const { data: viewImageResponse } = useQuery(reviewQueries.getViewImage())
-
   const { mutate: unlockReview } = reviewMutations.unlockReview()
-  const { mutate: deleteReview } = reviewMutations.deleteReview()
-  const { mutate: reportReview } = reviewMutations.reportReview()
-  const { mutate: getProfileImage } = imageMutations.getViewImage()
-  const { mutate: getTicketImage } = imageMutations.getViewImage()
+  const { mutate: likeReview, isPending: isPendingLike } =
+    reviewMutations.likeReview()
 
-  const viewImages = viewImageResponse?.view_images ?? []
   const isLiked = reviewData?.like_res?.like_type !== 'NONE'
-  const viewLevel = reviewData?.review_data_res?.view?.view_level
-  const viewImageUrl = viewLevel
-    ? viewImages.find((img) => img.level === viewLevel)?.url
-    : undefined
+  const viewImageUrl = viewImageResponse?.view_images?.find(
+    (img) =>
+      img.level === Number(reviewData?.review_data_res?.view?.view_level) + 1,
+  )?.url
 
-  const [profileImageUrl, setProfileImageUrl] = useState<string | undefined>()
-  const [ticketImageUrl, setTicketImageUrl] = useState<string | undefined>()
   const [isViewImageLoading, setIsViewImageLoading] = useState(true)
-
-  const handleDelete = () => {
-    overlay.open((ov) => (
-      <Dialog
-        {...ov}
-        title="후기글 삭제할까요?"
-        description="삭제한 후기는 되돌릴 수 없어요."
-        top="확인"
-        bottom="취소"
-        onTopPress={() => {
-          deleteReview(
-            { reviewId },
-            {
-              onSuccess: () => {
-                toast.show('후기글을 삭제했어요.')
-                if (params.from === 'home') {
-                  router.push('/')
-                } else if (params.from === 'mypage-reviews') {
-                  router.push('/mypage/reviews')
-                } else {
-                  router.back()
-                }
-              },
-              onError: (e) => {
-                toast.show(e?.message ?? '후기글 삭제에 실패했어요.')
-              },
-            },
-          )
-        }}
-      />
-    ))
-  }
 
   const handleLike = () => {
     if (reviewData?.is_my_review) {
@@ -120,37 +92,21 @@ export default function ReviewDetail() {
       return
     }
 
-    if (isLiking) return
+    if (isPendingLike) return
 
     likeReview(
       { reviewId },
       {
         onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: reviewKeys.detail(reviewId),
+          })
           if (!isLiked) {
             showPointRewardToast(5)
           }
         },
       },
     )
-  }
-
-  const handleReport = () => {
-    overlay.open((ov) => (
-      <ReportBottomSheet
-        {...ov}
-        onReport={(reason) => {
-          reportReview(
-            { reviewId, reason },
-            {
-              onSuccess: () => toast.show('신고가 접수되었어요'),
-              onError: (e) => {
-                toast.show(e?.message ?? '신고에 실패했어요.')
-              },
-            },
-          )
-        }}
-      />
-    ))
   }
 
   const handleNumberHelp = () => {
@@ -162,6 +118,20 @@ export default function ReviewDetail() {
       />
     ))
   }
+
+  const rating = reviewData?.review_data_res?.rating
+  const sound = reviewData?.review_data_res?.sound
+  const facility = reviewData?.review_data_res?.facility
+  const view = reviewData?.review_data_res?.view
+
+  const profileImageUrl = useSignedImageUrl(reviewData?.profile_image_url)
+  const ticketImageUrl = useSignedImageUrl(ticketData?.ticket_image_url)
+
+  useEffect(() => {
+    if ((myInfo?.point ?? 0) < 5 && myInfo !== undefined) {
+      overlay.open((ov) => <InsufficientPointDialog {...ov} />)
+    }
+  }, [myInfo])
 
   useEffect(() => {
     if (isError && (error as any)?.error?.message === '리뷰가 잠겨있습니다.') {
@@ -177,7 +147,7 @@ export default function ReviewDetail() {
               { reviewId },
               {
                 onSuccess: () => {
-                  toast.show('리뷰를 해제했어요.')
+                  toast.show('5포인트로 리뷰를 해제했어요.')
                   refetch()
                 },
                 onError: (e) => {
@@ -186,53 +156,14 @@ export default function ReviewDetail() {
               },
             )
           }}
+          onBottomPress={() => router.back()}
         />
       ))
     }
-  }, [isError, error, unlockReview, reviewId, refetch])
-
-  const rating = reviewData?.review_data_res?.rating
-  const sound = reviewData?.review_data_res?.sound
-  const facility = reviewData?.review_data_res?.facility
-  const view = reviewData?.review_data_res?.view
-
-  const { data: ticketData } = useQuery(
-    ticketQueries.getTicketDetail(
-      (reviewData?.ticket as ReviewDetailTicket)?.ticket_id ?? 0,
-    ),
-  )
-
-  useEffect(() => {
-    if (!reviewData?.profile_image_url) {
-      setProfileImageUrl(undefined)
-      return
-    }
-    getProfileImage(
-      { file_path: reviewData.profile_image_url },
-      {
-        onSuccess: (data) => setProfileImageUrl(data?.url ?? ''),
-      },
-    )
-  }, [reviewData?.profile_image_url, getProfileImage])
-
-  useEffect(() => {
-    if (!ticketData?.ticket_image_url) {
-      setTicketImageUrl(undefined)
-      return
-    }
-    const match =
-      ticketData?.ticket_image_url?.match(/dynamic\/[\w-]+\.\w+/)?.[0]
-
-    getTicketImage(
-      { file_path: match },
-      {
-        onSuccess: (data) => setTicketImageUrl(data?.url ?? ''),
-      },
-    )
-  }, [ticketData?.ticket_image_url, getTicketImage])
+  }, [isError, error, unlockReview, reviewId, refetch, router.back])
 
   // 로딩 또는 데이터 없음
-  if (isReviewLoading || !reviewData) {
+  if (isReviewLoading || !reviewData || user?.id !== reviewData?.user_id) {
     return (
       <Screen
         header={
@@ -267,42 +198,10 @@ export default function ReviewDetail() {
   return (
     <Screen
       header={
-        <Header>
-          <Header.Left>
-            <Icon
-              name="ArrowLeft"
-              onPress={router.back}
-              size={24}
-              className="text-white"
-            />
-          </Header.Left>
-          <Header.Center>후기글</Header.Center>
-          <Header.Right>
-            <Dropdown.Root>
-              <Dropdown.Trigger>
-                <Icon name="More" size={24} className="text-white" />
-              </Dropdown.Trigger>
-              <Dropdown.Content position="left">
-                {reviewData.is_my_review ? (
-                  <>
-                    <Dropdown.Item
-                      onPress={() => router.push(`/review-edit/${params.id}`)}
-                    >
-                      수정
-                    </Dropdown.Item>
-                    <Dropdown.Item variant="destructive" onPress={handleDelete}>
-                      삭제
-                    </Dropdown.Item>
-                  </>
-                ) : (
-                  <Dropdown.Item variant="destructive" onPress={handleReport}>
-                    신고
-                  </Dropdown.Item>
-                )}
-              </Dropdown.Content>
-            </Dropdown.Root>
-          </Header.Right>
-        </Header>
+        <ReviewDetailHeader
+          isMyReview={reviewData.is_my_review}
+          reviewId={reviewId}
+        />
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -358,12 +257,12 @@ export default function ReviewDetail() {
             {/* 티켓 카드 */}
             {ticketData && (
               <TicketBook
-                posterUrl={ticketImageUrl!}
-                title={`${ticketData.musical_title} ${ticketData.location}`}
-                date={ticketData.viewed_date?.replace(/-/g, '.') ?? ''}
-                theaterseat={`${ticketData.floor}층 ${ticketData.zone}구역 ${ticketData.col}열 ${ticketData.number}번`}
+                posterUrl={ticketImageUrl as string}
+                title={`${ticketData?.musical_title} ${ticketData?.location}`}
+                date={ticketData?.viewed_date?.replace(/-/g, '.') ?? ''}
+                theaterseat={`${ticketData?.floor}층 ${ticketData?.zone}구역 ${ticketData?.col}열 ${ticketData?.number}번`}
                 attendees={
-                  ticketData.actors?.map((actor) => actor.name).join(' ') ?? ''
+                  ticketData?.actors?.map((actor) => actor.name).join(' ') ?? ''
                 }
               />
             )}

@@ -31,7 +31,7 @@ export default function ReviewWriteStep5() {
     resolver: zodResolver(step5Schema),
     mode: 'onChange',
     defaultValues: {
-      facilityQuality: 'GOOD',
+      facilityQuality: 1,
       facilityQualityReason: '',
     },
   })
@@ -39,13 +39,18 @@ export default function ReviewWriteStep5() {
   const selectedQuality = form.watch('facilityQuality')
 
   const handleQualitySelect = (value: 'GOOD' | 'AVERAGE' | 'POOR') => {
-    form.setValue('facilityQuality', value, { shouldValidate: true })
+    const index = facilityQualityOptions.findIndex((opt) => opt.value === value)
+    if (index !== -1) {
+      form.setValue('facilityQuality', index + 1, { shouldValidate: true })
+    }
   }
 
   const handleNext = () => {
     const values = form.getValues()
     setData({
-      facilityQuality: values.facilityQuality,
+      facilityQuality: facilityQualityOptions.map((el) => el.value)[
+        values.facilityQuality - 1
+      ],
       facilityQualityReason: values.facilityQualityReason,
     })
     router.push('/review-write/step6')
@@ -66,7 +71,9 @@ export default function ReviewWriteStep5() {
         <Col gap={20}>
           <ReviewOptions
             options={facilityQualityOptions}
-            value={selectedQuality}
+            value={
+              facilityQualityOptions.map((el) => el.value)[selectedQuality - 1]
+            }
             onSelect={handleQualitySelect}
           />
 

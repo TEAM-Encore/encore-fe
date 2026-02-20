@@ -16,11 +16,11 @@ export function InsufficientPointDialog({
   const router = useRouter()
 
   const handleConfirm = () => {
-    // router.push('/point-guide')
+    router.replace('/mypage/point/guide')
   }
 
   const handleCancel = () => {
-    router.push('/')
+    router.back()
   }
 
   return (

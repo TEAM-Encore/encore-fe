@@ -1,4 +1,4 @@
-import { Image, Pressable, View } from 'react-native'
+import { ActivityIndicator, Image, Pressable, View } from 'react-native'
 import { cn } from '@/utils/cn'
 import { Icon } from './common/icons/Icon'
 import { Flex } from './common/ui/Flex'
@@ -16,6 +16,7 @@ type AvatarProps = {
     camera: string
     cameraIcon: number
   }
+  loading?: boolean
 }
 
 const sizeConfig = {
@@ -51,6 +52,7 @@ export function Avatar({
   size = 'large',
   className,
   config,
+  loading,
 }: AvatarProps) {
   const avatarConfig = config ?? sizeConfig[size]
 
@@ -70,8 +72,19 @@ export function Avatar({
 
   if (onUpload) {
     return (
-      <Pressable className="active:opacity-80" onPress={onUpload}>
+      <Pressable className="relative active:opacity-80" onPress={onUpload}>
         {content}
+        {loading && (
+          <Flex
+            center
+            className={cn(
+              'absolute inset-0 z-10 rounded-full bg-black/40',
+              avatarConfig.container,
+            )}
+          >
+            <ActivityIndicator color="white" size="small" />
+          </Flex>
+        )}
         <Flex
           center
           className={cn(

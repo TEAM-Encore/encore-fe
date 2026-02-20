@@ -14,5 +14,6 @@ export const userQueries = {
     queryOptions({
       queryKey: userKeys.myInfo(),
       queryFn: () => api().getMyInfo(),
+      select: (data) => data.data,
     }),
 }

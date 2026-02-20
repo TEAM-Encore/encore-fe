@@ -24,7 +24,6 @@ import { QualityDropdown } from '@/components/QualityDropdown'
 import { RatingSlider } from '@/components/RatingSlider'
 import { SeatViewImageGrid } from '@/components/SeatViewImageGrid'
 import { FormTextField } from '@/components/TextField'
-import { TicketCard } from '@/components/TicketCard'
 import { toast } from '@/components/Toaster'
 
 type ReviewEditFormType = z.infer<typeof reviewEditSchema>
@@ -41,14 +40,14 @@ export default function ReviewEdit() {
   const reviewId = params.id ? Number(params.id) : 0
 
   const { data: review } = useQuery(reviewQueries.getReview(reviewId))
-  const { data: viewImageResponse } = useQuery(reviewQueries.getViewImage())
+  const { data: viewImageResponse, refetch } = useQuery(
+    reviewQueries.getViewImages(),
+  )
   const { data: tickets } = useQuery(
     ticketQueries.getTicketDetail(
       (review?.ticket as ReviewDetailTicket)?.ticket_id ?? 0,
     ),
   )
-  const { data, refetch } = useQuery(reviewQueries.getViewImage())
-
   const { mutate: getProfileImage } = imageMutations.getViewImage()
   const { mutate: updateReview } = reviewMutations.updateReview()
   const { mutate: getTicketImage } = imageMutations.getViewImage()
@@ -78,12 +77,12 @@ export default function ReviewEdit() {
 
   const images = useMemo(() => {
     return (
-      data?.view_images?.map((img) => ({
+      viewImageResponse?.view_images?.map((img) => ({
         id: String(img.id ?? ''),
         url: img.url ?? '',
       })) ?? []
     )
-  }, [data])
+  }, [viewImageResponse?.view_images])
 
   const form = useForm<ReviewEditFormType>({
     resolver: zodResolver(reviewEditSchema),
@@ -123,8 +122,8 @@ export default function ReviewEdit() {
   const handleCancel = () => router.back()
 
   const handleSave = () => {
+    form.trigger()
     const values = form.getValues()
-    console.log(values)
     updateReview(
       {
         reviewId,
@@ -411,9 +410,11 @@ export default function ReviewEdit() {
             </Col>
           </Col>
 
-          <Text variant="caption" className="mt-8 text-center text-gray-06">
-            리뷰에 대한 권리는 작성자에게 있으며 무단 사용을 금지합니다.
-            개인적인 후기는 하나의 감상평으로 참고해주세요.
+          <Text
+            variant="caption"
+            className="my-8 whitespace-pre-line text-center text-gray-06 leading-normal"
+          >
+            {`리뷰에 대한 권리는 작성자에게 있으며 무단 사용을 금지합니다.\n개인적인 후기는 하나의 감상평으로 참고해주세요.`}
           </Text>
         </Col>
       </ScrollView>

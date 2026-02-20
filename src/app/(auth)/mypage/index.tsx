@@ -40,9 +40,9 @@ export default function Index() {
     <Screen header={<MypageHeader />} scrollable>
       <Spacing size={21} />
       <Col gap={20} center>
-        <Avatar imageUrl={data?.data?.profile_image_url ?? undefined} />
+        <Avatar imageUrl={data?.profile_image_url ?? undefined} />
         <Text variant="subhead-04" color="gray-01">
-          {data?.data?.nickname ?? ''}
+          {data?.nickname ?? ''}
         </Text>
       </Col>
       <Spacing size={10} />

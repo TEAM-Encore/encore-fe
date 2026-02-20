@@ -7,6 +7,7 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
 import { Header } from '@/components/Header'
+import { toast } from '@/components/Toaster'
 import { useAuth, useUser } from '@/providers/user.provider'
 import MypageSection from '../_components/MypageSection'
 
@@ -71,6 +72,8 @@ export default function Account() {
                             logout()
                             router.replace('/login')
                           },
+                          onError: (e) =>
+                            toast.show(e?.message ?? '회원 탈퇴에 실패했어요.'),
                         })
                       }}
                     />

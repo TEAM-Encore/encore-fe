@@ -36,9 +36,9 @@ export function QualityDropdown({
         {labels.map((label, index) => (
           <Dropdown.Item
             key={label}
-            onPress={() => onChange(index)}
+            onPress={() => onChange(index + 1)}
             className={
-              index === value
+              index === value - 1
                 ? `bg-sub-04/80 ${index === 0 ? 'rounded-t-[8px]' : ''} ${index === labels.length - 1 ? 'rounded-b-[8px]' : ''}`
                 : ''
             }
