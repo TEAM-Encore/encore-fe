@@ -23,7 +23,7 @@ import { type LoginFormType, loginSchema } from './schema'
 
 const NICKNAME_ERROR = {
   LENGTH: '닉네임은 3자 이상 6자 이내여야 합니다.',
-  DUPLICATE: '이미 존재하는 닉네임입니다.',
+  DUPLICATE: '중복되는 닉네임이에요',
   INVALID_CHAR: '닉네임은 한글, 영어, 숫자만 가능합니다.',
   WHITESPACE: '닉네임에 공백이 포함되면 안됩니다.',
   INVALID: '유효하지 않은 닉네임입니다.',
