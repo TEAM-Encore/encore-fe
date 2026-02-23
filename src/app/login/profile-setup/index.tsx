@@ -169,7 +169,7 @@ export default function ProfileSetup({
           <Avatar
             imageUrl={profile_image_url || undefined}
             onUpload={async () => {
-              if (imageFilePath) {
+              if (imageFilePath !== 'dynamic/encore-default.png') {
                 overlay.open((o) => (
                   <GalleryBottomSheet
                     {...o}
