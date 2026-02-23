@@ -3,6 +3,7 @@ import { BottomSheet } from '@/components/BottomSheet'
 import { Icon } from '@/components/common/icons/Icon'
 import { Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
+import { toast } from '@/components/Toaster'
 import { uploadImage } from '@/utils/upload-image'
 
 interface GalleryBottomSheetProps extends OverlayProps {
@@ -29,23 +30,29 @@ function GalleryBottomSheet({
           className="h-[68px] bg-white py-5"
           onPress={async () => {
             props.unmount?.()
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ['images'],
-              allowsEditing: false,
-              aspect: [1, 1],
-              quality: 1,
-              base64: true,
-            })
+            try {
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: false,
+                aspect: [1, 1],
+                quality: 0.8,
+              })
 
-            if (result.canceled || !result.assets?.length) return
+              if (result.canceled || !result.assets?.length) return
 
-            const asset = result?.assets?.[0] as ImagePicker.ImagePickerAsset
-            onUploadStart?.()
-            const res = await uploadImage(asset)
-            const { url, file_path } = res
-            onUploadEnd?.()
-            if (url && file_path) {
-              onOpenGallery(url, file_path)
+              const asset = result.assets[0]
+              onUploadStart?.()
+              try {
+                const res = await uploadImage(asset)
+                const { url, file_path } = res
+                if (url && file_path) {
+                  onOpenGallery(url, file_path)
+                }
+              } finally {
+                onUploadEnd?.()
+              }
+            } catch {
+              toast.show('이미지를 불러오는 데 실패했습니다.')
             }
           }}
         >
