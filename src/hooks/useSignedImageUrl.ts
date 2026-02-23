@@ -1,20 +1,14 @@
-import { useEffect, useState } from 'react'
-import { imageMutations } from '@/apis/image/mutations'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '@/api'
 
 export function useSignedImageUrl(filePath: string | undefined) {
-  const [url, setUrl] = useState<string | undefined>()
-  const { mutate } = imageMutations.getViewImage()
+  const { data } = useQuery({
+    queryKey: ['signedImageUrl', filePath],
+    queryFn: () => api().viewImage({ file_path: filePath as string }),
+    enabled: !!filePath,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  })
 
-  useEffect(() => {
-    if (!filePath) {
-      setUrl(undefined)
-      return
-    }
-    mutate(
-      { file_path: filePath },
-      { onSuccess: (data) => setUrl(data?.url ?? '') },
-    )
-  }, [filePath, mutate])
-
-  return url
+  return data?.url
 }
