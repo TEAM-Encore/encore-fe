@@ -57,7 +57,7 @@ export default function Index() {
           if (isInitialized === 'true') {
             router.replace('/')
           } else {
-            router.push('/login/profile-setup')
+            router.replace('/login/profile-setup')
           }
         }
       }

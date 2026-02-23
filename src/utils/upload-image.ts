@@ -11,8 +11,12 @@ export const uploadImage = async (
 }> => {
   const blob = await fetch(asset.uri).then((res) => res.blob())
 
+  const imageName =
+    asset.fileName ??
+    `image_${Date.now()}.${asset.mimeType?.split('/')[1] ?? 'jpeg'}`
+
   const { file_path, upload_url } = await api().saveImage({
-    image_name: asset.fileName as string,
+    image_name: imageName,
   })
 
   if (!upload_url) return { url: undefined, file_path, dynamicUrl: undefined }
@@ -31,7 +35,7 @@ export const uploadImage = async (
       return {
         url,
         file_path,
-        dynamicUrl: url.split(`${CONFIG.S3_BASE_URL}/`)[1].split('?')[0],
+        dynamicUrl: url.split(`${CONFIG.S3_BASE_URL}/`)[1]?.split('?')[0],
       }
     }
   }
