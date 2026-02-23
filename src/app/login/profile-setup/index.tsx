@@ -84,9 +84,14 @@ export default function ProfileSetup({
             setValidatedNickname(nick_name)
           }
         },
-        onError: (error: any) => {
+        onError: (error) => {
           setValidatedNickname(undefined)
-          form.setError('nick_name', { message: error.error?.message })
+          const err = error as Error & {
+            error?: { code?: number; message?: string }
+          }
+          form.setError('nick_name', {
+            message: err.error?.message ?? err.message,
+          })
         },
       },
     )
@@ -169,7 +174,10 @@ export default function ProfileSetup({
           <Avatar
             imageUrl={profile_image_url || undefined}
             onUpload={async () => {
-              if (imageFilePath !== 'dynamic/encore-default.png') {
+              if (
+                imageFilePath &&
+                imageFilePath !== 'dynamic/encore-default.png'
+              ) {
                 overlay.open((o) => (
                   <GalleryBottomSheet
                     {...o}
@@ -213,8 +221,8 @@ export default function ProfileSetup({
                   } finally {
                     setIsUploadingImage(false)
                   }
-                } catch (e) {
-                  toast.show(`이미지 오류: ${(e as Error)?.message ?? e}`)
+                } catch {
+                  toast.show('이미지를 불러오는 데 실패했습니다.')
                 }
               }
             }}
