@@ -1,10 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import * as ImagePicker from 'expo-image-picker'
 import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { ActivityIndicator, Keyboard, Pressable, StatusBar } from 'react-native'
+import { api } from '@/api'
 import { userKeys } from '@/apis/user/keys'
 import { userMutations } from '@/apis/user/mutations'
 import { userQueries } from '@/apis/user/queries'
@@ -18,6 +20,7 @@ import { Header } from '@/components/Header'
 import { FormTextField } from '@/components/TextField'
 import { toast } from '@/components/Toaster'
 import { queryClient } from '@/lib/query-client'
+import { uploadImage } from '@/utils/upload-image'
 import GalleryBottomSheet from './components/GalleryBottomSheet'
 import { type LoginFormType, loginSchema } from './schema'
 
@@ -159,22 +162,56 @@ export default function ProfileSetup({
         <Flex center>
           <Avatar
             imageUrl={profile_image_url || undefined}
-            onUpload={() =>
-              overlay.open((o) => (
-                <GalleryBottomSheet
-                  {...o}
-                  onOpenGallery={(url, file_path) => {
-                    setImageFilePath(file_path)
-                    form.setValue('profile_image_url', url)
-                  }}
-                  onDeletePhoto={() =>
-                    form.setValue('profile_image_url', undefined)
+            onUpload={async () => {
+              if (imageFilePath) {
+                overlay.open((o) => (
+                  <GalleryBottomSheet
+                    {...o}
+                    onOpenGallery={(url, file_path) => {
+                      setImageFilePath(file_path)
+                      form.setValue('profile_image_url', url)
+                    }}
+                    onDeletePhoto={async () => {
+                      const defaultPath = 'dynamic/encore-default.png'
+                      setImageFilePath(defaultPath)
+                      try {
+                        const { url } = await api().viewImage({
+                          file_path: defaultPath,
+                        })
+                        if (url) form.setValue('profile_image_url', url)
+                      } catch {
+                        form.setValue('profile_image_url', undefined)
+                      }
+                    }}
+                    onUploadStart={() => setIsUploadingImage(true)}
+                    onUploadEnd={() => setIsUploadingImage(false)}
+                  />
+                ))
+              } else {
+                try {
+                  const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ['images'],
+                    allowsEditing: false,
+                    aspect: [1, 1],
+                    quality: 0.8,
+                  })
+                  if (result.canceled || !result.assets?.length) return
+                  const asset = result.assets[0]
+                  setIsUploadingImage(true)
+                  try {
+                    const res = await uploadImage(asset)
+                    if (res.url && res.file_path) {
+                      setImageFilePath(res.file_path)
+                      form.setValue('profile_image_url', res.url)
+                    }
+                  } finally {
+                    setIsUploadingImage(false)
                   }
-                  onUploadStart={() => setIsUploadingImage(true)}
-                  onUploadEnd={() => setIsUploadingImage(false)}
-                />
-              ))
-            }
+                } catch (e) {
+                  toast.show(`이미지 오류: ${(e as Error)?.message ?? e}`)
+                }
+              }
+            }}
             loading={isUploadingImage}
           />
         </Flex>

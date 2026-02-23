@@ -35,7 +35,7 @@ export const uploadImage = async (
       return {
         url,
         file_path,
-        dynamicUrl: url.split(`${CONFIG.S3_BASE_URL}/`)[1].split('?')[0],
+        dynamicUrl: url.split(`${CONFIG.S3_BASE_URL}/`)[1]?.split('?')[0],
       }
     }
   }
