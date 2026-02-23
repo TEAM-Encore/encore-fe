@@ -21,14 +21,6 @@ import { queryClient } from '@/lib/query-client'
 import GalleryBottomSheet from './components/GalleryBottomSheet'
 import { type LoginFormType, loginSchema } from './schema'
 
-const NICKNAME_ERROR = {
-  LENGTH: '닉네임은 3자 이상 6자 이내여야 합니다.',
-  DUPLICATE: '중복되는 닉네임이에요',
-  INVALID_CHAR: '닉네임은 한글, 영어, 숫자만 가능합니다.',
-  WHITESPACE: '닉네임에 공백이 포함되면 안됩니다.',
-  INVALID: '유효하지 않은 닉네임입니다.',
-} as const
-
 interface ProfileSetupProps {
   isFromAccount?: boolean
 }
@@ -84,25 +76,8 @@ export default function ProfileSetup({
         onSuccess: (data) => {
           if (!data?.data?.is_valid) return
         },
-        onError: (error: {
-          timestamp?: string
-          code?: number
-          message?: string
-        }) => {
-          const { code } = error
-          let message: string = NICKNAME_ERROR.INVALID
-
-          if (code === 3003) {
-            message = NICKNAME_ERROR.DUPLICATE
-          } else if (code === 3002 || code === 3004 || code === 3005) {
-            message = NICKNAME_ERROR.LENGTH
-          } else if (code === 3006) {
-            message = NICKNAME_ERROR.INVALID_CHAR
-          } else if (code === 3007) {
-            message = NICKNAME_ERROR.WHITESPACE
-          }
-
-          form.setError('nick_name', { message })
+        onError: (error: any) => {
+          form.setError('nick_name', { message: error.error?.message })
         },
       },
     )
