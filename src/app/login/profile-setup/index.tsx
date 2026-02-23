@@ -4,7 +4,7 @@ import { router } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import { useEffect, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
-import { ActivityIndicator, StatusBar } from 'react-native'
+import { ActivityIndicator, Keyboard, Pressable, StatusBar } from 'react-native'
 import { userKeys } from '@/apis/user/keys'
 import { userMutations } from '@/apis/user/mutations'
 import { userQueries } from '@/apis/user/queries'
@@ -54,7 +54,7 @@ export default function ProfileSetup({
         nick_name: myInfo.nickname ?? '',
       })
     }
-  }, [myInfo])
+  }, [myInfo, form.reset])
 
   const profile_image_url = useWatch({
     control: form.control,
@@ -146,87 +146,89 @@ export default function ProfileSetup({
   }
 
   return (
-    <Screen
-      header={
-        <Header>
-          <Header.Back />
-          <Header.Center>
-            {isFromAccount ? '프로필 수정' : '회원가입'}
-          </Header.Center>
-        </Header>
-      }
-      fixedButton={
-        <Button
-          disabled={!form.formState.isValid || isPending}
-          onPress={onSubmit}
-        >
-          {buttonText()}
-        </Button>
-      }
-    >
-      <StatusBar barStyle="light-content" />
-      {!isFromAccount && (
-        <>
-          <Spacing size={24} />
-          <Col>
-            <Text variant="subhead-05" color="gray-01">
-              프로필만 설정하면
-            </Text>
-            <Text variant="subhead-05" color="gray-01">
-              바로 시작할 수 있어요!
-            </Text>
-          </Col>
-        </>
-      )}
-
-      <Spacing size={24} />
-      <Flex center>
-        <Avatar
-          imageUrl={profile_image_url || undefined}
-          onUpload={() =>
-            overlay.open((o) => (
-              <GalleryBottomSheet
-                {...o}
-                onOpenGallery={(url, file_path) => {
-                  setImageFilePath(file_path)
-                  form.setValue('profile_image_url', url)
-                }}
-                onDeletePhoto={() =>
-                  form.setValue('profile_image_url', undefined)
-                }
-                onUploadStart={() => setIsUploadingImage(true)}
-                onUploadEnd={() => setIsUploadingImage(false)}
-              />
-            ))
-          }
-          loading={isUploadingImage}
-        />
-      </Flex>
-
-      <Spacing size={32} />
-      <FormTextField
-        control={form.control}
-        name="nick_name"
-        style={{ paddingRight: 90 }}
-        placeholder="닉네임을 입력해주세요."
-        placeholderTextColor="#8B8B8B"
-        rightElement={() => (
-          <Col
-            align="center"
-            justify="center"
-            className="h-7 w-[64px] rounded-[4px] bg-primary-04"
-            onPress={onCheckNickname}
+    <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
+      <Screen
+        header={
+          <Header>
+            <Header.Back />
+            <Header.Center>
+              {isFromAccount ? '프로필 수정' : '회원가입'}
+            </Header.Center>
+          </Header>
+        }
+        fixedButton={
+          <Button
+            disabled={!form.formState.isValid || isPending}
+            onPress={onSubmit}
           >
-            {isCheckingNickname ? (
-              <ActivityIndicator />
-            ) : (
-              <Text variant="caption" color="gray-12">
-                중복 확인
+            {buttonText()}
+          </Button>
+        }
+      >
+        <StatusBar barStyle="light-content" />
+        {!isFromAccount && (
+          <>
+            <Spacing size={24} />
+            <Col>
+              <Text variant="subhead-05" color="gray-01">
+                프로필만 설정하면
               </Text>
-            )}
-          </Col>
+              <Text variant="subhead-05" color="gray-01">
+                바로 시작할 수 있어요!
+              </Text>
+            </Col>
+          </>
         )}
-      />
-    </Screen>
+
+        <Spacing size={24} />
+        <Flex center>
+          <Avatar
+            imageUrl={profile_image_url || undefined}
+            onUpload={() =>
+              overlay.open((o) => (
+                <GalleryBottomSheet
+                  {...o}
+                  onOpenGallery={(url, file_path) => {
+                    setImageFilePath(file_path)
+                    form.setValue('profile_image_url', url)
+                  }}
+                  onDeletePhoto={() =>
+                    form.setValue('profile_image_url', undefined)
+                  }
+                  onUploadStart={() => setIsUploadingImage(true)}
+                  onUploadEnd={() => setIsUploadingImage(false)}
+                />
+              ))
+            }
+            loading={isUploadingImage}
+          />
+        </Flex>
+
+        <Spacing size={32} />
+        <FormTextField
+          control={form.control}
+          name="nick_name"
+          style={{ paddingRight: 90 }}
+          placeholder="닉네임을 입력해주세요."
+          placeholderTextColor="#8B8B8B"
+          rightElement={() => (
+            <Col
+              align="center"
+              justify="center"
+              className="h-7 w-[64px] rounded-[4px] bg-primary-04"
+              onPress={onCheckNickname}
+            >
+              {isCheckingNickname ? (
+                <ActivityIndicator />
+              ) : (
+                <Text variant="caption" color="gray-12">
+                  중복 확인
+                </Text>
+              )}
+            </Col>
+          )}
+        />
+      </Screen>
+    </Pressable>
   )
 }
