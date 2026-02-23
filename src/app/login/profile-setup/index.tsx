@@ -12,6 +12,7 @@ import { userMutations } from '@/apis/user/mutations'
 import { userQueries } from '@/apis/user/queries'
 import { Avatar } from '@/components/Avatar'
 import { Button } from '@/components/Button'
+import { CheckCircle } from '@/components/common/icons/svgs'
 import { Col, Flex } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
@@ -64,6 +65,8 @@ export default function ProfileSetup({
     useMutation(userMutations.validateUserNickname())
   const { mutate: setupComplete } = useMutation(userMutations.setupComplete())
 
+  const [validatedNickname, setValidatedNickname] = useState<string>()
+  const isNicknameValid = validatedNickname === nick_name && !!nick_name
   const [isUploadingImage, setIsUploadingImage] = useState(false)
   const [imageFilePath, setImageFilePath] = useState<string | undefined>(
     undefined,
@@ -77,9 +80,12 @@ export default function ProfileSetup({
       { nickname: nick_name },
       {
         onSuccess: (data) => {
-          if (!data?.data?.is_valid) return
+          if (data?.data?.is_valid) {
+            setValidatedNickname(nick_name)
+          }
         },
         onError: (error: any) => {
+          setValidatedNickname(undefined)
           form.setError('nick_name', { message: error.error?.message })
         },
       },
@@ -223,22 +229,26 @@ export default function ProfileSetup({
           style={{ paddingRight: 90 }}
           placeholder="닉네임을 입력해주세요."
           placeholderTextColor="#8B8B8B"
-          rightElement={() => (
-            <Col
-              align="center"
-              justify="center"
-              className="h-7 w-[64px] rounded-[4px] bg-primary-04"
-              onPress={onCheckNickname}
-            >
-              {isCheckingNickname ? (
-                <ActivityIndicator />
-              ) : (
-                <Text variant="caption" color="gray-12">
-                  중복 확인
-                </Text>
-              )}
-            </Col>
-          )}
+          rightElement={() =>
+            isNicknameValid ? (
+              <CheckCircle width={24} height={24} className="text-primary-04" />
+            ) : (
+              <Col
+                align="center"
+                justify="center"
+                className="h-7 w-[64px] rounded-[4px] bg-primary-04"
+                onPress={onCheckNickname}
+              >
+                {isCheckingNickname ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text variant="caption" color="gray-12">
+                    중복 확인
+                  </Text>
+                )}
+              </Col>
+            )
+          }
         />
       </Screen>
     </Pressable>
