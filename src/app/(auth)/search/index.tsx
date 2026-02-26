@@ -28,6 +28,7 @@ export default function SearchIndex() {
 
   useFocusEffect(
     useCallback(() => {
+      setSearchValue('')
       refetch()
     }, [refetch]),
   )
