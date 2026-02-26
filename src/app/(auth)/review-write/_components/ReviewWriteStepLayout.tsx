@@ -1,6 +1,7 @@
 import { router, usePathname } from 'expo-router'
 import { overlay } from 'overlay-kit'
 import type { ReactNode } from 'react'
+import { Keyboard, Pressable } from 'react-native'
 import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Dialog } from '@/components/Dialog'
@@ -50,6 +51,7 @@ export function ReviewWriteStepLayout({
   }
 
   return (
+    <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
     <Screen
       header={
         <StepHeader
@@ -79,5 +81,6 @@ export function ReviewWriteStepLayout({
         children
       )}
     </Screen>
+    </Pressable>
   )
 }
