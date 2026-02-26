@@ -7,10 +7,10 @@ export const schema = z.object({
   /**
    * 관람좌석
    */
-  floor: z.string().min(1),
-  zone: z.string().min(1),
-  col: z.string().min(1),
-  seatNumber: z.string().min(1),
+  floor: z.string().optional(),
+  zone: z.string().optional(),
+  col: z.string().optional(),
+  seatNumber: z.string().optional(),
 
   /**
    * 관람 일정
