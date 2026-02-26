@@ -147,7 +147,7 @@ export default function ProfileSetup({
         }
         fixedButton={
           <Button
-            disabled={!form.formState.isValid || isPending}
+            disabled={!form.formState.isValid || isPending || (isFromAccount && !form.formState.isDirty)}
             onPress={onSubmit}
           >
             {buttonText()}
