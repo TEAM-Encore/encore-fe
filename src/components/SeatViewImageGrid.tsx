@@ -1,5 +1,6 @@
+import { Image } from 'expo-image'
 import { useCallback, useState } from 'react'
-import { Image, Pressable, View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
@@ -69,7 +70,8 @@ export function SeatViewImageGrid({
                     <Image
                       source={{ uri: image.url }}
                       className="h-full w-full"
-                      resizeMode="cover"
+                      contentFit="cover"
+                      cachePolicy="memory-disk"
                       onLoad={() => handleImageLoad(image.id)}
                     />
                   </View>
