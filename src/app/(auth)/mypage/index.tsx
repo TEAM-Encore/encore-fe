@@ -51,6 +51,7 @@ export default function Index() {
         <MypageSection title="외부 링크" items={MOCK.externalLinks} />
         <MypageSection title="앱 정보" items={MOCK.appInfo} />
       </Col>
+      <Spacing size={32} />
     </Screen>
   )
 }
