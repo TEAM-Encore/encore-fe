@@ -21,6 +21,7 @@ type Options<T, P extends Params = Params> = {
   fn: (params: P) => Promise<CommonResponse<T> | InternalResponse<T>>
   params: Omit<P, 'cursor'>
   enabled?: boolean
+  staleTime?: number
 }
 
 function getPagePayload<T>(page: unknown): InternalResponse<T> | undefined {
@@ -35,6 +36,7 @@ export const useInfiniteList = <T, P extends Params = Params>({
   fn,
   params,
   enabled = true,
+  staleTime,
 }: Options<T, P>) => {
   const query = useInfiniteQuery({
     queryKey: [queryKey, params],
@@ -45,6 +47,7 @@ export const useInfiniteList = <T, P extends Params = Params>({
       return payload?.nextCursor ?? payload?.next_cursor ?? undefined
     },
     enabled,
+    staleTime,
   })
 
   const rows =
