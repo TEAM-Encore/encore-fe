@@ -56,7 +56,8 @@ export default function ReviewWriteStep4() {
     router.push('/review-write/step5')
   }
 
-  const isFormValid = form.formState.isValid
+  const soundQualityReason = form.watch('soundQualityReason')
+  const isFormValid = soundQualityReason.length >= 20
 
   return (
     <ReviewWriteStepLayout
