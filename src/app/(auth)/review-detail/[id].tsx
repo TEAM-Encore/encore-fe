@@ -129,38 +129,54 @@ export default function ReviewDetail() {
 
   useEffect(() => {
     if ((myInfo?.point ?? 0) < 5 && myInfo !== undefined) {
-      overlay.open((ov) => <InsufficientPointDialog {...ov} />)
+      overlay.open((ov) => <InsufficientPointDialog {...ov} />, {
+        overlayId: 'insufficient-point',
+      })
+      return () => {
+        overlay.unmount('insufficient-point')
+      }
     }
   }, [myInfo])
 
   useEffect(() => {
-    if (isError && (error as any)?.error?.message === '리뷰가 잠겨있습니다.') {
-      overlay.open((ov) => (
-        <Dialog
-          {...ov}
-          title="5포인트를 사용할까요?"
-          description="사용한 포인트는 되돌릴 수 없어요."
-          top="확인"
-          bottom="취소"
-          onTopPress={() => {
-            unlockReview(
-              { reviewId },
-              {
-                onSuccess: () => {
-                  toast.show('5포인트로 리뷰를 해제했어요.')
-                  refetch()
+    if (
+      isError &&
+      (error as any)?.error?.message === '리뷰가 잠겨있습니다.' &&
+      myInfo !== undefined &&
+      (myInfo?.point ?? 0) >= 5
+    ) {
+      overlay.open(
+        (ov) => (
+          <Dialog
+            {...ov}
+            title="5포인트를 사용할까요?"
+            description="사용한 포인트는 되돌릴 수 없어요."
+            top="확인"
+            bottom="취소"
+            onTopPress={() => {
+              unlockReview(
+                { reviewId },
+                {
+                  onSuccess: () => {
+                    toast.show('5포인트로 리뷰를 해제했어요.')
+                    refetch()
+                  },
+                  onError: (e) => {
+                    toast.show(e?.message ?? '잠금 해제에 실패했어요.')
+                  },
                 },
-                onError: (e) => {
-                  toast.show(e?.message ?? '잠금 해제에 실패했어요.')
-                },
-              },
-            )
-          }}
-          onBottomPress={() => router.back()}
-        />
-      ))
+              )
+            }}
+            onBottomPress={() => router.back()}
+          />
+        ),
+        { overlayId: 'unlock-review' },
+      )
+      return () => {
+        overlay.unmount('unlock-review')
+      }
     }
-  }, [isError, error, unlockReview, reviewId, refetch, router.back])
+  }, [isError, error, unlockReview, reviewId, refetch, router.back, myInfo])
 
   // 로딩 또는 데이터 없음
   if (isReviewLoading || !reviewData || user?.id !== reviewData?.user_id) {
