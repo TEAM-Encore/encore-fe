@@ -11,12 +11,14 @@ export function Screen({
   className,
   fixedButton,
   scrollable,
+  scrollRef,
 }: PropsWithStrictChildren<{
   header?: React.ReactNode
   bg?: ColorKeys
   className?: string
   fixedButton?: React.ReactNode
   scrollable?: boolean
+  scrollRef?: React.Ref<ScrollView>
 }>) {
   const insets = useSafeAreaInsets()
 
@@ -32,7 +34,10 @@ export function Screen({
     >
       {header}
       {scrollable ? (
-        <ScrollView contentContainerClassName={cn('px-5', className)}>
+        <ScrollView
+          ref={scrollRef}
+          contentContainerClassName={cn('px-5', className)}
+        >
           {children}
         </ScrollView>
       ) : (

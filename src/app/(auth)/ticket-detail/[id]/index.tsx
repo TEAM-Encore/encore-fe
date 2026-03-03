@@ -1,14 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
-import * as ImagePicker from 'expo-image-picker'
-import { useLocalSearchParams } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useEffect, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Image, TextInput } from 'react-native'
-import { FlatList } from 'react-native-gesture-handler'
-import { imageMutations } from '@/apis/image/mutations'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -16,6 +5,7 @@ import { Calendar } from '@/components/Calendar'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Screen } from '@/components/common/ui/Screen'
+import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
 import { Dropdown } from '@/components/Dropdown'
@@ -27,24 +17,34 @@ import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
 import { cn } from '@/utils/cn'
 import { uploadImage } from '@/utils/upload-image'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import * as ImagePicker from 'expo-image-picker'
+import { router, useLocalSearchParams } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Image, type LayoutChangeEvent, TextInput } from 'react-native'
+import { FlatList, type ScrollView } from 'react-native-gesture-handler'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
   const { id } = useLocalSearchParams()
-
+  const scrollRef = useRef<ScrollView>(null)
+  const actorSectionY = useRef(0)
   const { mutate: updateTicket } = ticketMutations.updateTicket()
 
   const [actorKeyword, setActorKeyword] = useState('')
 
   const { data } = useSuspenseQuery(ticketQueries.getTicketDetail(Number(id)))
+  const { mutate: deleteTicket } = ticketMutations.deleteTicket()
 
   const { data: actors } = useQuery(
     ticketQueries.searchActors({
       keyword: useDebounce(actorKeyword, 150),
     }),
   )
-
-  const { mutate: getTicketImage } = imageMutations.getViewImage()
 
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
@@ -73,19 +73,6 @@ export default function TicketDetailScreen() {
 
   const [isEdit, setIsEdit] = useState(false)
 
-  useEffect(() => {
-    if (!data?.ticket_image_url) {
-      form.setValue('ticketImageUrl', undefined)
-      return
-    }
-    const match = data?.ticket_image_url?.match(/dynamic\/[\w-]+\.\w+/)?.[0]
-
-    getTicketImage(
-      { file_path: match },
-      { onSuccess: (data) => form.setValue('ticketImageUrl', data?.url ?? '') },
-    )
-  }, [data?.ticket_image_url, getTicketImage])
-
   const onDelete = async () => {
     overlay.open(({ isOpen, close }) => (
       <Dialog
@@ -95,6 +82,20 @@ export default function TicketDetailScreen() {
         description="삭제한 내역은 되돌릴 수 없어요."
         top="확인"
         bottom="취소"
+        onTopPress={() => {
+          close()
+          deleteTicket(
+            {
+              ticketId: Number(id),
+            },
+            {
+              onSuccess: () => {
+                toast.show('관람 내역을 삭제했어요.')
+                router.back()
+              },
+            },
+          )
+        }}
       />
     ))
   }
@@ -118,9 +119,9 @@ export default function TicketDetailScreen() {
                 onTicketImageUpload()
               }}
             >
-              <Icon name="Image" size={24} />
+              <Icon name="Image" size={24} className="text-black" />
               <Text variant="subhead-03" color="gray-09">
-                갤러리에서 사진 변경하기
+                갤러리에서 변경하기
               </Text>
             </Row>
             {type === 'EDIT' && (
@@ -132,7 +133,7 @@ export default function TicketDetailScreen() {
                   onClose()
                 }}
               >
-                <Icon name="Delete" size={24} color="sub-alert" />
+                <Icon name="Delete" size={24} className="text-sub-alert" />
                 <Text variant="subhead-03" color="sub-alert">
                   사진 삭제하기
                 </Text>
@@ -185,6 +186,7 @@ export default function TicketDetailScreen() {
     <Screen
       className="pt-[15px] pb-[170px]"
       scrollable
+      scrollRef={scrollRef}
       header={
         <Header>
           {isEdit ? (
@@ -393,10 +395,24 @@ export default function TicketDetailScreen() {
             티켓 사진
           </Text>
           <Flex center className="relative h-[176px] rounded-lg bg-gray-10">
-            {isEdit ? (
+            {form.watch('ticketImageUrl') && (
+              <Image
+                source={{ uri: form.watch('ticketImageUrl') }}
+                className="absolute inset-0 z-10 size-full rounded-lg"
+                resizeMode="cover"
+              />
+            )}
+            {!isEdit && !form.watch('ticketImageUrl') && (
+              <Text
+                variant="caption"
+                color="gray-07"
+                className="text-center"
+              >{`티켓 사진을 업로드하고\n후기를 작성해보세요!`}</Text>
+            )}
+            {isEdit && (
               <Col
-                gap={4}
-                align="center"
+                center
+                className="absolute inset-0 z-10 bg-gray-12/40"
                 onPress={() => {
                   if (form.watch('ticketImageUrl')) {
                     handleTicketSheet('EDIT')
@@ -410,21 +426,15 @@ export default function TicketDetailScreen() {
                   {form.watch('ticketImageUrl') ? '사진 변경' : '사진 추가'}
                 </Text>
               </Col>
-            ) : form.watch('ticketImageUrl') ? (
-              <Image
-                source={{ uri: form.watch('ticketImageUrl') }}
-                className="absolute inset-0 z-10 h-full w-full rounded-lg"
-                resizeMode="cover"
-              />
-            ) : (
-              <Text
-                variant="caption"
-                color="gray-07"
-              >{`티켓 사진을 업로드하고\n후기를 작성해보세요!`}</Text>
             )}
           </Flex>
         </Col>
-        <Col gap={12}>
+        <Col
+          gap={12}
+          onLayout={(event: LayoutChangeEvent) => {
+            actorSectionY.current = event.nativeEvent.layout.y
+          }}
+        >
           <Text variant="subhead-02" color="gray-01">
             배우
           </Text>
@@ -435,6 +445,12 @@ export default function TicketDetailScreen() {
               height="48"
               onDelete={() => {
                 setActorKeyword('')
+              }}
+              onPress={() => {
+                scrollRef.current?.scrollTo({
+                  y: actorSectionY.current,
+                  animated: true,
+                })
               }}
               placeholder="추가할 배우 검색하기"
             />
@@ -533,6 +549,7 @@ export default function TicketDetailScreen() {
           )}
         </Col>
       </Col>
+      <Spacing size={400} />
     </Screen>
   )
 }

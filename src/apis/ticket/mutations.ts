@@ -28,4 +28,14 @@ export const ticketMutations = {
       },
     })
   },
+
+  deleteTicket: () => {
+    return useMutation({
+      mutationFn: ({ ticketId }: { ticketId: number }) =>
+        api().deletePost(ticketId),
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ticketKeys.ticketList.all() })
+      },
+    })
+  },
 }
