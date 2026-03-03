@@ -16,6 +16,7 @@ export const reviewQueries = {
       queryKey: reviewKeys.viewImage(),
       queryFn: () => api().viewImage1(),
       select: (data) => data.data,
+      staleTime: 5 * 60 * 1000,
     }),
 
   getReview: (reviewId: number) =>

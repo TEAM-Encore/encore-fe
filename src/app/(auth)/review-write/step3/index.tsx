@@ -76,7 +76,7 @@ export default function ReviewWriteStep3() {
         </Button>
       }
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Col gap={20}>
           <SeatViewImageGrid
             images={images}

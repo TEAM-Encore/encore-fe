@@ -56,7 +56,8 @@ export default function ReviewWriteStep5() {
     router.push('/review-write/step6')
   }
 
-  const isFormValid = form.formState.isValid
+  const facilityQualityReason = form.watch('facilityQualityReason')
+  const isFormValid = facilityQualityReason.length >= 20
 
   return (
     <ReviewWriteStepLayout
@@ -67,7 +68,7 @@ export default function ReviewWriteStep5() {
         </Button>
       }
     >
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Col gap={20}>
           <ReviewOptions
             options={facilityQualityOptions}

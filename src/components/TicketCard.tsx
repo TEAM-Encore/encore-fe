@@ -3,6 +3,7 @@ import { ActivityIndicator, Image, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
+import { useSignedImageUrl } from '@/hooks/useSignedImageUrl'
 
 type TicketCardProps = {
   posterUrl?: string
@@ -27,21 +28,25 @@ export function TicketCard({
   actorName = '',
 }: TicketCardProps) {
   const { floor = '', zone = '', col = '', number = '' } = seat ?? {}
+  const isRelativePath = posterUrl && !posterUrl.startsWith('http')
+  const signedUrl = useSignedImageUrl(isRelativePath ? posterUrl : undefined)
+  const imageUrl = isRelativePath ? signedUrl : posterUrl
   const [isImageLoaded, setIsImageLoaded] = useState(false)
 
   return (
     <Row className="gap-4 rounded-lg bg-gray-11 p-4">
       {/* 포스터 썸네일 */}
       <View className="h-[92px] w-[66px] items-center justify-center overflow-hidden rounded-[4.79px]">
-        {posterUrl && (
+        {imageUrl && (
           <Image
-            source={{ uri: posterUrl }}
+            source={{ uri: imageUrl }}
             className="h-full w-full"
             resizeMode="cover"
             onLoad={() => setIsImageLoaded(true)}
+            onError={() => setIsImageLoaded(true)}
           />
         )}
-        {(!posterUrl || !isImageLoaded) && (
+        {(!imageUrl || !isImageLoaded) && (
           <ActivityIndicator color="white" className="absolute" />
         )}
       </View>

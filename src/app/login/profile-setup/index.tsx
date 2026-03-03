@@ -251,7 +251,7 @@ export default function ProfileSetup({
                   <ActivityIndicator />
                 ) : (
                   <Text variant="caption" color="gray-12">
-                    중복 확인
+                    닉네임 확인
                   </Text>
                 )}
               </Col>

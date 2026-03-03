@@ -25,6 +25,7 @@ export default function Reviews() {
     params: {
       sort: 'id',
     },
+    staleTime: 2 * 60 * 1000,
   })
 
   return (
@@ -70,6 +71,10 @@ export default function Reviews() {
             )}
             onEndReached={fetchNextPage}
             onEndReachedThreshold={0.5}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={true}
             ListFooterComponent={
               queryProps.isFetchingNextPage ? (
                 <ActivityIndicator style={{ padding: 20 }} />

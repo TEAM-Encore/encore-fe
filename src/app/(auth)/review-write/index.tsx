@@ -36,6 +36,7 @@ export default function ReviewWritePage() {
       <FlatList
         data={tickets}
         keyExtractor={(item) => String(item.id)}
+        keyboardShouldPersistTaps="handled"
         renderItem={({ item }) => {
           const title = item.location
             ? `${item.musical_title} [${item.location}]`

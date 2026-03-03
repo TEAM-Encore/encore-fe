@@ -172,7 +172,7 @@ export default function ReviewWriteStep6() {
           }}
         />
       </View>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
         <Spacing size={10} />
         <Col gap={19}>
           <Col gap={7} className="rounded-lg bg-gray-11 p-4">

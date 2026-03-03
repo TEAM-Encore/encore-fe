@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { ActivityIndicator, Image, View } from 'react-native'
+import { ActivityIndicator, Image } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Col, Flex, Row } from '@/components/common/ui/Flex'
 import { Text } from '@/components/common/ui/Text'
+import { useSignedImageUrl } from '@/hooks/useSignedImageUrl'
 import { cn } from '@/utils/cn'
 import Marquee from './Marquee'
 
@@ -25,6 +26,9 @@ export function TicketBook({
   active = false,
   ...rest
 }: TicketBookProps) {
+  const isRelativePath = posterUrl && !posterUrl.startsWith('http')
+  const signedUrl = useSignedImageUrl(isRelativePath ? posterUrl : undefined)
+  const imageUrl = isRelativePath ? signedUrl : posterUrl
   const [isImageLoaded, setIsImageLoaded] = useState(false)
 
   return (
@@ -45,17 +49,16 @@ export function TicketBook({
         justify="center"
         className="h-[92px] w-[66px] overflow-hidden rounded-[4.79px] bg-white/5"
       >
-        {posterUrl && (
+        {imageUrl && (
           <Image
-            source={
-              typeof posterUrl === 'string' ? { uri: posterUrl } : posterUrl
-            }
+            source={{ uri: imageUrl }}
             onLoad={() => setIsImageLoaded(true)}
+            onError={() => setIsImageLoaded(true)}
             className="h-full w-full"
             resizeMode="cover"
           />
         )}
-        {(!posterUrl || !isImageLoaded) && (
+        {(!imageUrl || !isImageLoaded) && (
           <ActivityIndicator color="white" className="absolute" />
         )}
       </Flex>
