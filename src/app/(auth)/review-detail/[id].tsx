@@ -68,9 +68,10 @@ export default function ReviewDetail() {
 
   useEffect(() => {
     if (isError && !isReviewLoading) {
-      toast.show(
-        (error as any)?.error?.message || '리뷰를 불러오는데 실패했습니다.',
-      )
+      const message = (error as any)?.error?.message
+      if (message !== '리뷰가 잠겨있습니다.') {
+        toast.show(message || '리뷰를 불러오는데 실패했습니다.')
+      }
     }
   }, [isError, isReviewLoading, error])
 
@@ -85,6 +86,13 @@ export default function ReviewDetail() {
   )?.url
 
   const [isViewImageLoading, setIsViewImageLoading] = useState(true)
+  const [insufficientDismissed, setInsufficientDismissed] = useState(false)
+  const [unlockDismissed, setUnlockDismissed] = useState(false)
+
+  const isReviewLocked =
+    isError && (error as any)?.error?.message === '리뷰가 잠겨있습니다.'
+  const hasInsufficientPoints = myInfo !== undefined && (myInfo?.point ?? 0) < 5
+  const hasEnoughPoints = myInfo !== undefined && (myInfo?.point ?? 0) >= 5
 
   const handleLike = () => {
     if (reviewData?.is_my_review) {
@@ -127,56 +135,42 @@ export default function ReviewDetail() {
   const profileImageUrl = useSignedImageUrl(reviewData?.profile_image_url)
   const ticketImageUrl = useSignedImageUrl(ticketData?.ticket_image_url)
 
-  useEffect(() => {
-    if ((myInfo?.point ?? 0) < 5 && myInfo !== undefined) {
-      overlay.open((ov) => <InsufficientPointDialog {...ov} />, {
-        overlayId: 'insufficient-point',
-      })
-      return () => {
-        overlay.unmount('insufficient-point')
-      }
-    }
-  }, [myInfo])
+  const dismissInsufficient = () => setInsufficientDismissed(true)
+  const dismissUnlock = () => setUnlockDismissed(true)
 
-  useEffect(() => {
-    if (
-      isError &&
-      (error as any)?.error?.message === '리뷰가 잠겨있습니다.' &&
-      myInfo !== undefined &&
-      (myInfo?.point ?? 0) >= 5
-    ) {
-      overlay.open(
-        (ov) => (
-          <Dialog
-            {...ov}
-            title="5포인트를 사용할까요?"
-            description="사용한 포인트는 되돌릴 수 없어요."
-            top="확인"
-            bottom="취소"
-            onTopPress={() => {
-              unlockReview(
-                { reviewId },
-                {
-                  onSuccess: () => {
-                    toast.show('5포인트로 리뷰를 해제했어요.')
-                    refetch()
-                  },
-                  onError: (e) => {
-                    toast.show(e?.message ?? '잠금 해제에 실패했어요.')
-                  },
-                },
-              )
-            }}
-            onBottomPress={() => router.back()}
-          />
-        ),
-        { overlayId: 'unlock-review' },
-      )
-      return () => {
-        overlay.unmount('unlock-review')
-      }
-    }
-  }, [isError, error, unlockReview, reviewId, refetch, router.back, myInfo])
+  const dialogs = (
+    <>
+      <InsufficientPointDialog
+        isOpen={!insufficientDismissed && hasInsufficientPoints}
+        close={dismissInsufficient}
+        unmount={dismissInsufficient}
+      />
+      <Dialog
+        isOpen={!unlockDismissed && isReviewLocked && hasEnoughPoints}
+        close={dismissUnlock}
+        unmount={dismissUnlock}
+        title="5포인트를 사용할까요?"
+        description="사용한 포인트는 되돌릴 수 없어요."
+        top="확인"
+        bottom="취소"
+        onTopPress={() => {
+          unlockReview(
+            { reviewId },
+            {
+              onSuccess: () => {
+                toast.show('5포인트로 리뷰를 해제했어요.')
+                refetch()
+              },
+              onError: (e) => {
+                toast.show(e?.message ?? '잠금 해제에 실패했어요.')
+              },
+            },
+          )
+        }}
+        onBottomPress={() => router.back()}
+      />
+    </>
+  )
 
   // 로딩 또는 데이터 없음
   if (isReviewLoading || !reviewData || user?.id !== reviewData?.user_id) {
@@ -207,6 +201,7 @@ export default function ReviewDetail() {
             </Text>
           )}
         </View>
+        {dialogs}
       </Screen>
     )
   }
@@ -393,6 +388,7 @@ export default function ReviewDetail() {
           </Text>
         </Col>
       </ScrollView>
+      {dialogs}
     </Screen>
   )
 }
