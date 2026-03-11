@@ -147,7 +147,11 @@ export default function ProfileSetup({
         }
         fixedButton={
           <Button
-            disabled={!form.formState.isValid || isPending}
+            disabled={
+              !form.formState.isValid ||
+              isPending ||
+              (isFromAccount && !form.formState.isDirty)
+            }
             onPress={onSubmit}
           >
             {buttonText()}
@@ -251,7 +255,7 @@ export default function ProfileSetup({
                   <ActivityIndicator />
                 ) : (
                   <Text variant="caption" color="gray-12">
-                    닉네임 확인
+                    중복 확인
                   </Text>
                 )}
               </Col>

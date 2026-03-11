@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FlatList } from 'react-native'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { Ticket } from '@/components/common/icons/svgs'
@@ -8,6 +8,7 @@ import { Col } from '@/components/common/ui/Flex'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { TicketBook } from '@/components/TicketBook'
+import { toast } from '@/components/Toaster'
 import SortSelector from './SortSelector'
 
 const tabs = [
@@ -22,11 +23,17 @@ export default function TicketbookStep() {
     tabs[0].value,
   )
 
-  const { data: tickets } = useQuery(
+  const { data: tickets, error } = useQuery(
     ticketQueries.getTicketList({
       dateRange: tabs.find((tab) => tab.value === sort)?.num ?? '30',
     }),
   )
+
+  useEffect(() => {
+    if (error) {
+      toast.show(error.message)
+    }
+  }, [error])
 
   return (
     <>
@@ -47,12 +54,12 @@ export default function TicketbookStep() {
                 item.actors?.map((actor) => actor.name as string).join(' ') ??
                 ''
               }
-              posterUrl={item.musical_image_url ?? ''}
+              posterUrl={item.ticket_image_url ?? ''}
               onPress={() => {
                 if (!item.id) return
-
                 router.push(`/ticket-detail/${item.id}`)
               }}
+              isImageUploaded={item.is_ticket_uploaded}
             />
           )}
         />

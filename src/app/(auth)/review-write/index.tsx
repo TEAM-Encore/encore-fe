@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FlatList } from 'react-native'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { Button } from '@/components/Button'
 import { TicketBook } from '@/components/TicketBook'
+import { toast } from '@/components/Toaster'
 import { useReviewWriteContext } from '@/contexts/ReviewWriteContext'
 import { ReviewWriteStepLayout } from './_components/ReviewWriteStepLayout'
 
@@ -13,7 +14,7 @@ export default function ReviewWritePage() {
   const { setData } = useReviewWriteContext()
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null)
 
-  const { data } = useQuery(ticketQueries.getUnreviewedTicketList())
+  const { data, error } = useQuery(ticketQueries.getUnreviewedTicketList())
   const tickets = data?.data ?? []
 
   const handleNext = () => {
@@ -22,6 +23,12 @@ export default function ReviewWritePage() {
       router.push('/review-write/step2')
     }
   }
+
+  useEffect(() => {
+    if (error) {
+      toast.show(error.message)
+    }
+  }, [error])
 
   return (
     <ReviewWriteStepLayout
@@ -34,7 +41,7 @@ export default function ReviewWritePage() {
     >
       {/* Ticket List */}
       <FlatList
-        data={tickets}
+        data={tickets.filter((item) => item.is_ticket_uploaded === true)}
         keyExtractor={(item) => String(item.id)}
         keyboardShouldPersistTaps="handled"
         renderItem={({ item }) => {
@@ -50,7 +57,7 @@ export default function ReviewWritePage() {
               date={item.viewed_date?.replace(/-/g, '.') ?? ''}
               theaterseat={`${item.floor}층 ${item.zone}구역 ${item.col}열 ${item.number}번`}
               attendees={attendees}
-              posterUrl={item.musical_image_url ?? ''}
+              posterUrl={item.ticket_image_url ?? ''}
               active={selectedTicketId === item.id}
               onPress={() => item.id && setSelectedTicketId(item.id)}
             />

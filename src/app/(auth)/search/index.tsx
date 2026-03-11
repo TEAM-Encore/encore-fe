@@ -19,6 +19,7 @@ export default function SearchIndex() {
   const handleSearch = () => {
     if (searchValue.trim()) {
       router.push(`/search/result?q=${encodeURIComponent(searchValue)}`)
+      setSearchValue('')
     }
   }
 

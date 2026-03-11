@@ -16,6 +16,7 @@ type TicketBookProps = {
   onPress?: () => void
   className?: string
   active?: boolean
+  isImageUploaded?: boolean
 }
 
 export function TicketBook({
@@ -24,11 +25,9 @@ export function TicketBook({
   onPress,
   className,
   active = false,
+  isImageUploaded,
   ...rest
 }: TicketBookProps) {
-  const isRelativePath = posterUrl && !posterUrl.startsWith('http')
-  const signedUrl = useSignedImageUrl(isRelativePath ? posterUrl : undefined)
-  const imageUrl = isRelativePath ? signedUrl : posterUrl
   const [isImageLoaded, setIsImageLoaded] = useState(false)
 
   return (
@@ -49,16 +48,16 @@ export function TicketBook({
         justify="center"
         className="h-[92px] w-[66px] overflow-hidden rounded-[4.79px] bg-white/5"
       >
-        {imageUrl && (
+        {posterUrl && (
           <Image
-            source={{ uri: imageUrl }}
+            source={{ uri: posterUrl }}
             onLoad={() => setIsImageLoaded(true)}
             onError={() => setIsImageLoaded(true)}
             className="h-full w-full"
             resizeMode="cover"
           />
         )}
-        {(!imageUrl || !isImageLoaded) && (
+        {(!posterUrl || !isImageLoaded) && (
           <ActivityIndicator color="white" className="absolute" />
         )}
       </Flex>

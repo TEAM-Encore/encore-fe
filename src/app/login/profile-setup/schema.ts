@@ -4,7 +4,6 @@ export const loginSchema = z.object({
   profile_image_url: z.string().optional(),
   nick_name: z
     .string()
-    .min(3, '닉네임을 입력해주세요')
     .max(6, '6글자가 초과되었어요.')
     .regex(
       /^[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z0-9]+$/,

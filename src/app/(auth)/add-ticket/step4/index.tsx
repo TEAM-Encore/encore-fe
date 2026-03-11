@@ -1,3 +1,9 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as ImagePicker from 'expo-image-picker'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useForm } from 'react-hook-form'
+import { Image } from 'react-native'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button } from '@/components/Button'
@@ -11,12 +17,6 @@ import { toast } from '@/components/Toaster'
 import { useUser } from '@/providers/user.provider'
 import { cn } from '@/utils/cn'
 import { uploadImage } from '@/utils/upload-image'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as ImagePicker from 'expo-image-picker'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useForm } from 'react-hook-form'
-import { Image } from 'react-native'
 import AddTicketHeader from '../components/AddTicketHeader'
 import { type FormType, schema } from '../schema'
 
@@ -96,23 +96,31 @@ export default function Step4() {
   const onSubmit = form.handleSubmit(async (data) => {
     if (!user?.id) return
 
-    mutate({
-      musical_id: data.musicalId,
-      viewed_date: data.viewedDate,
-      show_time: `${data.showTime.hour}:${data.showTime.minute}`,
-      floor: Number(data.floor),
-      zone: data.zone,
-      col: data.col,
-      number: data.seatNumber,
-      actor_ids: data.actors.map((actor) => actor.id),
-      ticket_image_url: data.noTicketUpload
-        ? undefined
-        : `/${data.dynamicTicketImageUrl}`,
-    })
+    console.log(data)
 
-    toast.show('티켓을 등록했어요.')
-
-    router.dismissTo('/')
+    mutate(
+      {
+        musical_id: data.musicalId,
+        viewed_date: data.viewedDate,
+        show_time: `${data.showTime.hour}:${data.showTime.minute}`,
+        floor: Number(data.floor),
+        zone: data.zone,
+        col: data.col,
+        number: data.seatNumber,
+        actor_ids: data.actors.map((actor) => actor.id),
+        ticket_image_url: data.noTicketUpload ? undefined : data.ticketImageUrl,
+      },
+      {
+        onSuccess: () => {
+          toast.show('티켓을 등록했어요.')
+          router.dismissTo('/')
+        },
+        onError: (error) => {
+          toast.show(error.message)
+          console.error(error)
+        },
+      },
+    )
   })
 
   return (
