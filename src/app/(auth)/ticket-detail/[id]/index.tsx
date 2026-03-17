@@ -1,3 +1,13 @@
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
+import dayjs from 'dayjs'
+import * as ImagePicker from 'expo-image-picker'
+import { router, useLocalSearchParams } from 'expo-router'
+import { overlay } from 'overlay-kit'
+import { useRef, useState } from 'react'
+import { Controller, useForm } from 'react-hook-form'
+import { Image, type LayoutChangeEvent, TextInput } from 'react-native'
+import { FlatList, type ScrollView } from 'react-native-gesture-handler'
 import { ticketMutations } from '@/apis/ticket/mutations'
 import { ticketQueries } from '@/apis/ticket/queries'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -17,16 +27,6 @@ import { toast } from '@/components/Toaster'
 import { useDebounce } from '@/hooks/useDebounce'
 import { cn } from '@/utils/cn'
 import { uploadImage } from '@/utils/upload-image'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useQuery, useSuspenseQuery } from '@tanstack/react-query'
-import dayjs from 'dayjs'
-import * as ImagePicker from 'expo-image-picker'
-import { router, useLocalSearchParams } from 'expo-router'
-import { overlay } from 'overlay-kit'
-import { useRef, useState } from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import { Image, type LayoutChangeEvent, TextInput } from 'react-native'
-import { FlatList, type ScrollView } from 'react-native-gesture-handler'
 import { type FormType, schema } from '../../add-ticket/schema'
 
 export default function TicketDetailScreen() {
@@ -184,7 +184,7 @@ export default function TicketDetailScreen() {
 
   return (
     <Screen
-      className="pt-[15px] pb-[170px]"
+      className="pt-[15px]"
       scrollable
       scrollRef={scrollRef}
       header={
@@ -549,7 +549,7 @@ export default function TicketDetailScreen() {
           )}
         </Col>
       </Col>
-      <Spacing size={400} />
+      <Spacing size={100} />
     </Screen>
   )
 }
