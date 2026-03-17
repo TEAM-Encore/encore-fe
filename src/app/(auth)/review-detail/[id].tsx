@@ -22,7 +22,6 @@ import { Screen } from '@/components/common/ui/Screen'
 import { Spacing } from '@/components/common/ui/Spacing'
 import { Text } from '@/components/common/ui/Text'
 import { Dialog } from '@/components/Dialog'
-import { Header } from '@/components/Header'
 import { InfoBadge } from '@/components/InfoBadge'
 import { InfoDialog } from '@/components/InfoDialog'
 import { InsufficientPointDialog } from '@/components/InsufficientPointDialog'
@@ -30,57 +29,54 @@ import { RatingSlider } from '@/components/RatingSlider'
 import { ReviewInfoSection } from '@/components/ReviewInfoSection'
 import { toast } from '@/components/Toaster'
 import { FACILITY_LEVEL_LABELS, SOUND_LEVEL_LABELS } from '@/constants/review'
+import { useReviews } from '@/hooks/useReviews'
 import { useSignedImageUrl } from '@/hooks/useSignedImageUrl'
 import { queryClient } from '@/lib/query-client'
-import { useUser } from '@/providers/user.provider'
 import { colors } from '@/styles/color'
 import { cn } from '@/utils/cn'
 import { showPointRewardToast } from '@/utils/pointReward'
 import ReviewDetailHeader from './_components/ReviewDetailHeader'
 
-type ReviewDetailTicket = {
-  image_url: string
-  ticket_id: number
-  ticket_title: string
-  viewed_date: string
-}
+type ReviewApiError = Error & { error?: { message?: string } }
 
 export default function ReviewDetail() {
   const router = useRouter()
   const params = useLocalSearchParams<{ id: string; from?: string }>()
   const reviewId = params.id ? Number(params.id) : 0
 
-  const user = useUser()
-
   const {
-    data: reviewData,
-    isLoading: isReviewLoading,
-    isError,
-    error,
-    refetch,
-  } = useQuery(reviewQueries.getReview(reviewId))
-
-  const ticket = reviewData?.ticket as ReviewDetailTicket
+    reviewData,
+    reviewQueryProps,
+    rating,
+    sound,
+    facility,
+    view,
+    isMyReview,
+    ticket,
+  } = useReviews(reviewId)
 
   const { data: myInfo } = useQuery(userQueries.getMyInfo())
   const { data: ticketData } = useQuery(
     ticketQueries.getTicketDetail(ticket?.ticket_id),
   )
-
   const { data: viewImageResponse } = useQuery(reviewQueries.getViewImages())
 
   useEffect(() => {
-    if (isError && !isReviewLoading) {
-      const message = (error as any)?.error?.message
+    if (reviewQueryProps.isError && !reviewQueryProps.isLoading) {
+      const message = (reviewQueryProps.error as ReviewApiError)?.error?.message
       if (message !== '리뷰가 잠겨있습니다.') {
         toast.show(message || '리뷰를 불러오는데 실패했습니다.')
       }
     }
-  }, [isError, isReviewLoading, error])
+  }, [reviewQueryProps])
 
   const { mutate: unlockReview } = reviewMutations.unlockReview()
   const { mutate: likeReview, isPending: isPendingLike } =
     reviewMutations.likeReview()
+
+  const [isViewImageLoading, setIsViewImageLoading] = useState(true)
+  const [insufficientDismissed, setInsufficientDismissed] = useState(false)
+  const [unlockDismissed, setUnlockDismissed] = useState(false)
 
   const isLiked = reviewData?.like_res?.like_type !== 'NONE'
   const viewImageUrl = viewImageResponse?.view_images?.find(
@@ -88,21 +84,14 @@ export default function ReviewDetail() {
       img.level === Number(reviewData?.review_data_res?.view?.view_level) + 1,
   )?.url
 
-  const [isViewImageLoading, setIsViewImageLoading] = useState(true)
-  const [insufficientDismissed, setInsufficientDismissed] = useState(false)
-  const [unlockDismissed, setUnlockDismissed] = useState(false)
-
   const isReviewLocked =
-    isError && (error as any)?.error?.message === '리뷰가 잠겨있습니다.'
+    reviewQueryProps.isError &&
+    (reviewQueryProps.error as ReviewApiError)?.error?.message ===
+      '리뷰가 잠겨있습니다.'
   const hasInsufficientPoints = myInfo !== undefined && (myInfo?.point ?? 0) < 5
   const hasEnoughPoints = myInfo !== undefined && (myInfo?.point ?? 0) >= 5
 
   const handleLike = () => {
-    if (reviewData?.user_id === user?.id) {
-      toast.show('자신의 글에 좋아요를 누를 수 없어요.')
-      return
-    }
-
     if (isPendingLike) return
 
     likeReview(
@@ -133,91 +122,83 @@ export default function ReviewDetail() {
     ))
   }
 
-  const rating = reviewData?.review_data_res?.rating
-  const sound = reviewData?.review_data_res?.sound
-  const facility = reviewData?.review_data_res?.facility
-  const view = reviewData?.review_data_res?.view
-
   const profileImageUrl = useSignedImageUrl(reviewData?.profile_image_url)
 
   const dismissInsufficient = () => setInsufficientDismissed(true)
   const dismissUnlock = () => setUnlockDismissed(true)
 
-  const dialogs = (
-    <>
-      <InsufficientPointDialog
-        isOpen={!insufficientDismissed && hasInsufficientPoints}
-        close={dismissInsufficient}
-        unmount={dismissInsufficient}
-      />
-      <Dialog
-        isOpen={!unlockDismissed && isReviewLocked && hasEnoughPoints}
-        close={dismissUnlock}
-        unmount={dismissUnlock}
-        title="5포인트를 사용할까요?"
-        description="사용한 포인트는 되돌릴 수 없어요."
-        top="확인"
-        bottom="취소"
-        onTopPress={() => {
-          unlockReview(
-            { reviewId },
-            {
-              onSuccess: () => {
-                toast.show('5포인트로 리뷰를 해제했어요.')
-                refetch()
-              },
-              onError: (e) => {
-                toast.show(e?.message ?? '잠금 해제에 실패했어요.')
-              },
-            },
-          )
-        }}
-        onBottomPress={() => router.back()}
-      />
-    </>
-  )
-
   // 로딩 또는 데이터 없음
-  if (isReviewLoading || !reviewData) {
+  if (reviewQueryProps.isLoading && !reviewData) {
     return (
       <Screen
         header={
-          <Header>
-            <Header.Left>
-              <Icon
-                name="ArrowLeft"
-                onPress={router.back}
-                size={24}
-                className="text-white"
-              />
-            </Header.Left>
-            <Header.Center>후기글</Header.Center>
-          </Header>
+          <ReviewDetailHeader isMyReview={isMyReview} reviewId={reviewId} />
         }
       >
         <View className="flex-1 items-center justify-center">
-          {isReviewLoading ? (
+          {reviewQueryProps.isLoading ? (
             <ActivityIndicator size="large" color={colors.primary['04']} />
           ) : (
             <Text variant="body-01" className="text-gray-06">
-              {(error as any)?.error?.message === '리뷰가 잠겨있습니다.'
+              {(reviewQueryProps.error as ReviewApiError | null)?.error
+                ?.message === '리뷰가 잠겨있습니다.'
                 ? '리뷰가 잠겨있습니다.'
                 : '후기를 찾을 수 없습니다.'}
             </Text>
           )}
         </View>
-        {dialogs}
       </Screen>
     )
   }
 
+  if (!isMyReview && !reviewData?.is_unlocked)
+    return (
+      <Screen
+        header={
+          <ReviewDetailHeader isMyReview={isMyReview} reviewId={reviewId} />
+        }
+      >
+        <View className="flex-1 items-center justify-center">
+          <InsufficientPointDialog
+            isOpen={!insufficientDismissed && hasInsufficientPoints}
+            close={dismissInsufficient}
+            unmount={dismissInsufficient}
+          />
+          <Dialog
+            isOpen={!unlockDismissed && isReviewLocked && hasEnoughPoints}
+            close={dismissUnlock}
+            unmount={dismissUnlock}
+            title="5포인트를 사용할까요?"
+            description="사용한 포인트는 되돌릴 수 없어요."
+            top="확인"
+            bottom="취소"
+            onTopPress={() => {
+              unlockReview(
+                { reviewId },
+                {
+                  onSuccess: () => {
+                    toast.show('5포인트로 리뷰를 해제했어요.')
+                    reviewQueryProps.refetch()
+                  },
+                  onError: (e) => {
+                    toast.show(e?.message ?? '잠금 해제에 실패했어요.')
+                  },
+                },
+              )
+            }}
+            onBottomPress={() => router.back()}
+          />
+          <Text variant="body-01" className="text-gray-06">
+            리뷰가 잠겨있습니다.
+          </Text>
+        </View>
+      </Screen>
+    )
+
   return (
     <Screen
       header={
-        <ReviewDetailHeader
-          isMyReview={reviewData.user_id === user?.id}
-          reviewId={reviewId}
-        />
+        <ReviewDetailHeader isMyReview={isMyReview} reviewId={reviewId} />
       }
     >
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -225,9 +206,9 @@ export default function ReviewDetail() {
           {/* 제목 & 좋아요 */}
           <Row align="center" className="mt-6 justify-between">
             <Text variant="subhead-05" className="flex-1 text-gray-01">
-              {reviewData.title}
+              {reviewData?.title}
             </Text>
-            {reviewData.user_id !== user?.id && (
+            {!isMyReview && (
               <Pressable onPress={handleLike}>
                 <Row align="center" gap={2}>
                   <Icon
@@ -240,11 +221,10 @@ export default function ReviewDetail() {
                   />
                   <Text
                     variant="body-02"
-                    color={
-                      reviewData.user_id === user?.id ? 'gray-11' : 'gray-01'
-                    }
+                    color={isMyReview ? 'gray-11' : 'gray-01'}
                   >
-                    {reviewData.like_res?.like_count_res?.total_like_count ?? 0}
+                    {reviewData?.like_res?.like_count_res?.total_like_count ??
+                      0}
                   </Text>
                 </Row>
               </Pressable>
@@ -265,7 +245,7 @@ export default function ReviewDetail() {
                   }}
                 />
                 <Text variant="body-02" className="text-gray-01">
-                  {reviewData.nick_name || '익명'}
+                  {reviewData?.nick_name || '익명'}
                 </Text>
               </Row>
             </Row>
@@ -309,7 +289,7 @@ export default function ReviewDetail() {
             <Spacing size={16} />
             {/* 총평 텍스트 */}
             <Text variant="body-long-01" color="gray-01" className="leading-6">
-              {reviewData.review_data_res?.rating?.rating_review ?? ''}
+              {reviewData?.review_data_res?.rating?.rating_review ?? ''}
             </Text>
             <Spacing size={20} />
             {/* 평점 슬라이더들 */}
@@ -397,7 +377,6 @@ export default function ReviewDetail() {
           </Text>
         </Col>
       </ScrollView>
-      {dialogs}
     </Screen>
   )
 }
