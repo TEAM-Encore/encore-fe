@@ -46,7 +46,7 @@ export function ReviewCard({
           {posterUrl ? (
             <Image
               source={posterUrl}
-              className="h-full w-full"
+              style={{ width: '100%', height: '100%' }}
               resizeMode="cover"
             />
           ) : null}

@@ -43,12 +43,12 @@ export function Dialog({
           <Col gap={12}>
             <Col gap={6} center>
               {title && (
-                <Text variant="subhead-03" color="gray-01">
+                <Text variant="subhead-03" color="gray-01" className="text-center">
                   {title}
                 </Text>
               )}
               {description && (
-                <Text variant="body-01" color="gray-07">
+                <Text variant="body-01" color="gray-07" className="text-center">
                   {description}
                 </Text>
               )}

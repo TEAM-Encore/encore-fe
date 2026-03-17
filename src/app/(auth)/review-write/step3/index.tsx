@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery } from '@tanstack/react-query'
+import { Image } from 'expo-image'
 import { useRouter } from 'expo-router'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { ScrollView } from 'react-native'
 import type { z } from 'zod'
@@ -25,6 +26,7 @@ export default function ReviewWriteStep3() {
   const { setData } = useReviewWriteContext()
   const { data, refetch } = useQuery(reviewQueries.getViewImages())
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const scrollRef = useRef<ScrollView>(null)
 
   const images = useMemo(() => {
     return (
@@ -34,6 +36,12 @@ export default function ReviewWriteStep3() {
       })) ?? []
     )
   }, [data])
+
+  useEffect(() => {
+    if (images.length > 0) {
+      Image.prefetch(images.map((img) => img.url))
+    }
+  }, [images])
 
   const form = useForm<Step3FormType>({
     resolver: zodResolver(step3Schema),
@@ -56,6 +64,7 @@ export default function ReviewWriteStep3() {
   }
 
   const handleNext = () => {
+    form.trigger()
     const values = form.getValues()
     setData({
       seatViewImage: values.seatViewImage,
@@ -76,7 +85,12 @@ export default function ReviewWriteStep3() {
         </Button>
       }
     >
-      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: 60 }}
+      >
         <Col gap={20}>
           <SeatViewImageGrid
             images={images}
@@ -91,6 +105,12 @@ export default function ReviewWriteStep3() {
             placeholder={`시야와 관련된 추가 의견을 작성해주세요.\n(최소 20자)`}
             as="textarea"
             className="p-4 text-body-02 placeholder:text-gray-06"
+            onFocus={() =>
+              setTimeout(
+                () => scrollRef.current?.scrollToEnd({ animated: true }),
+                300,
+              )
+            }
           />
         </Col>
       </ScrollView>

@@ -29,6 +29,9 @@ export function TicketBook({
   ...rest
 }: TicketBookProps) {
   const [isImageLoaded, setIsImageLoaded] = useState(false)
+  const isRelativePath = posterUrl && !posterUrl.startsWith('http')
+  const signedUrl = useSignedImageUrl(posterUrl)
+  const imageUrl = isRelativePath ? signedUrl : posterUrl
 
   return (
     <Flex
@@ -46,18 +49,18 @@ export function TicketBook({
       <Flex
         align="center"
         justify="center"
-        className="h-[92px] w-[66px] overflow-hidden rounded-[4.79px] bg-white/5"
+        className="h-[92px] w-[66px] overflow-hidden rounded-[4.79px]"
       >
-        {posterUrl && (
+        {imageUrl && (
           <Image
-            source={{ uri: posterUrl }}
+            source={{ uri: imageUrl }}
             onLoad={() => setIsImageLoaded(true)}
             onError={() => setIsImageLoaded(true)}
-            className="h-full w-full"
+            style={{ width: '100%', height: '100%' }}
             resizeMode="cover"
           />
         )}
-        {(!posterUrl || !isImageLoaded) && (
+        {(!imageUrl || !isImageLoaded) && (
           <ActivityIndicator color="white" className="absolute" />
         )}
       </Flex>
@@ -83,6 +86,7 @@ export function TicketBook({
                 : key === 'theaterseat'
                   ? 'Theaterseat'
                   : 'User'
+            if (key === 'theaterseat' && rest.theaterseat === '') return null
             return (
               <Row key={key} align="center" gap={6}>
                 <Icon

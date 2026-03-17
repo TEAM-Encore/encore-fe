@@ -1,4 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient'
+import { useRouter } from 'expo-router'
 import { ActivityIndicator, FlatList } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { api } from '@/api'
@@ -11,6 +12,7 @@ import { useInfiniteList } from '@/hooks/useInfiniteList'
 
 export default function Reviews() {
   const insets = useSafeAreaInsets()
+  const router = useRouter()
 
   const {
     rows: likes,
@@ -22,7 +24,7 @@ export default function Reviews() {
     fn: api().getMyLikedReviewList,
     params: {
       size: 3,
-      sort: 'like_count',
+      sort: 'id',
     },
   })
 
@@ -60,6 +62,11 @@ export default function Reviews() {
                 author={item.nickname ?? ''}
                 likes={item.like_count ?? 0}
                 hideImage
+                onPress={() =>
+                  router.push(
+                    `/review-detail/${item.review_id}?from=mypage-likes`,
+                  )
+                }
               />
             )}
             onEndReached={fetchNextPage}

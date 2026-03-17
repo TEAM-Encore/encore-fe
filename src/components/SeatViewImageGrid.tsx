@@ -1,5 +1,4 @@
 import { Image } from 'expo-image'
-import { useCallback, useState } from 'react'
 import { Pressable, View } from 'react-native'
 import { Icon } from '@/components/common/icons/Icon'
 import { Row } from '@/components/common/ui/Flex'
@@ -21,11 +20,6 @@ export function SeatViewImageGrid({
   images,
   className,
 }: SeatViewImageGridProps) {
-  const [loadedIds, setLoadedIds] = useState<Set<string>>(new Set())
-
-  const handleImageLoad = useCallback((imageId: string) => {
-    setLoadedIds((prev) => new Set(prev).add(imageId))
-  }, [])
 
   return (
     <View className={cn(className)}>
@@ -58,10 +52,7 @@ export function SeatViewImageGrid({
                   className="flex-1"
                 >
                   <View
-                    className={cn(
-                      'overflow-hidden rounded-[6px] bg-gray-10',
-                      !loadedIds.has(image.id) && 'animate-pulse',
-                    )}
+                    className="overflow-hidden rounded-[6px] bg-gray-10"
                     style={{
                       aspectRatio: 3 / 2,
                       opacity: selectedImage && !isSelected ? 0.2 : 1,
@@ -69,10 +60,10 @@ export function SeatViewImageGrid({
                   >
                     <Image
                       source={{ uri: image.url }}
-                      className="h-full w-full"
+                      style={{ width: '100%', height: '100%' }}
                       contentFit="cover"
                       cachePolicy="memory-disk"
-                      onLoad={() => handleImageLoad(image.id)}
+                      transition={300}
                     />
                   </View>
                 </Pressable>
