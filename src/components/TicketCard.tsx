@@ -40,7 +40,7 @@ export function TicketCard({
         {imageUrl && (
           <Image
             source={{ uri: imageUrl }}
-            className="h-full w-full"
+            style={{ width: '100%', height: '100%' }}
             resizeMode="cover"
             onLoad={() => setIsImageLoaded(true)}
             onError={() => setIsImageLoaded(true)}

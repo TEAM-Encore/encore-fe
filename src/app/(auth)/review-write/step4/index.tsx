@@ -68,7 +68,10 @@ export default function ReviewWriteStep4() {
         </Button>
       }
     >
-      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         <Col gap={20}>
           <ReviewOptions
             options={soundQualityOptions}

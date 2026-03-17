@@ -2,9 +2,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import type { ReviewCreateReq } from 'api'
 import { useRouter } from 'expo-router'
 import { overlay } from 'overlay-kit'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { ScrollView, View } from 'react-native'
+import { Keyboard, Platform, ScrollView, View } from 'react-native'
 import { reviewMutations } from '@/apis/review/mutations'
 import { Button } from '@/components/Button'
 import { Icon } from '@/components/common/icons/Icon'
@@ -115,7 +115,8 @@ export default function ReviewWriteStep6() {
       toast.show('10포인트를 획득했어요')
       router.push('/')
     } catch (e) {
-      toast.show((e as any)?.error?.message ?? '후기 등록에 실패했습니다.')
+      toast.show('후기 등록에 실패했습니다.')
+      console.log(e)
     }
   }
 
@@ -132,10 +133,29 @@ export default function ReviewWriteStep6() {
   const isFormValid = form.formState.isValid
   const isLoading = createReviewMutation.isPending
 
+  const scrollRef = useRef<ScrollView>(null)
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false)
   const [hideHelp, setHideHelp] = useState(false)
 
   useEffect(() => {
     setTimeout(() => setHideHelp(true), 2000)
+  }, [])
+
+  useEffect(() => {
+    const showEvent =
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent =
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+    const showSub = Keyboard.addListener(showEvent, () =>
+      setIsKeyboardVisible(true),
+    )
+    const hideSub = Keyboard.addListener(hideEvent, () =>
+      setIsKeyboardVisible(false),
+    )
+    return () => {
+      showSub.remove()
+      hideSub.remove()
+    }
   }, [])
 
   return (
@@ -172,7 +192,12 @@ export default function ReviewWriteStep6() {
           }}
         />
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        ref={scrollRef}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{ paddingBottom: isKeyboardVisible ? 100 : 60 }}
+      >
         <Spacing size={10} />
         <Col gap={19}>
           <Col gap={7} className="rounded-lg bg-gray-11 p-4">
@@ -245,6 +270,12 @@ export default function ReviewWriteStep6() {
             placeholder="자유롭게 총평을 작성해주세요. (최소 20자)"
             as="textarea"
             className="p-4 text-body-02 placeholder:text-gray-06"
+            onFocus={() =>
+              setTimeout(
+                () => scrollRef.current?.scrollToEnd({ animated: true }),
+                300,
+              )
+            }
           />
         </Col>
       </ScrollView>

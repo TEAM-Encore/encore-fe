@@ -20,7 +20,7 @@ export default function Reviews() {
     isLoading,
     ...queryProps
   } = useInfiniteList({
-    queryKey: 'reviews',
+    queryKey: 'my-reviews',
     fn: api().getMyReviewList,
     params: {
       sort: 'id',

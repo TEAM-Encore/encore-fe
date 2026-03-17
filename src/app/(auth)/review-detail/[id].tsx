@@ -39,17 +39,18 @@ import { showPointRewardToast } from '@/utils/pointReward'
 import ReviewDetailHeader from './_components/ReviewDetailHeader'
 
 type ReviewDetailTicket = {
-  ticket_id?: number
-  ticket_title?: string
-  viewed_date?: string
-  image_url?: string
+  image_url: string
+  ticket_id: number
+  ticket_title: string
+  viewed_date: string
 }
 
 export default function ReviewDetail() {
-  const user = useUser()
   const router = useRouter()
   const params = useLocalSearchParams<{ id: string; from?: string }>()
   const reviewId = params.id ? Number(params.id) : 0
+
+  const user = useUser()
 
   const {
     data: reviewData,
@@ -58,12 +59,14 @@ export default function ReviewDetail() {
     error,
     refetch,
   } = useQuery(reviewQueries.getReview(reviewId))
+
+  const ticket = reviewData?.ticket as ReviewDetailTicket
+
   const { data: myInfo } = useQuery(userQueries.getMyInfo())
   const { data: ticketData } = useQuery(
-    ticketQueries.getTicketDetail(
-      (reviewData?.ticket as ReviewDetailTicket)?.ticket_id ?? 0,
-    ),
+    ticketQueries.getTicketDetail(ticket?.ticket_id),
   )
+
   const { data: viewImageResponse } = useQuery(reviewQueries.getViewImages())
 
   useEffect(() => {
@@ -95,7 +98,7 @@ export default function ReviewDetail() {
   const hasEnoughPoints = myInfo !== undefined && (myInfo?.point ?? 0) >= 5
 
   const handleLike = () => {
-    if (reviewData?.is_my_review) {
+    if (reviewData?.user_id === user?.id) {
       toast.show('자신의 글에 좋아요를 누를 수 없어요.')
       return
     }
@@ -108,6 +111,9 @@ export default function ReviewDetail() {
         onSuccess: () => {
           queryClient.invalidateQueries({
             queryKey: reviewKeys.detail(reviewId),
+          })
+          queryClient.invalidateQueries({
+            queryKey: reviewKeys.list(),
           })
           if (!isLiked) {
             showPointRewardToast(5)
@@ -133,7 +139,6 @@ export default function ReviewDetail() {
   const view = reviewData?.review_data_res?.view
 
   const profileImageUrl = useSignedImageUrl(reviewData?.profile_image_url)
-  const ticketImageUrl = useSignedImageUrl(ticketData?.ticket_image_url)
 
   const dismissInsufficient = () => setInsufficientDismissed(true)
   const dismissUnlock = () => setUnlockDismissed(true)
@@ -173,7 +178,7 @@ export default function ReviewDetail() {
   )
 
   // 로딩 또는 데이터 없음
-  if (isReviewLoading || !reviewData || user?.id !== reviewData?.user_id) {
+  if (isReviewLoading || !reviewData) {
     return (
       <Screen
         header={
@@ -210,7 +215,7 @@ export default function ReviewDetail() {
     <Screen
       header={
         <ReviewDetailHeader
-          isMyReview={reviewData.is_my_review}
+          isMyReview={reviewData.user_id === user?.id}
           reviewId={reviewId}
         />
       }
@@ -222,28 +227,28 @@ export default function ReviewDetail() {
             <Text variant="subhead-05" className="flex-1 text-gray-01">
               {reviewData.title}
             </Text>
-            <Pressable onPress={handleLike}>
-              <Row align="center" gap={2}>
-                <Icon
-                  name={isLiked ? 'Like' : 'StrokeHeart'}
-                  size={22}
-                  className={cn(
-                    reviewData.is_my_review
-                      ? 'text-gray-11'
-                      : isLiked
-                        ? 'text-sub-point'
-                        : 'text-gray-01',
-                    'mt-px',
-                  )}
-                />
-                <Text
-                  variant="body-02"
-                  color={reviewData.is_my_review ? 'gray-11' : 'gray-01'}
-                >
-                  {reviewData.like_res?.like_count_res?.total_like_count ?? 0}
-                </Text>
-              </Row>
-            </Pressable>
+            {reviewData.user_id !== user?.id && (
+              <Pressable onPress={handleLike}>
+                <Row align="center" gap={2}>
+                  <Icon
+                    name={isLiked ? 'Like' : 'StrokeHeart'}
+                    size={isLiked ? 16 : 22}
+                    className={cn(
+                      isLiked ? 'px-4 text-sub-point' : 'text-gray-01',
+                      'mt-px',
+                    )}
+                  />
+                  <Text
+                    variant="body-02"
+                    color={
+                      reviewData.user_id === user?.id ? 'gray-11' : 'gray-01'
+                    }
+                  >
+                    {reviewData.like_res?.like_count_res?.total_like_count ?? 0}
+                  </Text>
+                </Row>
+              </Pressable>
+            )}
           </Row>
           <Spacing size={12} />
           <Col className="gap-5">
@@ -266,12 +271,16 @@ export default function ReviewDetail() {
             </Row>
 
             {/* 티켓 카드 */}
-            {ticketData && (
+            {(ticketData?.id || ticket?.ticket_id) && (
               <TicketBook
-                posterUrl={ticketImageUrl as string}
-                title={`${ticketData?.musical_title} ${ticketData?.location}`}
-                date={ticketData?.viewed_date?.replace(/-/g, '.') ?? ''}
-                theaterseat={`${ticketData?.floor}층 ${ticketData?.zone}구역 ${ticketData?.col}열 ${ticketData?.number}번`}
+                posterUrl={ticket?.image_url as string}
+                title={ticket?.ticket_title ?? ''}
+                date={ticket?.viewed_date?.replace(/-/g, '.') ?? ''}
+                theaterseat={
+                  ticketData
+                    ? `${ticketData?.floor}층 ${ticketData?.zone}구역 ${ticketData?.col}열 ${ticketData?.number}번`
+                    : ''
+                }
                 attendees={
                   ticketData?.actors?.map((actor) => actor.name).join(' ') ?? ''
                 }

@@ -25,7 +25,7 @@ export function ReviewOptions<T extends string>({
           key={option.value}
           center
           className={cn(
-            'h-[54px] flex-1 border-gray-10 border-r-[0.5px] bg-gray-11 px-6 py-4',
+            'h-[54px] flex-1 border-gray-10 border-r-[0.5px] bg-gray-11 px-2 py-4',
             {
               'bg-primary-04': value === option.value,
               'bg-gray-11': value !== option.value,
@@ -37,6 +37,8 @@ export function ReviewOptions<T extends string>({
           <Text
             variant={value !== option.value ? 'body-02' : 'subhead-03'}
             color={value !== option.value ? 'gray-08' : 'gray-12'}
+            numberOfLines={1}
+            adjustsFontSizeToFit
           >
             {option.label}
           </Text>
