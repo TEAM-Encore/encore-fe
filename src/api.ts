@@ -1,5 +1,6 @@
 import { Api } from 'api'
 import { router } from 'expo-router'
+import { toast } from './components/Toaster'
 import { deleteToken, getToken } from './lib/storage'
 
 async function customFetch(
@@ -9,6 +10,7 @@ async function customFetch(
   const response = await fetch(input, init)
 
   if (response.status === 401) {
+    toast.show('토큰이 만료되었습니다.')
     await deleteToken('accessToken')
     router.replace('/login')
   }
